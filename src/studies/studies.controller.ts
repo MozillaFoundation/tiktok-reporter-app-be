@@ -10,11 +10,13 @@ import {
 import { StudiesService } from './studies.service';
 import { CreateStudyDto } from './dto/create-study.dto';
 import { UpdateStudyDto } from './dto/update-study.dto';
+import { ApiBody } from '@nestjs/swagger';
 
 @Controller('studies')
 export class StudiesController {
   constructor(private readonly studiesService: StudiesService) {}
 
+  @ApiBody({ type: CreateStudyDto })
   @Post()
   create(@Body() createStudyDto: CreateStudyDto) {
     return this.studiesService.create(createStudyDto);
