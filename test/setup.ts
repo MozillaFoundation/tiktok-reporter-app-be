@@ -1,25 +1,22 @@
-import { TestApp } from './test-app';
+import { RegretsReporterTestSetup } from './regretsReporterTestSetup';
 import { getDataSourceToken } from '@nestjs/typeorm';
 
 global.beforeEach(async () => {
   try {
-    const app = await TestApp.getInstance().getApp();
-    console.log('I am here');
+    const app = await RegretsReporterTestSetup.getInstance().getApp();
+
     const token = getDataSourceToken();
     const connection = app.get(token);
 
-    console.log('Dropping:');
     await connection.dropDatabase();
-    console.log('Dropped');
+    await app.close();
   } catch (err) {
-    console.log('Error while removing db but its ok: ', JSON.stringify(err));
+    console.log('Error while removing db: ', JSON.stringify(err));
   }
 });
 
 global.afterAll(async () => {
-  console.log('Closing');
-  const app = await TestApp.getInstance().getApp();
+  const app = await RegretsReporterTestSetup.getInstance().getApp();
 
   await app.close();
-  console.log('Closed');
 });

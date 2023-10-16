@@ -1,6 +1,6 @@
 ## Description
 
-TikTok Reporter Backend API that will supply the mobile applications with metadata for the onboarding process and the reporting forms
+Regrets Reporter Backend API that will supply the mobile applications with metadata for the onboarding process and the reporting forms
 
 ## Installation
 
