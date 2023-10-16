@@ -8,7 +8,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
       inject: [ConfigService],
       useFactory: (config: ConfigService) => {
         return {
-          type: process.env.NODE_ENV === 'test' ? 'sqlite' : 'postgres',
+          type: 'postgres',
           host: config.getOrThrow<string>('PG_HOST'),
           port: config.getOrThrow<number>('PG_PORT'),
           database: config.getOrThrow<string>('PG_DATABASE'),

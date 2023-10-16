@@ -1,15 +1,25 @@
-import { join } from 'path';
-import { rm } from 'fs';
+import { TestApp } from './test-app';
+import { getDataSourceToken } from '@nestjs/typeorm';
 
 global.beforeEach(async () => {
   try {
-    const fileName = join(__dirname, '..', 'db.test.sqlite');
-    console.log(`Removing old DB file for testing ${fileName}`);
+    const app = await TestApp.getInstance().getApp();
+    console.log('I am here');
+    const token = getDataSourceToken();
+    const connection = app.get(token);
 
-    await rm(fileName, () => {
-      console.log('No params callback');
-    });
+    console.log('Dropping:');
+    await connection.dropDatabase();
+    console.log('Dropped');
   } catch (err) {
-    console.log('Error while removing db but its ok');
+    console.log('Error while removing db but its ok: ', JSON.stringify(err));
   }
+});
+
+global.afterAll(async () => {
+  console.log('Closing');
+  const app = await TestApp.getInstance().getApp();
+
+  await app.close();
+  console.log('Closed');
 });
