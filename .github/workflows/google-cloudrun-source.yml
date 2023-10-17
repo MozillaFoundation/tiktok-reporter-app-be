@@ -18,54 +18,24 @@ jobs:
 
     runs-on: ubuntu-latest
     steps:
-      - id: checkout
-        name: Checkout
+      - name: Checkout
         uses: actions/checkout@v2
 
-      - id: auth
-        name: Google Auth
+      - name: Google Auth
+        id: auth
         uses: 'google-github-actions/auth@v0'
         with:
-          token_format: access_token
           workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
           service_account: '${{ secrets.WIF_SERVICE_ACCOUNT }}' # e.g. - my-service-account@my-project.iam.gserviceaccount.com
-          access_token_lifetime: 300s
 
-      - id: loginar
-        name: Login to Artifact Registry
-        uses: docker/login-action@v1
+      - name: Deploy to Cloud Run
+        id: deploy
+        uses: google-github-actions/deploy-cloudrun@v0
         with:
-          registry: <gar-region>-docker.pkg.dev
-          username: oauth2accesstoken
-          password: ${{ steps.auth.outputs.access_token }}
-
-      - id: get-tag
-        name: Get tag
-        run: echo ::set-output name=short_ref::${GITHUB_REF#refs/*/}
-
-      - id: docker-push-tagged
-        name: Tag Docker image and push to Google Artifact Registry
-        uses: docker/build-push-action@v2
-        with:
-          push: true
-          tags: |
-            europe-west1-docker.pkg.dev/regrets-reporter-dev/tiktok-reporter-app-be/regrets-reporter:${{ steps.get-tag.outputs.short_ref }}
-            europe-west1-docker.pkg.dev/regrets-reporter-dev/tiktok-reporter-app-be/regrets-reporter:latest
-
-      - id: deploy
-        name: Deploy Docker image to App Engine
-        uses: google-github-actions/deploy-appengine@v1
-        with:
-          deliverables: '.github/configs/app.yaml'
-
-      # - name: Deploy to Cloud Run
-      #   id: deploy
-      #   uses: google-github-actions/deploy-cloudrun@v0
-      #   with:
-      #     service: ${{ env.SERVICE }}
-      #     region: ${{ env.REGION }}
-      #     # NOTE: If required, update to the appropriate source folder
-      #     source: ./
+          service: ${{ env.SERVICE }}
+          region: ${{ env.REGION }}
+          # NOTE: If required, update to the appropriate source folder
+          source: ./
 
       # If required, use the Cloud Run url output in later steps
       - name: Show Output
