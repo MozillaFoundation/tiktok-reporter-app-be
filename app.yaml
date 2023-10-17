@@ -1,0 +1,17 @@
+runtime: custom
+env: flex
+
+network:
+  forwarded_ports:
+    - 80:8080
+
+env_variables:
+  PG_HOST: $PG_HOST
+  PG_PORT: $PG_PORT
+  PG_Type: $PG_Type
+  PG_DATABASE: $PG_DATABASE
+  PG_USERNAME: $PG_USERNAME
+  PG_PASSWORD: $PG_PASSWORD
+  PG_ROOT_PASSWORD: $PG_ROOT_PASSWORD
+  PG_SYNCHRONIZE: $PG_SYNCHRONIZE
+  PG_LOGGING: $PG_LOGGING
