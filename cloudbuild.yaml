@@ -7,5 +7,7 @@ steps:
         'europe-west1-docker.pkg.dev/regrets-reporter-dev/myimage',
         '.',
       ]
-options:
-  defaultLogsBucketBehavior: REGIONAL_USER_OWNED_BUCKET
+logsBucket: 'gs://regrets-reporter-loggs-bucket'
+    options:
+      logging: GCS_ONLY
+
