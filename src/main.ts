@@ -8,7 +8,6 @@ const port = process.env.PORT || 8080;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
   // whitelist set to true strips the request of other values that are not part of the original DTO
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
@@ -20,6 +19,8 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  console.log('Hello world listening on port', port);
 
   await app.listen(port);
 }
