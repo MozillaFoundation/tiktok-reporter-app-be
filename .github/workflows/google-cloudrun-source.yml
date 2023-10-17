@@ -52,21 +52,6 @@ jobs:
             europe-west1-docker.pkg.dev/regrets-reporter-dev/tiktok-reporter-app-be/regrets-reporter:${{ steps.get-tag.outputs.short_ref }}
             europe-west1-docker.pkg.dev/regrets-reporter-dev/tiktok-reporter-app-be/regrets-reporter:latest
 
-      - id: populate-configs
-        uses: 73h/gae-app-yaml-replace-env-variables@v0.3
-        env:
-          PG_HOST: ${{ secrets.PG_HOST }}
-          PG_PORT: ${{ secrets.PG_PORT }}
-          PG_Type: ${{ secrets.PG_Type }}
-          PG_DATABASE: ${{ secrets.PG_DATABASE }}
-          PG_USERNAME: ${{ secrets.PG_USERNAME }}
-          PG_PASSWORD: ${{ secrets.PG_PASSWORD }}
-          PG_ROOT_PASSWORD: ${{ secrets.PG_ROOT_PASSWORD }}
-          PG_SYNCHRONIZE: ${{ secrets.PG_SYNCHRONIZE }}
-          PG_LOGGING: ${{ secrets.PG_LOGGING }}
-        with:
-          app_yaml_path: '.github/configs/app.yaml'
-
       - id: deploy
         name: Deploy Docker image to App Engine
         uses: google-github-actions/deploy-appengine@v1
