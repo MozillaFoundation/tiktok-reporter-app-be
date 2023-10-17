@@ -12,20 +12,20 @@ env:
 jobs:
   deploy:
     # Add 'id-token' with the intended permissions for workload identity federation
-    runs-on: ubuntu-latest
-
     permissions:
       contents: 'read'
       id-token: 'write'
-    secrets: inherit
 
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        secrets: inherit
 
       - name: Google Auth
         id: auth
         uses: 'google-github-actions/auth@v0'
+        secrets: inherit
         with:
           token_format: 'access_token'
           workload_identity_provider: '${{ secrets.WIF_PROVIDER }}' # e.g. - projects/123456789/locations/global/workloadIdentityPools/my-pool/providers/my-provider
@@ -34,6 +34,7 @@ jobs:
       - name: Deploy to Cloud Run
         id: deploy
         uses: google-github-actions/deploy-cloudrun@v0
+        secrets: inherit
         with:
           service: ${{ env.SERVICE }}
           region: ${{ env.REGION }}
