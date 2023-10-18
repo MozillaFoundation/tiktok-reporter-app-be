@@ -4,6 +4,7 @@ import { APP_PIPE } from '@nestjs/core';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
+import { CountryCodesModule } from './countryCodes/country-codes.module';
 import { DataBaseModule } from './database/database.module';
 import { StudiesModule } from './studies/studies.module';
 
@@ -16,6 +17,7 @@ import { StudiesModule } from './studies/studies.module';
     }),
     DataBaseModule,
     StudiesModule,
+    CountryCodesModule,
   ],
   controllers: [AppController],
   providers: [

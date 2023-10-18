@@ -4,16 +4,53 @@ import {
   AfterUpdate,
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
+import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
+
 @Entity()
 export class Study {
-  @PrimaryGeneratedColumn()
-  id: number;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
   @Column()
   name: string;
+
+  @Column()
+  description: string;
+
+  @ManyToMany(() => CountryCode, (countryCode) => countryCode.studies, {
+    cascade: true,
+    onDelete: 'NO ACTION',
+  })
+  @JoinTable()
+  countryCodes: CountryCode[];
+
+  // studies/:cc
+  // // Create a connection to countrycode table
+  // @Column()
+  // countryCodeId: number;
+
+  // studies/:id/onboard
+  // class Onboard:{
+  // Many to many OnboardSteps
+  // steps:{id, title?, description, imageUrl, details, order, onboardForm:Form}
+  // }
+
+  // termsandconditions
+  // title, subtitle, text
+
+  // Form:
+  /* studies/id/form
+  Form: 
+    id
+    Type: Recording, Reporting
+    Title
+    fields:{order}
+  */
 
   @AfterInsert()
   logAfterInsert() {

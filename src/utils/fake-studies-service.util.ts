@@ -1,14 +1,28 @@
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+
 import { CreateStudyDto } from 'src/studies/dto/create-study.dto';
-import { NotFoundException } from '@nestjs/common';
 import { StudiesService } from 'src/studies/studies.service';
 import { Study } from 'src/studies/entities/study.entity';
 import { UpdateStudyDto } from 'src/studies/dto/update-study.dto';
-import { fakeStudyRepository } from './fake-studies-repository.util';
+import { fakeCountryCodesService } from './fake-country-codes-service.util';
+import { getFakeEntityRepository } from './fake-repository.util';
+
+const fakeStudyRepository = getFakeEntityRepository<Study>();
 
 export const fakeStudiesService: Partial<StudiesService> = {
   create: async (createStudyDto: CreateStudyDto) => {
+    const foundCountryCode = await fakeCountryCodesService.findOne(
+      createStudyDto.countryCodeId,
+    );
+
+    if (!foundCountryCode) {
+      throw new BadRequestException('No Country Code with the given id');
+    }
+
     const newStudy = {
       name: createStudyDto.name,
+      description: createStudyDto.description,
+      countryCodes: [foundCountryCode],
     } as Study;
 
     const createdStudy = fakeStudyRepository.create(newStudy);
@@ -20,12 +34,12 @@ export const fakeStudiesService: Partial<StudiesService> = {
     const studies = await fakeStudyRepository.find();
     return studies;
   },
-  findOne: async (id: number) => {
+  findOne: async (id: string) => {
     const foundStudy = await fakeStudyRepository.findOneBy({ id });
 
     return foundStudy;
   },
-  update: async (id: number, updateStudyDto: UpdateStudyDto) => {
+  update: async (id: string, updateStudyDto: UpdateStudyDto) => {
     const foundStudy = await fakeStudyRepository.findOneBy({ id });
 
     if (!foundStudy) {
@@ -35,7 +49,7 @@ export const fakeStudiesService: Partial<StudiesService> = {
     Object.assign(foundStudy, { ...updateStudyDto });
     return await fakeStudyRepository.save(foundStudy);
   },
-  remove: async (id: number) => {
+  remove: async (id: string) => {
     const foundStudy = await fakeStudyRepository.findOneBy({ id });
 
     if (!foundStudy) {

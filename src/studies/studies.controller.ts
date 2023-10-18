@@ -27,18 +27,23 @@ export class StudiesController {
     return this.studiesService.findAll();
   }
 
+  @Get('country-codes/:countryCode')
+  findByCountryCode(@Param('countryCode') countryCode: string) {
+    return this.studiesService.findByCountryCode(countryCode);
+  }
+
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.studiesService.findOne(+id);
+    return this.studiesService.findOne(id);
   }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateStudyDto: UpdateStudyDto) {
-    return this.studiesService.update(+id, updateStudyDto);
+    return this.studiesService.update(id, updateStudyDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.studiesService.remove(+id);
+    return this.studiesService.remove(id);
   }
 }
