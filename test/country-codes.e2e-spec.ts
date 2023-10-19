@@ -1,6 +1,6 @@
 import * as request from 'supertest';
 
-import { DEFAULT_GUID } from './constants';
+import { DEFAULT_GUID } from '../src/utils/constants';
 import { INestApplication } from '@nestjs/common';
 import { RegretsReporterTestSetup } from './regretsReporterTestSetup';
 
@@ -87,7 +87,7 @@ describe('Country Code', () => {
     expect(foundCountryCode).toBeDefined();
   });
 
-  it('update returns the updated country code', async () => {
+  it('update returns the updated country code with all changes updated', async () => {
     const countryCode = 'Test Create Second Country Code';
     const countryName = 'Test Create Second Country Code Name';
 
@@ -112,6 +112,33 @@ describe('Country Code', () => {
 
     expect(updateResponseBody.code).toEqual(updatedCountryCode);
     expect(updateResponseBody.countryName).toEqual(updatedCountryName);
+
+    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+  });
+
+  it('update returns the updated country code with the partial changes updated', async () => {
+    const countryCode = 'Test Create Second Country Code';
+    const countryName = 'Test Create Second Country Code Name';
+
+    const updatedCountryCode = 'UPDATE Test Create Second Country Code';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/country-codes')
+      .send({ countryCode, countryName })
+      .expect(201);
+
+    const { body: updateResponseBody } = await request(app.getHttpServer())
+      .patch(`/country-codes/${createResponseBody.id}`)
+      .send({
+        countryCode: updatedCountryCode,
+      })
+      .expect(200);
+
+    expect(createResponseBody.code).toEqual(countryCode);
+    expect(createResponseBody.countryName).toEqual(countryName);
+
+    expect(updateResponseBody.code).toEqual(updatedCountryCode);
+    expect(updateResponseBody.countryName).toEqual(countryName);
 
     expect(createResponseBody.id).toEqual(updateResponseBody.id);
   });

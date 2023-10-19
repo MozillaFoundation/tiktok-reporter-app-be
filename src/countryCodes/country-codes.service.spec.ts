@@ -3,7 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CountryCode } from './entities/country-code.entity';
 import { CountryCodesService } from './country-codes.service';
 import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
-import { DEFAULT_GUID } from 'test/constants';
+import { DEFAULT_GUID } from 'src/utils/constants';
 import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
@@ -34,9 +34,11 @@ describe('CountryCodesService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
   it('should have repository defined', () => {
     expect(repository).toBeDefined();
   });
+
   it('create returns the newly created country code', async () => {
     const createCountryCodeDto = new CreateCountryCodeDto();
     createCountryCodeDto.countryCode = 'Test Country Code';
@@ -49,6 +51,7 @@ describe('CountryCodesService', () => {
       createCountryCodeDto.countryCode,
     );
   });
+
   it('findAll returns the list of all studies including the newly created one', async () => {
     const createCountryCodeDto = new CreateCountryCodeDto();
     createCountryCodeDto.countryCode = 'Test Find All Country Codes';
@@ -59,6 +62,20 @@ describe('CountryCodesService', () => {
     await expect(allCountryCodes).toBeDefined();
     await expect(allCountryCodes.length).toBeGreaterThan(0);
     await expect(allCountryCodes).toContain(newCreatedCountryCode);
+  });
+
+  it('findAllById returns the list of studies with ids in the provided search list ', async () => {
+    const createCountryCodeDto = new CreateCountryCodeDto();
+    createCountryCodeDto.countryCode = 'Test Find All By Ids Country Codes';
+    const newCreatedCountryCode = await service.create(createCountryCodeDto);
+
+    const foundCountries = await service.findAllById([
+      newCreatedCountryCode.id,
+    ]);
+
+    await expect(foundCountries).toBeDefined();
+    await expect(foundCountries.length).toBeGreaterThan(0);
+    await expect(foundCountries).toContain(newCreatedCountryCode);
   });
 
   it('findOne returns newly created country code', async () => {
@@ -72,7 +89,13 @@ describe('CountryCodesService', () => {
     await expect(foundCountryCode).toEqual(newCreatedCountryCode);
   });
 
-  it('update returns the updated country code', async () => {
+  it('findOne throws error when no country code was found', async () => {
+    await expect(service.findOne(DEFAULT_GUID)).rejects.toThrow(
+      NotFoundException,
+    );
+  });
+
+  it('update returns the updated country code with all changes updated', async () => {
     const createCountryCodeDto = new CreateCountryCodeDto();
     createCountryCodeDto.countryCode = 'Test Update Country Code';
     const newCreatedCountryCode = await service.create(createCountryCodeDto);
@@ -84,6 +107,24 @@ describe('CountryCodesService', () => {
 
     await expect(updatedCountryCode).toBeDefined();
     await expect(updatedCountryCode.code).toEqual(updatedCode);
+    await expect(updatedCountryCode).toEqual(newCreatedCountryCode);
+  });
+
+  it('update returns the updated country code with the partial changes updated', async () => {
+    const entityDto = new CreateCountryCodeDto();
+    entityDto.countryCode = 'Test Update Country Code';
+    entityDto.countryName = 'Test Update Country Code Name';
+
+    const newCreatedCountryCode = await service.create(entityDto);
+    const updatedCode = 'UPDATED Test Update Country Code';
+
+    const updatedCountryCode = await service.update(newCreatedCountryCode.id, {
+      countryCode: updatedCode,
+    });
+
+    await expect(updatedCountryCode).toBeDefined();
+    await expect(updatedCountryCode.code).toEqual(updatedCode);
+    await expect(updatedCountryCode.countryName).toEqual(entityDto.countryName);
     await expect(updatedCountryCode).toEqual(newCreatedCountryCode);
   });
 
@@ -101,14 +142,14 @@ describe('CountryCodesService', () => {
     const newCreatedCountryCode = await service.create(createCountryCodeDto);
 
     const removedCountryCode = await service.remove(newCreatedCountryCode.id);
-    const foundRemovedCountryCode = await service.findOne(
-      removedCountryCode.id,
+    await expect(service.findOne(removedCountryCode.id)).rejects.toThrow(
+      NotFoundException,
     );
-
-    await expect(foundRemovedCountryCode).not.toBeDefined();
   });
 
   it('remove throws error when no country code was found', async () => {
-    await expect(service.remove('12')).rejects.toThrow(NotFoundException);
+    await expect(service.remove(DEFAULT_GUID)).rejects.toThrow(
+      NotFoundException,
+    );
   });
 });

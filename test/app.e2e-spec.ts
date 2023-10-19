@@ -7,7 +7,6 @@ import { INestApplication } from '@nestjs/common';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;
-  // TODO: move e2e tests in postgreSQL
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],

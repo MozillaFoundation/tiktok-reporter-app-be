@@ -49,8 +49,8 @@ export class StudiesService {
   async findByCountryCode(countryCode: string) {
     const condition = isUUID(countryCode)
       ? { countryCodes: { id: countryCode } }
-      : { countryCodes: { code: countryCode.toLowerCase() } };
-    console.log('countryCode', countryCode);
+      : { countryCodes: { code: countryCode } };
+
     const areStudiesAvailable = await this.studyRepository.exist({
       where: condition,
       relations: {
@@ -75,22 +75,23 @@ export class StudiesService {
       return null;
     }
 
-    return await this.studyRepository.findOne({
+    const study = await this.studyRepository.findOne({
       where: { id },
       relations: { countryCodes: true },
     });
+    if (!study) {
+      throw new NotFoundException('Study not found');
+    }
+
+    return study;
   }
 
   async update(id: string, updateStudyDto: UpdateStudyDto) {
     const study = await this.findOne(id);
 
-    if (!study) {
-      throw new NotFoundException('Study not found');
-    }
-
     Object.assign(study, {
-      name: updateStudyDto.name,
-      description: updateStudyDto.description,
+      name: updateStudyDto.name || study.name,
+      description: updateStudyDto.description || study.description,
     });
 
     if (updateStudyDto.countryCodeIds) {
@@ -111,10 +112,6 @@ export class StudiesService {
 
   async remove(id: string) {
     const study = await this.findOne(id);
-
-    if (!study) {
-      throw new NotFoundException('Study not found');
-    }
 
     return this.studyRepository.remove(study);
   }

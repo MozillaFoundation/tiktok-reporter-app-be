@@ -36,29 +36,28 @@ export class CountryCodesService {
       return null;
     }
 
-    return await this.countryCodeRepository.findOneBy({ id });
+    const countryCode = await this.countryCodeRepository.findOneBy({ id });
+
+    if (!countryCode) {
+      throw new NotFoundException('Country Code not found');
+    }
+
+    return countryCode;
   }
 
   async update(id: string, updateCountryCodeDto: UpdateCountryCodeDto) {
     const countryCode = await this.findOne(id);
 
-    if (!countryCode) {
-      throw new NotFoundException('Country Code not found');
-    }
-
     Object.assign(countryCode, {
-      countryName: updateCountryCodeDto.countryName,
-      code: updateCountryCodeDto.countryCode,
+      countryName: updateCountryCodeDto.countryName || countryCode.countryName,
+      code: updateCountryCodeDto.countryCode || countryCode.code,
     });
+
     return await this.countryCodeRepository.save(countryCode);
   }
 
   async remove(id: string) {
     const countryCode = await this.findOne(id);
-
-    if (!countryCode) {
-      throw new NotFoundException('Country Code not found');
-    }
 
     return await this.countryCodeRepository.remove(countryCode);
   }

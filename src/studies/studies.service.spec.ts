@@ -5,7 +5,7 @@ import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
 import { CreateCountryCodeDto } from 'src/countryCodes/dtos/create-country-code.dto';
 import { CreateStudyDto } from './dto/create-study.dto';
-import { DEFAULT_GUID } from 'test/constants';
+import { DEFAULT_GUID } from 'src/utils/constants';
 import { Repository } from 'typeorm';
 import { StudiesService } from './studies.service';
 import { Study } from './entities/study.entity';
@@ -21,7 +21,8 @@ describe('StudiesService', () => {
 
   beforeAll(async () => {
     const countryCodeDto = new CreateCountryCodeDto();
-    countryCodeDto.countryCode = 'Test Country Code';
+    countryCodeDto.countryCode = 'test country code';
+    countryCodeDto.countryName = 'Test Country Code Name';
     countryCodeForTest = await fakeCountryCodesService.create(countryCodeDto);
   });
 
@@ -44,9 +45,11 @@ describe('StudiesService', () => {
   it('should be defined', () => {
     expect(service).toBeDefined();
   });
+
   it('should have studyRepository defined', () => {
     expect(repository).toBeDefined();
   });
+
   it('create returns the newly created study', async () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Create Study';
@@ -62,6 +65,7 @@ describe('StudiesService', () => {
     await expect(newCreatedEntity.countryCodes).toBeDefined();
     await expect(newCreatedEntity.countryCodes.length).toBeGreaterThan(0);
   });
+
   it('create throws error if invalid country code id is provided', async () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Create Study';
@@ -72,6 +76,7 @@ describe('StudiesService', () => {
       BadRequestException,
     );
   });
+
   it('findAll returns the list of all studies including the newly created one', async () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Find All Studies';
@@ -102,7 +107,45 @@ describe('StudiesService', () => {
     await expect(foundEntity.countryCodes).toBeDefined();
   });
 
-  it('update returns the updated study', async () => {
+  it('findOne throws error when no study was found', async () => {
+    await expect(service.findOne(DEFAULT_GUID)).rejects.toThrow(
+      NotFoundException,
+    );
+  });
+
+  it('findByCountryCode returns newly created study when querying by id', async () => {
+    const entityDto = new CreateStudyDto();
+    entityDto.name = 'Test Find One Study';
+    entityDto.description = 'The Description of the new Created Study';
+    entityDto.countryCodeIds = [countryCodeForTest.id];
+
+    const newCreatedStudy = await service.create(entityDto);
+
+    const foundEntities = await service.findByCountryCode(
+      countryCodeForTest.id,
+    );
+
+    await expect(foundEntities).toBeDefined();
+    await expect(foundEntities).toContain(newCreatedStudy);
+  });
+
+  it('findByCountryCode returns newly created study when querying by country code value', async () => {
+    const entityDto = new CreateStudyDto();
+    entityDto.name = 'Test Find One Study';
+    entityDto.description = 'The Description of the new Created Study';
+    entityDto.countryCodeIds = [countryCodeForTest.id];
+
+    const newCreatedStudy = await service.create(entityDto);
+
+    const foundEntities = await service.findByCountryCode(
+      countryCodeForTest.code,
+    );
+
+    await expect(foundEntities).toBeDefined();
+    await expect(foundEntities).toContain(newCreatedStudy);
+  });
+
+  it('update returns the updated study with all changes updated', async () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Update Study';
     entityDto.description = 'The Description of the new Created Study';
@@ -117,6 +160,28 @@ describe('StudiesService', () => {
 
     await expect(updatedEntity).toBeDefined();
     await expect(updatedEntity.name).toEqual(updatedName);
+    await expect(updatedEntity).toEqual(newCreatedEntity);
+  });
+
+  it('update returns the updated study with the partial changes updated', async () => {
+    const entityDto = new CreateStudyDto();
+    entityDto.name = 'Test Update Study';
+    entityDto.description = 'The Description of the new Created Study';
+    entityDto.countryCodeIds = [countryCodeForTest.id];
+
+    const newCreatedEntity = await service.create(entityDto);
+    const updatedName = 'UPDATED Test Update Study';
+
+    const updatedEntity = await service.update(newCreatedEntity.id, {
+      name: updatedName,
+    });
+
+    await expect(updatedEntity).toBeDefined();
+    await expect(updatedEntity.name).toEqual(updatedName);
+    await expect(updatedEntity.description).toEqual(entityDto.description);
+    await expect(updatedEntity.countryCodes.map((cc) => cc.id)).toEqual(
+      entityDto.countryCodeIds,
+    );
     await expect(updatedEntity).toEqual(newCreatedEntity);
   });
 
@@ -137,9 +202,9 @@ describe('StudiesService', () => {
     const newCreatedEntity = await service.create(entityDto);
 
     const removedEntity = await service.remove(newCreatedEntity.id);
-    const foundRemovedEntity = await service.findOne(removedEntity.id);
-
-    await expect(foundRemovedEntity).not.toBeDefined();
+    await expect(service.findOne(removedEntity.id)).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('remove throws error when no study was found', async () => {

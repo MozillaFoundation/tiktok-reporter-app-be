@@ -5,7 +5,7 @@ import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
 import { CreateCountryCodeDto } from 'src/countryCodes/dtos/create-country-code.dto';
 import { CreateStudyDto } from './dto/create-study.dto';
-import { DEFAULT_GUID } from 'test/constants';
+import { DEFAULT_GUID } from 'src/utils/constants';
 import { StudiesController } from './studies.controller';
 import { StudiesService } from './studies.service';
 import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
@@ -17,7 +17,7 @@ describe('StudiesController', () => {
 
   beforeAll(async () => {
     const countryCodeDto = new CreateCountryCodeDto();
-    countryCodeDto.countryCode = 'Test Country Code';
+    countryCodeDto.countryCode = 'test country code';
     countryCodeDto.countryName = 'Test Country Code Name';
 
     countryCodeForTest = await fakeCountryCodesService.create(countryCodeDto);
@@ -65,6 +65,7 @@ describe('StudiesController', () => {
       BadRequestException,
     );
   });
+
   it('findAll returns the list of all studies including the newly created one', async () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Find All Studies';
@@ -95,7 +96,45 @@ describe('StudiesController', () => {
     await expect(foundEntity).toEqual(newCreatedStudy);
   });
 
-  it('update returns the updated study', async () => {
+  it('findOne throws error when no study was found', async () => {
+    await expect(controller.findOne(DEFAULT_GUID)).rejects.toThrow(
+      NotFoundException,
+    );
+  });
+
+  it('findByCountryCode returns newly created study when querying by id', async () => {
+    const entityDto = new CreateStudyDto();
+    entityDto.name = 'Test Find One Study';
+    entityDto.description = 'The Description of the new Created Study';
+    entityDto.countryCodeIds = [countryCodeForTest.id];
+
+    const newCreatedStudy = await controller.create(entityDto);
+
+    const foundEntities = await controller.findByCountryCode(
+      countryCodeForTest.id,
+    );
+
+    await expect(foundEntities).toBeDefined();
+    await expect(foundEntities).toContain(newCreatedStudy);
+  });
+
+  it('findByCountryCode returns newly created study when querying by country code value', async () => {
+    const entityDto = new CreateStudyDto();
+    entityDto.name = 'Test Find One Study';
+    entityDto.description = 'The Description of the new Created Study';
+    entityDto.countryCodeIds = [countryCodeForTest.id];
+
+    const newCreatedStudy = await controller.create(entityDto);
+
+    const foundEntities = await controller.findByCountryCode(
+      countryCodeForTest.code,
+    );
+
+    await expect(foundEntities).toBeDefined();
+    await expect(foundEntities).toContain(newCreatedStudy);
+  });
+
+  it('update returns the updated study with all changes updated', async () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Update Study';
     entityDto.description = 'The Description of the new Created Study';
@@ -110,6 +149,28 @@ describe('StudiesController', () => {
 
     await expect(updatedStudy).toBeDefined();
     await expect(updatedStudy.name).toEqual(updatedName);
+    await expect(updatedStudy).toEqual(newCreatedStudy);
+  });
+
+  it('update returns the updated study with the partial changes updated', async () => {
+    const entityDto = new CreateStudyDto();
+    entityDto.name = 'Test Update Study';
+    entityDto.description = 'The Description of the new Created Study';
+    entityDto.countryCodeIds = [countryCodeForTest.id];
+
+    const newCreatedStudy = await controller.create(entityDto);
+    const updatedName = 'UPDATED Test Update Study';
+
+    const updatedStudy = await controller.update(newCreatedStudy.id, {
+      name: updatedName,
+    });
+
+    await expect(updatedStudy).toBeDefined();
+    await expect(updatedStudy.name).toEqual(updatedName);
+    await expect(updatedStudy.description).toEqual(entityDto.description);
+    await expect(updatedStudy.countryCodes.map((cc) => cc.id)).toEqual(
+      entityDto.countryCodeIds,
+    );
     await expect(updatedStudy).toEqual(newCreatedStudy);
   });
 
@@ -130,9 +191,9 @@ describe('StudiesController', () => {
     const newCreatedStudy = await controller.create(entityDto);
 
     const removedStudy = await controller.remove(newCreatedStudy.id);
-    const foundRemovedStudy = await controller.findOne(removedStudy.id);
-
-    await expect(foundRemovedStudy).not.toBeDefined();
+    await expect(controller.findOne(removedStudy.id)).rejects.toThrow(
+      NotFoundException,
+    );
   });
 
   it('remove throws error when no study was found', async () => {

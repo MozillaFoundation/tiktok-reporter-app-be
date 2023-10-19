@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CountryCodesController } from './country-codes.controller';
 import { CountryCodesService } from './country-codes.service';
 import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
+import { DEFAULT_GUID } from 'src/utils/constants';
 import { NotFoundException } from '@nestjs/common';
 import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
 
@@ -36,6 +37,7 @@ describe('CountryCodesController', () => {
     await expect(newEntityCode.code).toEqual(entityDto.countryCode);
     await expect(newEntityCode.countryName).toEqual(entityDto.countryName);
   });
+
   it('findAll returns the list of all country codes including the newly created one', async () => {
     const entityDto = new CreateCountryCodeDto();
     entityDto.countryCode = 'Test Find All Country Codes';
@@ -63,7 +65,13 @@ describe('CountryCodesController', () => {
     await expect(foundCountryCode).toEqual(newEntityCode);
   });
 
-  it('update returns the updated country code', async () => {
+  it('findOne throws error when no country code was found', async () => {
+    await expect(controller.findOne(DEFAULT_GUID)).rejects.toThrow(
+      NotFoundException,
+    );
+  });
+
+  it('update returns the updated country code with all changes updated', async () => {
     const entityDto = new CreateCountryCodeDto();
     entityDto.countryCode = 'Test Update Country Code';
     entityDto.countryName = 'Test Update Country Code Name';
@@ -83,9 +91,27 @@ describe('CountryCodesController', () => {
     await expect(updatedEntity).toEqual(newEntityCode);
   });
 
+  it('update returns the updated country code with the partial changes updated', async () => {
+    const entityDto = new CreateCountryCodeDto();
+    entityDto.countryCode = 'Test Update Country Code';
+    entityDto.countryName = 'Test Update Country Code Name';
+
+    const newEntityCode = await controller.create(entityDto);
+    const updatedCode = 'UPDATED Test Country Code';
+
+    const updatedEntity = await controller.update(newEntityCode.id, {
+      countryCode: updatedCode,
+    });
+
+    await expect(updatedEntity).toBeDefined();
+    await expect(updatedEntity.code).toEqual(updatedCode);
+    await expect(updatedEntity.countryName).toEqual(entityDto.countryName);
+    await expect(updatedEntity).toEqual(newEntityCode);
+  });
+
   it('update throws error when no country code was found', async () => {
     await expect(
-      controller.update('12', {
+      controller.update(DEFAULT_GUID, {
         countryCode: 'Not Existing Country Code',
       }),
     ).rejects.toThrow(NotFoundException);
@@ -101,14 +127,14 @@ describe('CountryCodesController', () => {
     const removedCountryCode = await controller.remove(
       newCreatedCountryCode.id,
     );
-    const foundRemovedCountryCode = await controller.findOne(
-      removedCountryCode.id,
+    await expect(controller.findOne(removedCountryCode.id)).rejects.toThrow(
+      NotFoundException,
     );
-
-    await expect(foundRemovedCountryCode).not.toBeDefined();
   });
 
   it('remove throws error when no country code was found', async () => {
-    await expect(controller.remove('12')).rejects.toThrow(NotFoundException);
+    await expect(controller.remove(DEFAULT_GUID)).rejects.toThrow(
+      NotFoundException,
+    );
   });
 });

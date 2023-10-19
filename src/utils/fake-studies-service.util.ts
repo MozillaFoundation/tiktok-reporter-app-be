@@ -6,6 +6,8 @@ import { Study } from 'src/studies/entities/study.entity';
 import { UpdateStudyDto } from 'src/studies/dto/update-study.dto';
 import { fakeCountryCodesService } from './fake-country-codes-service.util';
 import { getFakeEntityRepository } from './fake-repository.util';
+import { isUUID } from 'class-validator';
+import { removeDuplicateObjects } from './remove-duplicates';
 
 const fakeStudyRepository = getFakeEntityRepository<Study>();
 
@@ -34,27 +36,63 @@ export const fakeStudiesService: Partial<StudiesService> = {
     const studies = await fakeStudyRepository.find();
     return studies;
   },
+  findByCountryCode: async (countryCode: string) => {
+    const condition = isUUID(countryCode)
+      ? { countryCodes: { id: countryCode } }
+      : { countryCodes: { code: countryCode } };
+
+    const areStudiesAvailable = await fakeStudyRepository.exist({
+      where: condition,
+      relations: {
+        countryCodes: true,
+      },
+    });
+
+    if (!areStudiesAvailable) {
+      return await fakeStudiesService.findAll();
+    }
+
+    return await fakeStudyRepository.find({
+      where: condition,
+      relations: {
+        countryCodes: true,
+      },
+    });
+  },
   findOne: async (id: string) => {
     const foundStudy = await fakeStudyRepository.findOneBy({ id });
+
+    if (!foundStudy) {
+      throw new NotFoundException('Study not found');
+    }
 
     return foundStudy;
   },
   update: async (id: string, updateStudyDto: UpdateStudyDto) => {
-    const foundStudy = await fakeStudyRepository.findOneBy({ id });
+    const foundStudy = await fakeStudiesService.findOne(id);
 
-    if (!foundStudy) {
-      throw new NotFoundException('Study not found');
+    Object.assign(foundStudy, {
+      name: updateStudyDto.name || foundStudy.name,
+      description: updateStudyDto.description || foundStudy.description,
+    });
+
+    if (updateStudyDto.countryCodeIds) {
+      const countryCodes = await fakeCountryCodesService.findAllById(
+        updateStudyDto.countryCodeIds,
+      );
+
+      const newCountryCodes = removeDuplicateObjects(
+        [...foundStudy.countryCodes, ...countryCodes],
+        'id',
+      );
+
+      Object.assign(foundStudy, { countryCodes: newCountryCodes });
     }
 
-    Object.assign(foundStudy, { ...updateStudyDto });
     return await fakeStudyRepository.save(foundStudy);
   },
   remove: async (id: string) => {
-    const foundStudy = await fakeStudyRepository.findOneBy({ id });
-
-    if (!foundStudy) {
-      throw new NotFoundException('Study not found');
-    }
+    const foundStudy = await fakeStudiesService.findOne(id);
 
     return await fakeStudyRepository.remove(foundStudy);
   },

@@ -1,7 +1,7 @@
 import * as request from 'supertest';
 
 import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
-import { DEFAULT_GUID } from './constants';
+import { DEFAULT_GUID } from '../src/utils/constants';
 import { INestApplication } from '@nestjs/common';
 import { RegretsReporterTestSetup } from './regretsReporterTestSetup';
 
@@ -44,6 +44,62 @@ describe('Study', () => {
     expect(createResponseBody.countryCodes.at(0).id).toEqual(newCountryCode.id);
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
+  });
+
+  it('handles a findByCountryCode study request returns study by country code id', async () => {
+    const studyName = 'Test Create Second Study';
+    const studyDescription = 'Test Create Second Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        countryCodeIds: [newCountryCode.id],
+      })
+      .expect(201);
+
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/country-codes/${newCountryCode.id}`)
+      .expect(200);
+
+    expect(createResponseBody.name).toEqual(studyName);
+    expect(createResponseBody.description).toEqual(studyDescription);
+    expect(createResponseBody.countryCodes.at(0).id).toEqual(newCountryCode.id);
+
+    expect(getResponseBody.at(0).name).toEqual(studyName);
+    expect(getResponseBody.at(0).description).toEqual(studyDescription);
+    expect(getResponseBody.at(0).countryCodes.at(0).id).toEqual(
+      newCountryCode.id,
+    );
+  });
+
+  it('handles a findByCountryCode study request returns study by country code value', async () => {
+    const studyName = 'Test Create Second Study';
+    const studyDescription = 'Test Create Second Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        countryCodeIds: [newCountryCode.id],
+      })
+      .expect(201);
+
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/country-codes/${newCountryCode.code}`)
+      .expect(200);
+
+    expect(createResponseBody.name).toEqual(studyName);
+    expect(createResponseBody.description).toEqual(studyDescription);
+    expect(createResponseBody.countryCodes.at(0).id).toEqual(newCountryCode.id);
+
+    expect(getResponseBody.at(0).name).toEqual(studyName);
+    expect(getResponseBody.at(0).description).toEqual(studyDescription);
+    expect(getResponseBody.at(0).countryCodes.at(0).id).toEqual(
+      newCountryCode.id,
+    );
   });
 
   it('handles a findOne study request', async () => {
@@ -108,7 +164,7 @@ describe('Study', () => {
     expect(getResponseBody.at(0).name).toEqual(studyName);
   });
 
-  it('update returns the updated study', async () => {
+  it('update returns the updated study with all changes updated', async () => {
     const studyName = 'Test Create Third Study';
     const studyDescription = 'Test Create Third Study DESCRIPTION';
 
@@ -134,6 +190,35 @@ describe('Study', () => {
 
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(updateStudyDescription);
+
+    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+  });
+
+  it('update returns the updated study with the partial changes updated', async () => {
+    const studyName = 'Test Create Third Study';
+    const studyDescription = 'Test Create Third Study DESCRIPTION';
+
+    const updatedStudyName = 'UPDATE Test Create Third Study';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        countryCodeIds: [newCountryCode.id],
+      })
+      .expect(201);
+
+    const { body: updateResponseBody } = await request(app.getHttpServer())
+      .patch(`/studies/${createResponseBody.id}`)
+      .send({ name: updatedStudyName })
+      .expect(200);
+
+    expect(createResponseBody.name).toEqual(studyName);
+    expect(createResponseBody.description).toEqual(studyDescription);
+
+    expect(updateResponseBody.name).toEqual(updatedStudyName);
+    expect(updateResponseBody.description).toEqual(studyDescription);
 
     expect(createResponseBody.id).toEqual(updateResponseBody.id);
   });

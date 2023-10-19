@@ -19,4 +19,5 @@ global.afterAll(async () => {
   const app = await RegretsReporterTestSetup.getInstance().getApp();
 
   await app.close();
+  await app.get;
 });

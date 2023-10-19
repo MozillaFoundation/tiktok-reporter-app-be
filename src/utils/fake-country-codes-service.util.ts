@@ -26,7 +26,15 @@ export const fakeCountryCodesService: Partial<CountryCodesService> = {
     return studies;
   },
   findOne: async (id: string) => {
+    if (!id) {
+      return null;
+    }
+
     const foundCountryCode = await fakeCountryCodeRepository.findOneBy({ id });
+
+    if (!foundCountryCode) {
+      throw new NotFoundException('Country Code not found');
+    }
 
     return foundCountryCode;
   },
@@ -36,24 +44,17 @@ export const fakeCountryCodesService: Partial<CountryCodesService> = {
     });
   },
   update: async (id: string, updateCountryCodeDto: UpdateCountryCodeDto) => {
-    const foundCountryCode = await fakeCountryCodeRepository.findOneBy({ id });
-
-    if (!foundCountryCode) {
-      throw new NotFoundException('CountryCode not found');
-    }
+    const foundCountryCode = await fakeCountryCodesService.findOne(id);
 
     Object.assign(foundCountryCode, {
-      code: updateCountryCodeDto.countryCode,
-      countryName: updateCountryCodeDto.countryName,
+      code: updateCountryCodeDto.countryCode || foundCountryCode.code,
+      countryName:
+        updateCountryCodeDto.countryName || foundCountryCode.countryName,
     });
     return await fakeCountryCodeRepository.save(foundCountryCode);
   },
   remove: async (id: string) => {
-    const foundCountryCode = await fakeCountryCodeRepository.findOneBy({ id });
-
-    if (!foundCountryCode) {
-      throw new NotFoundException('Country Code not found');
-    }
+    const foundCountryCode = await fakeCountryCodesService.findOne(id);
 
     return await fakeCountryCodeRepository.remove(foundCountryCode);
   },
