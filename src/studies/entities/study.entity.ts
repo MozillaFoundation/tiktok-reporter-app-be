@@ -26,11 +26,6 @@ export class Study {
   @JoinTable()
   countryCodes: CountryCode[];
 
-  // studies/:cc
-  // // Create a connection to countrycode table
-  // @Column()
-  // countryCodeId: number;
-
   // studies/:id/onboard
   // class Onboard:{
   // Many to many OnboardSteps
