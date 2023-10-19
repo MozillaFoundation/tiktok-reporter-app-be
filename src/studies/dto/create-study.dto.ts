@@ -1,4 +1,4 @@
-import { IsArray, IsString } from 'class-validator';
+import { IsArray, IsString, IsUUID } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -22,5 +22,14 @@ export class CreateStudyDto {
     type: [String],
   })
   @IsArray()
+  @IsUUID('all', { each: true })
   countryCodeIds: string[];
+
+  @ApiProperty({
+    description: 'The ids of the policies associated to this study',
+    type: [String],
+  })
+  @IsArray()
+  @IsUUID('all', { each: true })
+  policyIds: string[];
 }

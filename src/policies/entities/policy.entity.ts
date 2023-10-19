@@ -1,6 +1,7 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 import { PolicyType } from 'src/models/policyType';
+import { Study } from 'src/studies/entities/study.entity';
 
 @Entity()
 export class Policy {
@@ -22,4 +23,9 @@ export class Policy {
 
   @Column()
   text: string;
+
+  @ManyToMany(() => Study, (study) => study.policies, {
+    onDelete: 'NO ACTION',
+  })
+  studies: Study[];
 }

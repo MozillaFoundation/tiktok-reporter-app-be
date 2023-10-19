@@ -1,9 +1,14 @@
+import { IsEnum, IsString } from 'class-validator';
+
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
 import { PolicyType } from 'src/models/policyType';
 
 export class CreatePolicyDto {
-  @ApiProperty({ enum: PolicyType })
+  @ApiProperty({
+    description: 'The Policy Type',
+    enum: PolicyType,
+  })
+  @IsEnum(PolicyType)
   type: PolicyType;
 
   @ApiProperty({

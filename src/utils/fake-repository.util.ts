@@ -27,8 +27,6 @@ export function getFakeEntityRepository<TEntity>(): Partial<
       return entities.filter((entity) => {
         if (isArray(entity[key])) {
           return entity[key].find((foundEntity) => {
-            console.log(foundEntity);
-            console.log(options);
             return (
               foundEntity?.[firstWhereKey] ===
               options.where[key]?.[firstWhereKey]

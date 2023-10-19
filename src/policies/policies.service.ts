@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Policy } from './entities/policy.entity';
@@ -28,6 +28,12 @@ export class PoliciesService {
     return await this.policyRepository.find();
   }
 
+  async findAllById(policyIds: string[]) {
+    return await this.policyRepository.findBy({
+      id: In(policyIds),
+    });
+  }
+
   async findOne(id: string) {
     if (!id) {
       return null;
@@ -42,17 +48,17 @@ export class PoliciesService {
     return policy;
   }
 
-  async update(id: string, updateCountryCodeDto: UpdatePolicyDto) {
-    const countryCode = await this.findOne(id);
+  async update(id: string, updatePolicyDto: UpdatePolicyDto) {
+    const foundPolicy = await this.findOne(id);
 
-    Object.assign(countryCode, {
-      type: updateCountryCodeDto.type || countryCode.type,
-      title: updateCountryCodeDto.title || countryCode.title,
-      subtitle: updateCountryCodeDto.subtitle || countryCode.subtitle,
-      text: updateCountryCodeDto.text || countryCode.text,
+    Object.assign(foundPolicy, {
+      type: updatePolicyDto.type || foundPolicy.type,
+      title: updatePolicyDto.title || foundPolicy.title,
+      subtitle: updatePolicyDto.subtitle || foundPolicy.subtitle,
+      text: updatePolicyDto.text || foundPolicy.text,
     });
 
-    return await this.policyRepository.save(countryCode);
+    return await this.policyRepository.save(foundPolicy);
   }
 
   async remove(id: string) {

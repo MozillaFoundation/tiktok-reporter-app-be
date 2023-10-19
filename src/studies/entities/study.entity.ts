@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 
 import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
+import { Policy } from 'src/policies/entities/policy.entity';
 
 @Entity()
 export class Study {
@@ -25,6 +26,13 @@ export class Study {
   })
   @JoinTable()
   countryCodes: CountryCode[];
+
+  @ManyToMany(() => Policy, (policy) => policy.studies, {
+    cascade: true,
+    onDelete: 'NO ACTION',
+  })
+  @JoinTable()
+  policies: Policy[];
 
   // studies/:id/onboard
   // class Onboard:{

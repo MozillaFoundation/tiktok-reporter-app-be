@@ -6,7 +6,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CountryCodesModule } from './countryCodes/country-codes.module';
 import { DataBaseModule } from './database/database.module';
-import { PoliciesModule } from './policies/policy.module';
+import { PoliciesModule } from './policies/policies.module';
 import { SeedersModule } from './seeders/seeders.module';
 import { StudiesModule } from './studies/studies.module';
 

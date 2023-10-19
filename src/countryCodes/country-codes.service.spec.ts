@@ -1,9 +1,8 @@
+import { DEFAULT_GUID, defaultCreateCountryCodeDto } from 'src/utils/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { CountryCode } from './entities/country-code.entity';
 import { CountryCodesService } from './country-codes.service';
-import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
-import { DEFAULT_GUID } from 'src/utils/constants';
 import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
@@ -12,23 +11,21 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 describe('CountryCodesService', () => {
   let service: CountryCodesService;
   let repository: Repository<CountryCode>;
-  const COUNTRY_CODE_REPOSITORY_TOKEN = getRepositoryToken(CountryCode);
+  const REPOSITORY_TOKEN = getRepositoryToken(CountryCode);
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         CountryCodesService,
         {
-          provide: COUNTRY_CODE_REPOSITORY_TOKEN,
+          provide: REPOSITORY_TOKEN,
           useValue: { ...getFakeEntityRepository<CountryCode>() },
         },
       ],
     }).compile();
 
     service = module.get<CountryCodesService>(CountryCodesService);
-    repository = module.get<Repository<CountryCode>>(
-      COUNTRY_CODE_REPOSITORY_TOKEN,
-    );
+    repository = module.get<Repository<CountryCode>>(REPOSITORY_TOKEN);
   });
 
   it('should be defined', () => {
@@ -40,53 +37,42 @@ describe('CountryCodesService', () => {
   });
 
   it('create returns the newly created country code', async () => {
-    const createCountryCodeDto = new CreateCountryCodeDto();
-    createCountryCodeDto.countryCode = 'Test Country Code';
+    const createdEntity = await service.create(defaultCreateCountryCodeDto);
 
-    const createdCountryCode = await service.create(createCountryCodeDto);
-
-    await expect(createdCountryCode).toBeDefined();
-    await expect(createdCountryCode.id).toBeDefined();
-    await expect(createdCountryCode.code).toEqual(
-      createCountryCodeDto.countryCode,
+    await expect(createdEntity).toBeDefined();
+    await expect(createdEntity.id).toBeDefined();
+    await expect(createdEntity.code).toEqual(
+      defaultCreateCountryCodeDto.countryCode,
     );
   });
 
-  it('findAll returns the list of all studies including the newly created one', async () => {
-    const createCountryCodeDto = new CreateCountryCodeDto();
-    createCountryCodeDto.countryCode = 'Test Find All Country Codes';
-    const newCreatedCountryCode = await service.create(createCountryCodeDto);
+  it('findAll returns the list of all country codes including the newly created one', async () => {
+    const createdEntity = await service.create(defaultCreateCountryCodeDto);
 
-    const allCountryCodes = await service.findAll();
+    const allEntities = await service.findAll();
 
-    await expect(allCountryCodes).toBeDefined();
-    await expect(allCountryCodes.length).toBeGreaterThan(0);
-    await expect(allCountryCodes).toContain(newCreatedCountryCode);
+    await expect(allEntities).toBeDefined();
+    await expect(allEntities.length).toBeGreaterThan(0);
+    await expect(allEntities).toContain(createdEntity);
   });
 
-  it('findAllById returns the list of studies with ids in the provided search list ', async () => {
-    const createCountryCodeDto = new CreateCountryCodeDto();
-    createCountryCodeDto.countryCode = 'Test Find All By Ids Country Codes';
-    const newCreatedCountryCode = await service.create(createCountryCodeDto);
+  it('findAllById returns the list of country codes with ids in the provided search list ', async () => {
+    const createdEntity = await service.create(defaultCreateCountryCodeDto);
 
-    const foundCountries = await service.findAllById([
-      newCreatedCountryCode.id,
-    ]);
+    const foundEntity = await service.findAllById([createdEntity.id]);
 
-    await expect(foundCountries).toBeDefined();
-    await expect(foundCountries.length).toBeGreaterThan(0);
-    await expect(foundCountries).toContain(newCreatedCountryCode);
+    await expect(foundEntity).toBeDefined();
+    await expect(foundEntity.length).toBeGreaterThan(0);
+    await expect(foundEntity).toContain(createdEntity);
   });
 
   it('findOne returns newly created country code', async () => {
-    const createCountryCodeDto = new CreateCountryCodeDto();
-    createCountryCodeDto.countryCode = 'Test Find One Country Code';
-    const newCreatedCountryCode = await service.create(createCountryCodeDto);
+    const createdEntity = await service.create(defaultCreateCountryCodeDto);
 
-    const foundCountryCode = await service.findOne(newCreatedCountryCode.id);
+    const foundEntity = await service.findOne(createdEntity.id);
 
-    await expect(foundCountryCode).toBeDefined();
-    await expect(foundCountryCode).toEqual(newCreatedCountryCode);
+    await expect(foundEntity).toBeDefined();
+    await expect(foundEntity).toEqual(createdEntity);
   });
 
   it('findOne throws error when no country code was found', async () => {
@@ -96,36 +82,36 @@ describe('CountryCodesService', () => {
   });
 
   it('update returns the updated country code with all changes updated', async () => {
-    const createCountryCodeDto = new CreateCountryCodeDto();
-    createCountryCodeDto.countryCode = 'Test Update Country Code';
-    const newCreatedCountryCode = await service.create(createCountryCodeDto);
+    const createdEntity = await service.create(defaultCreateCountryCodeDto);
+
     const updatedCode = 'UPDATED Test Update Country Code';
 
-    const updatedCountryCode = await service.update(newCreatedCountryCode.id, {
+    const updatedEntity = await service.update(createdEntity.id, {
       countryCode: updatedCode,
     });
 
-    await expect(updatedCountryCode).toBeDefined();
-    await expect(updatedCountryCode.code).toEqual(updatedCode);
-    await expect(updatedCountryCode).toEqual(newCreatedCountryCode);
+    await expect(updatedEntity).toBeDefined();
+    await expect(updatedEntity.code).toEqual(updatedCode);
+    await expect(updatedEntity.countryName).toEqual(
+      defaultCreateCountryCodeDto.countryName,
+    );
+    await expect(updatedEntity).toEqual(createdEntity);
   });
 
   it('update returns the updated country code with the partial changes updated', async () => {
-    const entityDto = new CreateCountryCodeDto();
-    entityDto.countryCode = 'Test Update Country Code';
-    entityDto.countryName = 'Test Update Country Code Name';
-
-    const newCreatedCountryCode = await service.create(entityDto);
+    const createdEntity = await service.create(defaultCreateCountryCodeDto);
     const updatedCode = 'UPDATED Test Update Country Code';
 
-    const updatedCountryCode = await service.update(newCreatedCountryCode.id, {
+    const updatedEntity = await service.update(createdEntity.id, {
       countryCode: updatedCode,
     });
 
-    await expect(updatedCountryCode).toBeDefined();
-    await expect(updatedCountryCode.code).toEqual(updatedCode);
-    await expect(updatedCountryCode.countryName).toEqual(entityDto.countryName);
-    await expect(updatedCountryCode).toEqual(newCreatedCountryCode);
+    await expect(updatedEntity).toBeDefined();
+    await expect(updatedEntity.code).toEqual(updatedCode);
+    await expect(updatedEntity.countryName).toEqual(
+      defaultCreateCountryCodeDto.countryName,
+    );
+    await expect(updatedEntity).toEqual(createdEntity);
   });
 
   it('update throws error when no country code was found', async () => {
@@ -137,12 +123,10 @@ describe('CountryCodesService', () => {
   });
 
   it('remove removes the country code', async () => {
-    const createCountryCodeDto = new CreateCountryCodeDto();
-    createCountryCodeDto.countryCode = 'Test Delete Country Code';
-    const newCreatedCountryCode = await service.create(createCountryCodeDto);
+    const createdEntity = await service.create(defaultCreateCountryCodeDto);
 
-    const removedCountryCode = await service.remove(newCreatedCountryCode.id);
-    await expect(service.findOne(removedCountryCode.id)).rejects.toThrow(
+    const removedEntity = await service.remove(createdEntity.id);
+    await expect(service.findOne(removedEntity.id)).rejects.toThrow(
       NotFoundException,
     );
   });

@@ -5,6 +5,7 @@ import { StudiesService } from 'src/studies/studies.service';
 import { Study } from 'src/studies/entities/study.entity';
 import { UpdateStudyDto } from 'src/studies/dto/update-study.dto';
 import { fakeCountryCodesService } from './fake-country-codes-service.util';
+import { fakePoliciesService } from './fake-policies-service.util';
 import { getFakeEntityRepository } from './fake-repository.util';
 import { isUUID } from 'class-validator';
 import { removeDuplicateObjects } from './remove-duplicates';
@@ -13,18 +14,27 @@ const fakeStudyRepository = getFakeEntityRepository<Study>();
 
 export const fakeStudiesService: Partial<StudiesService> = {
   create: async (createStudyDto: CreateStudyDto) => {
-    const foundCountryCodes = await fakeCountryCodesService.findAllById(
+    const countryCodes = await fakeCountryCodesService.findAllById(
       createStudyDto.countryCodeIds,
     );
 
-    if (!foundCountryCodes.length) {
+    if (!countryCodes.length) {
       throw new BadRequestException('No Country Codes with the given id');
+    }
+
+    const policies = await fakePoliciesService.findAllById(
+      createStudyDto.policyIds,
+    );
+
+    if (!policies.length) {
+      throw new BadRequestException('No Policies with the given id exist');
     }
 
     const newStudy = {
       name: createStudyDto.name,
       description: createStudyDto.description,
-      countryCodes: foundCountryCodes,
+      countryCodes,
+      policies,
     } as Study;
 
     const createdStudy = fakeStudyRepository.create(newStudy);
@@ -87,6 +97,21 @@ export const fakeStudiesService: Partial<StudiesService> = {
       );
 
       Object.assign(foundStudy, { countryCodes: newCountryCodes });
+    }
+
+    if (updateStudyDto.policyIds) {
+      const policies = await fakePoliciesService.findAllById(
+        updateStudyDto.policyIds,
+      );
+
+      const newPolicies = removeDuplicateObjects(
+        [...foundStudy.policies, ...policies],
+        'id',
+      );
+
+      Object.assign(foundStudy, {
+        policies: newPolicies,
+      });
     }
 
     return await fakeStudyRepository.save(foundStudy);
