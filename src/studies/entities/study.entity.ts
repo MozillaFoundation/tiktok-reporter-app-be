@@ -37,11 +37,9 @@ export class Study {
   // studies/:id/onboard
   // class Onboard:{
   // Many to many OnboardSteps
-  // steps:{id, title?, description, imageUrl, details, order, onboardForm:Form}
+  // steps:{id, title?, description, imageUrl, details, order},
+  // onboardForm:Form
   // }
-
-  // termsandconditions
-  // title, subtitle, text
 
   // Form:
   /* studies/id/form

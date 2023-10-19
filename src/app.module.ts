@@ -6,6 +6,8 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CountryCodesModule } from './countryCodes/country-codes.module';
 import { DataBaseModule } from './database/database.module';
+import { OnboardingStepsModule } from './onboardingSteps/onboarding-steps.module';
+import { OnboardingsModule } from './onboardings/onboardings.module';
 import { PoliciesModule } from './policies/policies.module';
 import { SeedersModule } from './seeders/seeders.module';
 import { StudiesModule } from './studies/studies.module';
@@ -21,6 +23,8 @@ import { StudiesModule } from './studies/studies.module';
     StudiesModule,
     CountryCodesModule,
     PoliciesModule,
+    OnboardingStepsModule,
+    OnboardingsModule,
     SeedersModule,
   ],
   controllers: [AppController],

@@ -5,9 +5,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Policy } from 'src/policies/entities/policy.entity';
 import { PolicyType } from 'src/models/policyType';
+import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
+import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([CountryCode, Policy])],
+  imports: [
+    TypeOrmModule.forFeature([CountryCode, Policy, Onboarding, OnboardingStep]),
+  ],
 })
 export class SeedersModule {
   constructor(
@@ -15,6 +19,10 @@ export class SeedersModule {
     private readonly countryCodeRepository: Repository<CountryCode>,
     @InjectRepository(Policy)
     private readonly policyRepository: Repository<Policy>,
+    @InjectRepository(Onboarding)
+    private readonly onboardingRepository: Repository<Onboarding>,
+    @InjectRepository(OnboardingStep)
+    private readonly onboardingStepRepository: Repository<OnboardingStep>,
   ) {}
 
   async onModuleInit() {
@@ -23,6 +31,7 @@ export class SeedersModule {
       await this.seedCountryCodes();
       // TODO: This is only test data
       await this.seedPolicies();
+      await this.seedOnboardings();
     } catch (error) {
       console.error('Something went wrong while seeding', error.message);
     }
@@ -48,6 +57,7 @@ export class SeedersModule {
     if (countryCodeCount > 0) {
       return;
     }
+
     this.policyRepository.save({
       type: PolicyType.TermsOfService,
       title: ' Terms of Service Title',
@@ -62,7 +72,86 @@ export class SeedersModule {
       text: policyText,
     });
   }
+
+  async seedOnboardings() {
+    const onboardingsCount = await this.onboardingRepository.count();
+    if (onboardingsCount > 0) {
+      return;
+    }
+
+    const newOnboarding = await this.onboardingRepository.create({
+      name: 'TEST Onboarding step',
+      steps: [],
+    });
+
+    for (let i = 0; i < onboardingSteps.length; i++) {
+      const onboardingStep = onboardingSteps[i];
+      const createdOnboardingStep = await this.onboardingStepRepository.create({
+        title: onboardingStep.title,
+        description: onboardingStep.description,
+        imageUrl: onboardingStep.imageUrl,
+        details: onboardingStep.details,
+        order: onboardingStep.order,
+      });
+      const savedOnboardingStep = await this.onboardingStepRepository.save(
+        createdOnboardingStep,
+      );
+      newOnboarding.steps.push(savedOnboardingStep);
+    }
+    return await this.onboardingRepository.save(newOnboarding);
+  }
 }
+
+const onboardingSteps = [
+  {
+    title: 'OnboardingStep title',
+    description: 'Onboarding step description',
+    details: 'Onboarding step details',
+    order: 1,
+    imageUrl:
+      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20recording%20-%20step%201.png',
+  },
+  {
+    title: 'OnboardingStep title',
+    description: 'Onboarding step description',
+    details: 'Onboarding step details',
+    order: 2,
+    imageUrl:
+      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20recording%20-%20step%202.png',
+  },
+  {
+    title: 'OnboardingStep title',
+    description: 'Onboarding step description',
+    details: 'Onboarding step details',
+    order: 3,
+    imageUrl:
+      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20recording%20-%20step%203.png',
+  },
+  {
+    title: 'OnboardingStep title',
+    description: 'Onboarding step description',
+    details: 'Onboarding step details',
+    order: 4,
+    imageUrl:
+      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20report%20link%20-%20step%201.png',
+  },
+  {
+    title: 'OnboardingStep title',
+    description: 'Onboarding step description',
+    details: 'Onboarding step details',
+    order: 5,
+    imageUrl:
+      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20report%20link%20-%20step%202.png',
+  },
+  {
+    title: 'OnboardingStep title',
+    description: 'Onboarding step description',
+    details: 'Onboarding step details',
+    order: 6,
+    imageUrl:
+      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20report%20link%20-%20step%203.png',
+  },
+];
 
 const policyText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris egestas risus augue, ut egestas tortor ultrices vitae. Curabitur malesuada scelerisque rhoncus. Suspendisse vitae commodo metus. Phasellus et bibendum elit, eu auctor tortor. Vivamus pharetra, tellus ac sollicitudin ultrices, lorem lacus dapibus nisi, et dapibus tortor lectus at metus. Sed in maximus urna, tempus ultricies magna. Nam vitae turpis consectetur, pretium metus ut, convallis mi. Vestibulum vestibulum ex at mi faucibus malesuada. Etiam ullamcorper in tortor quis pellentesque. Fusce tristique nunc risus, nec vestibulum dui suscipit eget.
 
