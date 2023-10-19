@@ -8,6 +8,9 @@ export class CountryCode {
   id: string;
 
   @Column()
+  countryName: string;
+
+  @Column()
   code: string;
 
   @ManyToMany(() => Study, (study) => study.countryCodes, {

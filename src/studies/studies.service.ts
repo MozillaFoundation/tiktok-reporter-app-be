@@ -10,6 +10,7 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
 import { isUUID } from 'class-validator';
+import { removeDuplicateObjects } from 'src/utils/remove-duplicates';
 
 @Injectable()
 export class StudiesService {
@@ -20,17 +21,18 @@ export class StudiesService {
   ) {}
 
   async create(createStudyDto: CreateStudyDto) {
-    const countryCode = await this.countryCodeService.findOne(
-      createStudyDto.countryCodeId,
+    const countryCodes = await this.countryCodeService.findAllById(
+      createStudyDto.countryCodeIds,
     );
 
-    if (!countryCode) {
-      throw new BadRequestException('No Country Code with the given id');
+    if (!countryCodes.length) {
+      throw new BadRequestException('No Country Codes with the given id');
     }
+
     const createdStudy = await this.studyRepository.create({
       name: createStudyDto.name,
       description: createStudyDto.description,
-      countryCodes: [countryCode],
+      countryCodes,
     });
 
     return await this.studyRepository.save(createdStudy);
@@ -47,8 +49,8 @@ export class StudiesService {
   async findByCountryCode(countryCode: string) {
     const condition = isUUID(countryCode)
       ? { countryCodes: { id: countryCode } }
-      : { countryCodes: { code: countryCode } };
-
+      : { countryCodes: { code: countryCode.toLowerCase() } };
+    console.log('countryCode', countryCode);
     const areStudiesAvailable = await this.studyRepository.exist({
       where: condition,
       relations: {
@@ -86,8 +88,25 @@ export class StudiesService {
       throw new NotFoundException('Study not found');
     }
 
-    Object.assign(study, { ...updateStudyDto });
-    return this.studyRepository.save(study);
+    Object.assign(study, {
+      name: updateStudyDto.name,
+      description: updateStudyDto.description,
+    });
+
+    if (updateStudyDto.countryCodeIds) {
+      const countryCodes = await this.countryCodeService.findAllById(
+        updateStudyDto.countryCodeIds,
+      );
+
+      const newCountryCodes = removeDuplicateObjects(
+        [...study.countryCodes, ...countryCodes],
+        'id',
+      );
+
+      Object.assign(study, { countryCodes: newCountryCodes });
+    }
+
+    return await this.studyRepository.save(study);
   }
 
   async remove(id: string) {

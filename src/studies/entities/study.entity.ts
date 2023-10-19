@@ -1,7 +1,4 @@
 import {
-  AfterInsert,
-  AfterRemove,
-  AfterUpdate,
   Column,
   Entity,
   JoinTable,
@@ -52,18 +49,18 @@ export class Study {
     fields:{order}
   */
 
-  @AfterInsert()
-  logAfterInsert() {
-    console.log(`New study with id ${this.id} has been inserted.`);
-  }
+  // @AfterInsert()
+  // logAfterInsert() {
+  //   console.log(`New study with id ${this.id} has been inserted.`);
+  // }
 
-  @AfterUpdate()
-  logAfterUpdate() {
-    console.log(`New study with id ${this.id} has been updated.`);
-  }
+  // @AfterUpdate()
+  // logAfterUpdate() {
+  //   console.log(`New study with id ${this.id} has been updated.`);
+  // }
 
-  @AfterRemove()
-  logAfterRemove() {
-    console.log(`New study with id ${this.id} has been removed.`);
-  }
+  // @AfterRemove()
+  // logAfterRemove() {
+  //   console.log(`New study with id ${this.id} has been removed.`);
+  // }
 }

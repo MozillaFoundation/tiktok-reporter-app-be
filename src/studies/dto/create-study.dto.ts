@@ -1,4 +1,4 @@
-import { IsOptional, IsString } from 'class-validator';
+import { IsArray, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -18,10 +18,9 @@ export class CreateStudyDto {
   description: string;
 
   @ApiProperty({
-    description: 'The id of the country code associated to this study',
-    type: String,
+    description: 'The ids of the country code associated to this study',
+    type: [String],
   })
-  @IsString()
-  @IsOptional()
-  countryCodeId?: string;
+  @IsArray()
+  countryCodeIds: string[];
 }

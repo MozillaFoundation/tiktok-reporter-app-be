@@ -21,6 +21,29 @@ export function getFakeEntityRepository<TEntity>(): Partial<
     find: jest.fn().mockImplementation(() => {
       return entities;
     }),
+    findBy: jest
+      .fn()
+      .mockImplementation(
+        (where: FindOptionsWhere<TEntity> | FindOptionsWhere<TEntity>[]) => {
+          if (where['id'].type === 'in') {
+            if (!where['id'].value) {
+              return [];
+            }
+
+            const foundEntities = entities.filter((entity) =>
+              where['id'].value.includes(entity?.['id']),
+            );
+
+            return foundEntities;
+          }
+
+          const foundEntity = entities.find(
+            (entity) => entity?.['id'] === where?.['id'],
+          );
+
+          return foundEntity;
+        },
+      ),
     findOneBy: jest
       .fn()
       .mockImplementation(

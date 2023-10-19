@@ -5,6 +5,7 @@ import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
 import { CreateCountryCodeDto } from 'src/countryCodes/dtos/create-country-code.dto';
 import { CreateStudyDto } from './dto/create-study.dto';
+import { DEFAULT_GUID } from 'test/constants';
 import { Repository } from 'typeorm';
 import { StudiesService } from './studies.service';
 import { Study } from './entities/study.entity';
@@ -50,7 +51,7 @@ describe('StudiesService', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Create Study';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = countryCodeForTest.id;
+    entityDto.countryCodeIds = [countryCodeForTest.id];
 
     const newCreatedEntity = await service.create(entityDto);
 
@@ -65,7 +66,7 @@ describe('StudiesService', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Create Study';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = '12';
+    entityDto.countryCodeIds = [DEFAULT_GUID];
 
     await expect(service.create(entityDto)).rejects.toThrow(
       BadRequestException,
@@ -75,7 +76,7 @@ describe('StudiesService', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Find All Studies';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = countryCodeForTest.id;
+    entityDto.countryCodeIds = [countryCodeForTest.id];
 
     const newCreatedEntity = await service.create(entityDto);
 
@@ -90,7 +91,7 @@ describe('StudiesService', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Find One Study';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = countryCodeForTest.id;
+    entityDto.countryCodeIds = [countryCodeForTest.id];
 
     const newCreatedEntity = await service.create(entityDto);
 
@@ -105,7 +106,7 @@ describe('StudiesService', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Update Study';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = countryCodeForTest.id;
+    entityDto.countryCodeIds = [countryCodeForTest.id];
 
     const newCreatedEntity = await service.create(entityDto);
     const updatedName = 'UPDATED Test Update Study';
@@ -121,7 +122,7 @@ describe('StudiesService', () => {
 
   it('update throws error when no study was found', async () => {
     await expect(
-      service.update('12', {
+      service.update(DEFAULT_GUID, {
         name: 'Not Existing Study',
       }),
     ).rejects.toThrow(NotFoundException);
@@ -131,7 +132,7 @@ describe('StudiesService', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Delete Study';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = countryCodeForTest.id;
+    entityDto.countryCodeIds = [countryCodeForTest.id];
 
     const newCreatedEntity = await service.create(entityDto);
 
@@ -142,6 +143,8 @@ describe('StudiesService', () => {
   });
 
   it('remove throws error when no study was found', async () => {
-    await expect(service.remove('12')).rejects.toThrow(NotFoundException);
+    await expect(service.remove(DEFAULT_GUID)).rejects.toThrow(
+      NotFoundException,
+    );
   });
 });

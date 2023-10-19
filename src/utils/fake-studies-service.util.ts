@@ -11,18 +11,18 @@ const fakeStudyRepository = getFakeEntityRepository<Study>();
 
 export const fakeStudiesService: Partial<StudiesService> = {
   create: async (createStudyDto: CreateStudyDto) => {
-    const foundCountryCode = await fakeCountryCodesService.findOne(
-      createStudyDto.countryCodeId,
+    const foundCountryCodes = await fakeCountryCodesService.findAllById(
+      createStudyDto.countryCodeIds,
     );
 
-    if (!foundCountryCode) {
-      throw new BadRequestException('No Country Code with the given id');
+    if (!foundCountryCodes.length) {
+      throw new BadRequestException('No Country Codes with the given id');
     }
 
     const newStudy = {
       name: createStudyDto.name,
       description: createStudyDto.description,
-      countryCodes: [foundCountryCode],
+      countryCodes: foundCountryCodes,
     } as Study;
 
     const createdStudy = fakeStudyRepository.create(newStudy);

@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CountryCode } from './entities/country-code.entity';
 import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
@@ -12,24 +12,31 @@ export class CountryCodesService {
     private readonly countryCodeRepository: Repository<CountryCode>,
   ) {}
 
-  create(createCountryCodeDto: CreateCountryCodeDto) {
+  async create(createCountryCodeDto: CreateCountryCodeDto) {
     const createdCountryCode = this.countryCodeRepository.create({
+      countryName: createCountryCodeDto.countryName,
       code: createCountryCodeDto.countryCode,
     });
 
-    return this.countryCodeRepository.save(createdCountryCode);
+    return await this.countryCodeRepository.save(createdCountryCode);
   }
 
-  findAll() {
-    return this.countryCodeRepository.find();
+  async findAll() {
+    return await this.countryCodeRepository.find();
   }
 
-  findOne(id: string) {
+  async findAllById(countryCodeIds: string[]) {
+    return await this.countryCodeRepository.findBy({
+      id: In(countryCodeIds),
+    });
+  }
+
+  async findOne(id: string) {
     if (!id) {
       return null;
     }
 
-    return this.countryCodeRepository.findOneBy({ id });
+    return await this.countryCodeRepository.findOneBy({ id });
   }
 
   async update(id: string, updateCountryCodeDto: UpdateCountryCodeDto) {
@@ -39,8 +46,11 @@ export class CountryCodesService {
       throw new NotFoundException('Country Code not found');
     }
 
-    Object.assign(countryCode, { code: updateCountryCodeDto.countryCode });
-    return this.countryCodeRepository.save(countryCode);
+    Object.assign(countryCode, {
+      countryName: updateCountryCodeDto.countryName,
+      code: updateCountryCodeDto.countryCode,
+    });
+    return await this.countryCodeRepository.save(countryCode);
   }
 
   async remove(id: string) {
@@ -50,6 +60,6 @@ export class CountryCodesService {
       throw new NotFoundException('Country Code not found');
     }
 
-    return this.countryCodeRepository.remove(countryCode);
+    return await this.countryCodeRepository.remove(countryCode);
   }
 }

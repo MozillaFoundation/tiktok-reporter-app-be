@@ -8,4 +8,11 @@ export class CreateCountryCodeDto {
   })
   @IsString()
   countryCode: string;
+
+  @ApiProperty({
+    description: 'The Country Name',
+    type: String,
+  })
+  @IsString()
+  countryName: string;
 }

@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CountryCode } from './entities/country-code.entity';
 import { CountryCodesService } from './country-codes.service';
 import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
+import { DEFAULT_GUID } from 'test/constants';
 import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
@@ -88,7 +89,7 @@ describe('CountryCodesService', () => {
 
   it('update throws error when no country code was found', async () => {
     await expect(
-      service.update('12', {
+      service.update(DEFAULT_GUID, {
         countryCode: 'Not Existing Country Code',
       }),
     ).rejects.toThrow(NotFoundException);

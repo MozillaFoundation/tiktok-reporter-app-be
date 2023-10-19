@@ -6,6 +6,7 @@ import {
   Patch,
   Param,
   Delete,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { StudiesService } from './studies.service';
 import { CreateStudyDto } from './dto/create-study.dto';
@@ -33,17 +34,20 @@ export class StudiesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.studiesService.findOne(id);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateStudyDto: UpdateStudyDto) {
+  update(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() updateStudyDto: UpdateStudyDto,
+  ) {
     return this.studiesService.update(id, updateStudyDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.studiesService.remove(id);
   }
 }

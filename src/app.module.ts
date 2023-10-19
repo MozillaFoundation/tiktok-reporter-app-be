@@ -6,6 +6,7 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CountryCodesModule } from './countryCodes/country-codes.module';
 import { DataBaseModule } from './database/database.module';
+import { SeedersModule } from './seeders/seeders.module';
 import { StudiesModule } from './studies/studies.module';
 
 // TEST Cloud Build 11
@@ -18,6 +19,7 @@ import { StudiesModule } from './studies/studies.module';
     DataBaseModule,
     StudiesModule,
     CountryCodesModule,
+    SeedersModule,
   ],
   controllers: [AppController],
   providers: [

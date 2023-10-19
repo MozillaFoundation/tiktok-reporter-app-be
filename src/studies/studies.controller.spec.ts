@@ -5,6 +5,7 @@ import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
 import { CreateCountryCodeDto } from 'src/countryCodes/dtos/create-country-code.dto';
 import { CreateStudyDto } from './dto/create-study.dto';
+import { DEFAULT_GUID } from 'test/constants';
 import { StudiesController } from './studies.controller';
 import { StudiesService } from './studies.service';
 import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
@@ -17,6 +18,8 @@ describe('StudiesController', () => {
   beforeAll(async () => {
     const countryCodeDto = new CreateCountryCodeDto();
     countryCodeDto.countryCode = 'Test Country Code';
+    countryCodeDto.countryName = 'Test Country Code Name';
+
     countryCodeForTest = await fakeCountryCodesService.create(countryCodeDto);
   });
 
@@ -40,9 +43,9 @@ describe('StudiesController', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Create Study';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = countryCodeForTest.id;
+    entityDto.countryCodeIds = [countryCodeForTest.id];
 
-    const newCreatedEntity = await fakeStudiesService.create(entityDto);
+    const newCreatedEntity = await controller.create(entityDto);
 
     await expect(newCreatedEntity).toBeDefined();
     await expect(newCreatedEntity.id).toBeDefined();
@@ -56,9 +59,9 @@ describe('StudiesController', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Create Study';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = '12';
+    entityDto.countryCodeIds = [DEFAULT_GUID];
 
-    await expect(fakeStudiesService.create(entityDto)).rejects.toThrow(
+    await expect(controller.create(entityDto)).rejects.toThrow(
       BadRequestException,
     );
   });
@@ -66,11 +69,11 @@ describe('StudiesController', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Find All Studies';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = countryCodeForTest.id;
+    entityDto.countryCodeIds = [countryCodeForTest.id];
 
-    const newCreatedEntity = await fakeStudiesService.create(entityDto);
+    const newCreatedEntity = await controller.create(entityDto);
 
-    const allStudies = await fakeStudiesService.findAll();
+    const allStudies = await controller.findAll();
 
     await expect(allStudies).toBeDefined();
     await expect(allStudies.length).toBeGreaterThan(0);
@@ -82,11 +85,11 @@ describe('StudiesController', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Find One Study';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = countryCodeForTest.id;
+    entityDto.countryCodeIds = [countryCodeForTest.id];
 
-    const newCreatedStudy = await fakeStudiesService.create(entityDto);
+    const newCreatedStudy = await controller.create(entityDto);
 
-    const foundEntity = await fakeStudiesService.findOne(newCreatedStudy.id);
+    const foundEntity = await controller.findOne(newCreatedStudy.id);
 
     await expect(foundEntity).toBeDefined();
     await expect(foundEntity).toEqual(newCreatedStudy);
@@ -96,12 +99,12 @@ describe('StudiesController', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Update Study';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = countryCodeForTest.id;
+    entityDto.countryCodeIds = [countryCodeForTest.id];
 
-    const newCreatedStudy = await fakeStudiesService.create(entityDto);
+    const newCreatedStudy = await controller.create(entityDto);
     const updatedName = 'UPDATED Test Update Study';
 
-    const updatedStudy = await fakeStudiesService.update(newCreatedStudy.id, {
+    const updatedStudy = await controller.update(newCreatedStudy.id, {
       name: updatedName,
     });
 
@@ -112,7 +115,7 @@ describe('StudiesController', () => {
 
   it('update throws error when no study was found', async () => {
     await expect(
-      fakeStudiesService.update('12', {
+      controller.update(DEFAULT_GUID, {
         name: 'Not Existing Study',
       }),
     ).rejects.toThrow(NotFoundException);
@@ -122,18 +125,18 @@ describe('StudiesController', () => {
     const entityDto = new CreateStudyDto();
     entityDto.name = 'Test Delete Study';
     entityDto.description = 'The Description of the new Created Study';
-    entityDto.countryCodeId = countryCodeForTest.id;
+    entityDto.countryCodeIds = [countryCodeForTest.id];
 
-    const newCreatedStudy = await fakeStudiesService.create(entityDto);
+    const newCreatedStudy = await controller.create(entityDto);
 
-    const removedStudy = await fakeStudiesService.remove(newCreatedStudy.id);
-    const foundRemovedStudy = await fakeStudiesService.findOne(removedStudy.id);
+    const removedStudy = await controller.remove(newCreatedStudy.id);
+    const foundRemovedStudy = await controller.findOne(removedStudy.id);
 
     await expect(foundRemovedStudy).not.toBeDefined();
   });
 
   it('remove throws error when no study was found', async () => {
-    await expect(fakeStudiesService.remove('12')).rejects.toThrow(
+    await expect(controller.remove(DEFAULT_GUID)).rejects.toThrow(
       NotFoundException,
     );
   });
