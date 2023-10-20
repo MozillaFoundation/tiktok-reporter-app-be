@@ -11,8 +11,8 @@ import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.ent
 import { OnboardingStepsService } from 'src/onboardingSteps/onboarding-steps.service';
 import { OnboardingsService } from './onboardings.service';
 import { Repository } from 'typeorm';
-import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
-import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
+import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.spec.util';
+import { getFakeEntityRepository } from 'src/utils/fake-repository.spec.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('OnboardingsService', () => {

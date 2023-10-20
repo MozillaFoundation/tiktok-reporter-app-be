@@ -7,34 +7,59 @@ import {
   Param,
   Delete,
   ParseUUIDPipe,
+  HttpStatus,
 } from '@nestjs/common';
 
-import { ApiBody } from '@nestjs/swagger';
+import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CountryCodesService } from './country-codes.service';
 import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
 import { UpdateCountryCodeDto } from './dtos/update-country-code.dto';
+import { CountryCodeDto } from './dtos/country-code.dto';
+import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
 
 @Controller('country-codes')
+@ApiTags('Country Codes')
 export class CountryCodesController {
   constructor(private readonly countryCodesService: CountryCodesService) {}
 
-  @ApiBody({ type: CreateCountryCodeDto })
   @Post()
+  @ApiBody({ type: CreateCountryCodeDto })
+  @ApiResponse({
+    status: 201,
+    type: CountryCodeDto,
+  })
+  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
+  @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
   create(@Body() createCountryCodeDto: CreateCountryCodeDto) {
     return this.countryCodesService.create(createCountryCodeDto);
   }
 
   @Get()
+  @ApiResponse({
+    status: 200,
+    type: [CountryCodeDto],
+  })
   findAll() {
     return this.countryCodesService.findAll();
   }
 
   @Get(':id')
+  @ApiResponse({
+    status: 200,
+    type: CountryCodeDto,
+  })
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.countryCodesService.findOne(id);
   }
 
   @Patch(':id')
+  @ApiBody({ type: UpdateCountryCodeDto })
+  @ApiResponse({
+    status: 201,
+    type: CountryCodeDto,
+  })
+  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
+  @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCountryCodeDto: UpdateCountryCodeDto,
@@ -43,6 +68,12 @@ export class CountryCodesController {
   }
 
   @Delete(':id')
+  @ApiResponse({
+    status: 200,
+    type: CountryCodeDto,
+  })
+  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
+  @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.countryCodesService.remove(id);
   }

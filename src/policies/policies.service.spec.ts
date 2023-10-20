@@ -6,7 +6,7 @@ import { PoliciesService } from './policies.service';
 import { Policy } from './entities/policy.entity';
 import { PolicyType } from 'src/models/policyType';
 import { Repository } from 'typeorm';
-import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
+import { getFakeEntityRepository } from 'src/utils/fake-repository.spec.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('PoliciesService', () => {

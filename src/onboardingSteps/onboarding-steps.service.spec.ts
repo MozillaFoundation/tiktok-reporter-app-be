@@ -8,7 +8,7 @@ import { NotFoundException } from '@nestjs/common';
 import { OnboardingStep } from './entities/onboarding-step.entity';
 import { OnboardingStepsService } from './onboarding-steps.service';
 import { Repository } from 'typeorm';
-import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
+import { getFakeEntityRepository } from 'src/utils/fake-repository.spec.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('OnboardingStepsService', () => {

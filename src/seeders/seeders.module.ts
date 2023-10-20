@@ -112,7 +112,7 @@ export class SeedersModule {
   }
 
   async seedStudies(onboarding: Onboarding) {
-    const countryCodeCount = await this.policyRepository.count();
+    const countryCodeCount = await this.studyRepository.count();
     if (countryCodeCount > 0) {
       return;
     }

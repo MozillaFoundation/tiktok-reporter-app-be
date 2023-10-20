@@ -76,11 +76,6 @@ export class StudiesService {
 
     const areStudiesAvailable = await this.studyRepository.exist({
       where: condition,
-      relations: {
-        countryCodes: true,
-        policies: true,
-        onboarding: true,
-      },
     });
 
     if (!areStudiesAvailable) {

@@ -5,7 +5,7 @@ import { CountryCode } from './entities/country-code.entity';
 import { CountryCodesService } from './country-codes.service';
 import { NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
+import { getFakeEntityRepository } from 'src/utils/fake-repository.spec.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('CountryCodesService', () => {

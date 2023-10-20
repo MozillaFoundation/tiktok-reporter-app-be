@@ -79,6 +79,18 @@
     "testEnvironment": "node",
     "moduleNameMapper": {
       "^src/(.*)$": "<rootDir>/$1"
-    }
+    },
+    "testPathIgnorePatterns": [
+      ".module.ts",
+      ".entity.ts",
+      ".dto.ts",
+      ".spec.utl.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      ".module.ts",
+      ".entity.ts",
+      ".dto.ts",
+      ".spec.utl.ts"
+    ]
   }
 }

@@ -4,10 +4,10 @@ import { CreateStudyDto } from 'src/studies/dto/create-study.dto';
 import { StudiesService } from 'src/studies/studies.service';
 import { Study } from 'src/studies/entities/study.entity';
 import { UpdateStudyDto } from 'src/studies/dto/update-study.dto';
-import { fakeCountryCodesService } from './fake-country-codes-service.util';
-import { fakeOnboardingsService } from './fake-onboardings-service.util';
-import { fakePoliciesService } from './fake-policies-service.util';
-import { getFakeEntityRepository } from './fake-repository.util';
+import { fakeCountryCodesService } from './fake-country-codes-service.spec.util';
+import { fakeOnboardingsService } from './fake-onboardings-service.spec.util';
+import { fakePoliciesService } from './fake-policies-service..spec.util';
+import { getFakeEntityRepository } from './fake-repository.spec.util';
 import { isUUID } from 'class-validator';
 import { removeDuplicateObjects } from './remove-duplicates';
 

@@ -17,10 +17,10 @@ import { Policy } from 'src/policies/entities/policy.entity';
 import { Repository } from 'typeorm';
 import { StudiesService } from './studies.service';
 import { Study } from './entities/study.entity';
-import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
-import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
-import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
-import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
+import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.spec.util';
+import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.spec.util';
+import { fakePoliciesService } from 'src/utils/fake-policies-service..spec.util';
+import { getFakeEntityRepository } from 'src/utils/fake-repository.spec.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 // TODO: Handle update scenario for non existent country code, policy and onboarding ids

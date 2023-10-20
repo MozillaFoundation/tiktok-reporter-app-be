@@ -15,10 +15,10 @@ import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { Policy } from 'src/policies/entities/policy.entity';
 import { StudiesController } from './studies.controller';
 import { StudiesService } from './studies.service';
-import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
-import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
-import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
-import { fakeStudiesService } from 'src/utils/fake-studies-service.util';
+import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.spec.util';
+import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.spec.util';
+import { fakePoliciesService } from 'src/utils/fake-policies-service..spec.util';
+import { fakeStudiesService } from 'src/utils/fake-studies-service.spec.util';
 
 describe('StudiesController', () => {
   let controller: StudiesController;

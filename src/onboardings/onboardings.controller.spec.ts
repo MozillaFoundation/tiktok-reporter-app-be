@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { OnboardingsController } from './onboardings.controller';
 import { OnboardingsService } from './onboardings.service';
-import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
+import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.spec.util';
 
 describe('OnboardingsController', () => {
   let controller: OnboardingsController;
