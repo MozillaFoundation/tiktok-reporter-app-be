@@ -48,6 +48,7 @@ export class OnboardingsController {
     status: 200,
     type: OnboardingDto,
   })
+  @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.onboardingsService.findOne(id);
   }
@@ -58,8 +59,9 @@ export class OnboardingsController {
     type: OnboardingDto,
     status: 201,
   })
-  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
+  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
+  @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateOnboardingDto: UpdateOnboardingDto,
@@ -72,8 +74,9 @@ export class OnboardingsController {
     status: 200,
     type: OnboardingDto,
   })
-  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
+  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
+  @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.onboardingsService.remove(id);
   }

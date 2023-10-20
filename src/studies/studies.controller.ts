@@ -56,6 +56,7 @@ export class StudiesController {
     status: 200,
     type: StudyDto,
   })
+  @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.studiesService.findOne(id);
   }
@@ -66,8 +67,9 @@ export class StudiesController {
     status: 201,
     type: StudyDto,
   })
-  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
+  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
+  @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateStudyDto: UpdateStudyDto,
@@ -80,8 +82,9 @@ export class StudiesController {
     status: 200,
     type: StudyDto,
   })
-  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
+  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
+  @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.studiesService.remove(id);
   }

@@ -48,6 +48,7 @@ export class CountryCodesController {
     status: 200,
     type: CountryCodeDto,
   })
+  @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.countryCodesService.findOne(id);
   }
@@ -58,8 +59,9 @@ export class CountryCodesController {
     status: 201,
     type: CountryCodeDto,
   })
-  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
+  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
+  @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCountryCodeDto: UpdateCountryCodeDto,
@@ -72,8 +74,9 @@ export class CountryCodesController {
     status: 200,
     type: CountryCodeDto,
   })
-  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
+  @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
+  @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   remove(@Param('id', ParseUUIDPipe) id: string) {
     return this.countryCodesService.remove(id);
   }
