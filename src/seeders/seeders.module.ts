@@ -7,10 +7,17 @@ import { Policy } from 'src/policies/entities/policy.entity';
 import { PolicyType } from 'src/models/policyType';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
+import { Study } from 'src/studies/entities/study.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([CountryCode, Policy, Onboarding, OnboardingStep]),
+    TypeOrmModule.forFeature([
+      CountryCode,
+      Policy,
+      Onboarding,
+      OnboardingStep,
+      Study,
+    ]),
   ],
 })
 export class SeedersModule {
@@ -23,6 +30,8 @@ export class SeedersModule {
     private readonly onboardingRepository: Repository<Onboarding>,
     @InjectRepository(OnboardingStep)
     private readonly onboardingStepRepository: Repository<OnboardingStep>,
+    @InjectRepository(Study)
+    private readonly studyRepository: Repository<Study>,
   ) {}
 
   async onModuleInit() {
@@ -31,7 +40,8 @@ export class SeedersModule {
       await this.seedCountryCodes();
       // TODO: This is only test data
       await this.seedPolicies();
-      await this.seedOnboardings();
+      const onboarding = await this.seedOnboardings();
+      await this.seedStudies(onboarding);
     } catch (error) {
       console.error('Something went wrong while seeding', error.message);
     }
@@ -99,6 +109,31 @@ export class SeedersModule {
       newOnboarding.steps.push(savedOnboardingStep);
     }
     return await this.onboardingRepository.save(newOnboarding);
+  }
+
+  async seedStudies(onboarding: Onboarding) {
+    const countryCodeCount = await this.policyRepository.count();
+    if (countryCodeCount > 0) {
+      return;
+    }
+
+    const studyPolicy = await this.policyRepository.save({
+      type: PolicyType.TermsOfService,
+      title: 'Custom Terms of Service for this study',
+      subtitle: ' Custom Terms of Service for this study',
+      text: policyText,
+    });
+    const countryCodes = await this.countryCodeRepository.find({
+      where: { code: 'ro' },
+    });
+
+    return await this.studyRepository.save({
+      name: 'Custom Study for testing only',
+      description: 'Custom Study for testing only',
+      countryCodes,
+      onboarding,
+      policies: [studyPolicy],
+    });
   }
 }
 

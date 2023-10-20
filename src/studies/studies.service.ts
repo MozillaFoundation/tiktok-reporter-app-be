@@ -12,12 +12,14 @@ import { CountryCodesService } from 'src/countryCodes/country-codes.service';
 import { isUUID } from 'class-validator';
 import { removeDuplicateObjects } from 'src/utils/remove-duplicates';
 import { PoliciesService } from 'src/policies/policies.service';
+import { OnboardingsService } from 'src/onboardings/onboardings.service';
 
 @Injectable()
 export class StudiesService {
   constructor(
     private readonly countryCodeService: CountryCodesService,
     private readonly policiesService: PoliciesService,
+    private readonly onboardingsService: OnboardingsService,
     @InjectRepository(Study)
     private readonly studyRepository: Repository<Study>,
   ) {}
@@ -39,11 +41,19 @@ export class StudiesService {
       throw new BadRequestException('No Policies with the given id exist');
     }
 
+    const onboarding = await this.onboardingsService.findOne(
+      createStudyDto.onboardingId,
+    );
+    if (!onboarding) {
+      throw new BadRequestException('No Onboarding with the given id exist');
+    }
+
     const createdStudy = await this.studyRepository.create({
       name: createStudyDto.name,
       description: createStudyDto.description,
       countryCodes,
       policies,
+      onboarding,
     });
 
     return await this.studyRepository.save(createdStudy);
@@ -53,6 +63,8 @@ export class StudiesService {
     return await this.studyRepository.find({
       relations: {
         countryCodes: true,
+        policies: true,
+        onboarding: true,
       },
     });
   }
@@ -67,6 +79,7 @@ export class StudiesService {
       relations: {
         countryCodes: true,
         policies: true,
+        onboarding: true,
       },
     });
 
@@ -79,6 +92,7 @@ export class StudiesService {
       relations: {
         countryCodes: true,
         policies: true,
+        onboarding: true,
       },
     });
   }
@@ -90,12 +104,12 @@ export class StudiesService {
 
     const study = await this.studyRepository.findOne({
       where: { id },
-      relations: { countryCodes: true, policies: true },
+      relations: { countryCodes: true, policies: true, onboarding: true },
     });
+
     if (!study) {
       throw new NotFoundException('Study not found');
     }
-
     return study;
   }
 
@@ -108,37 +122,56 @@ export class StudiesService {
     });
 
     if (updateStudyDto.countryCodeIds) {
+      const countryCodes = await this.countryCodeService.findAllById(
+        updateStudyDto.countryCodeIds,
+      );
+
+      if (!countryCodes.length) {
+        throw new BadRequestException(
+          'No Country Codes with the given id exist',
+        );
+      }
+
       Object.assign(study, {
-        countryCodes: this.getUpdatedCountryCodes(study, updateStudyDto),
+        countryCodes: removeDuplicateObjects(
+          [...study.countryCodes, ...countryCodes],
+          'id',
+        ),
       });
     }
 
     if (updateStudyDto.policyIds) {
+      const policies = await this.policiesService.findAllById(
+        updateStudyDto.policyIds,
+      );
+
+      if (!policies.length) {
+        throw new BadRequestException('No Policies with the given id exist');
+      }
+
       Object.assign(study, {
-        policies: this.getUpdatedPolicies(study, updateStudyDto),
+        policies: removeDuplicateObjects(
+          [...study.policies, ...policies],
+          'id',
+        ),
+      });
+    }
+
+    if (updateStudyDto.onboardingId) {
+      const onboarding = await this.onboardingsService.findOne(
+        updateStudyDto.onboardingId,
+      );
+
+      if (!onboarding) {
+        throw new BadRequestException('No Onboarding with the given id exist');
+      }
+
+      Object.assign(study, {
+        onboarding,
       });
     }
 
     return await this.studyRepository.save(study);
-  }
-
-  async getUpdatedCountryCodes(study: Study, updateStudyDto: UpdateStudyDto) {
-    const countryCodes = await this.countryCodeService.findAllById(
-      updateStudyDto.countryCodeIds,
-    );
-
-    return removeDuplicateObjects(
-      [...study.countryCodes, ...countryCodes],
-      'id',
-    );
-  }
-
-  async getUpdatedPolicies(study: Study, updateStudyDto: UpdateStudyDto) {
-    const policies = await this.policiesService.findAllById(
-      updateStudyDto.policyIds,
-    );
-
-    return removeDuplicateObjects([...study.policies, ...policies], 'id');
   }
 
   async remove(id: string) {

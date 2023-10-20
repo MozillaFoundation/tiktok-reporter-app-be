@@ -3,10 +3,12 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
+import { Study } from 'src/studies/entities/study.entity';
 
 @Entity()
 export class Onboarding {
@@ -26,4 +28,7 @@ export class Onboarding {
   )
   @JoinTable()
   steps: OnboardingStep[];
+
+  @OneToMany(() => Study, (study) => study.onboarding)
+  studies: Study[];
 }

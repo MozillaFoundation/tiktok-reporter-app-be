@@ -40,6 +40,15 @@ export class PoliciesController {
     return this.policiesService.findAll();
   }
 
+  @Get('app')
+  @ApiResponse({
+    status: 200,
+    description: 'Returns all policies',
+  })
+  findAppPolicies() {
+    return this.policiesService.findAppPolicies();
+  }
+
   @Get(':id')
   @ApiResponse({
     status: 200,
@@ -48,6 +57,7 @@ export class PoliciesController {
   findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.policiesService.findOne(id);
   }
+
   @Patch(':id')
   @ApiBody({
     type: UpdatePolicyDto,

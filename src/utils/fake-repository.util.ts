@@ -5,7 +5,7 @@ import {
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
-import { isArray, isEmpty } from 'class-validator';
+import { arrayNotEmpty, isArray, isEmpty } from 'class-validator';
 
 import { randomUuidv4 } from './generate-uuid';
 
@@ -16,6 +16,23 @@ export function getFakeEntityRepository<TEntity>(): Partial<
 
   const filterEntities = (options?: FindManyOptions<TEntity>) => {
     const entityKeys = Object.keys(entities.at(0));
+    let filteredEntities = [];
+    const [first] = Object.keys(options.where);
+    const condition = options.where[first];
+
+    if (!entityKeys.includes(first)) {
+      const [firstConditionKey] = Object.keys(condition);
+
+      filteredEntities = entities.filter((entity) => {
+        if (
+          condition?.[firstConditionKey].type === 'isNull' &&
+          isEmpty(entity?.['first'])
+        ) {
+          return true;
+        }
+        return false;
+      });
+    }
 
     for (const key of entityKeys) {
       if (!options.where[key]) {
@@ -23,8 +40,16 @@ export function getFakeEntityRepository<TEntity>(): Partial<
       }
 
       const [firstWhereKey] = Object.keys(options.where[key]);
+      const firstWhereCondition = options.where[key];
 
-      return entities.filter((entity) => {
+      if (firstWhereCondition[firstWhereKey].type === 'isNull') {
+        filteredEntities = entities.filter(
+          (entity) => isEmpty(entity[key]) || !arrayNotEmpty(entity[key]),
+        );
+        continue;
+      }
+
+      filteredEntities = entities.filter((entity) => {
         if (isArray(entity[key])) {
           return entity[key].find((foundEntity) => {
             return (
@@ -39,7 +64,7 @@ export function getFakeEntityRepository<TEntity>(): Partial<
       });
     }
 
-    return [];
+    return filteredEntities;
   };
   const hasOtherPropertiesThan = (
     property: string,

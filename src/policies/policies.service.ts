@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { In, Repository } from 'typeorm';
+import { In, IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 
 import { Policy } from './entities/policy.entity';
@@ -26,6 +26,13 @@ export class PoliciesService {
 
   async findAll() {
     return await this.policyRepository.find();
+  }
+
+  async findAppPolicies() {
+    return await this.policyRepository.find({
+      where: { studies: { id: IsNull() } },
+      relations: { studies: true },
+    });
   }
 
   async findAllById(policyIds: string[]) {

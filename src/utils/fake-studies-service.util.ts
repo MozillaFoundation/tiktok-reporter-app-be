@@ -5,6 +5,7 @@ import { StudiesService } from 'src/studies/studies.service';
 import { Study } from 'src/studies/entities/study.entity';
 import { UpdateStudyDto } from 'src/studies/dto/update-study.dto';
 import { fakeCountryCodesService } from './fake-country-codes-service.util';
+import { fakeOnboardingsService } from './fake-onboardings-service.util';
 import { fakePoliciesService } from './fake-policies-service.util';
 import { getFakeEntityRepository } from './fake-repository.util';
 import { isUUID } from 'class-validator';
@@ -30,11 +31,19 @@ export const fakeStudiesService: Partial<StudiesService> = {
       throw new BadRequestException('No Policies with the given id exist');
     }
 
+    const onboarding = await fakeOnboardingsService.findOne(
+      createStudyDto.onboardingId,
+    );
+    if (!onboarding) {
+      throw new BadRequestException('No Onboarding with the given id exist');
+    }
+
     const newStudy = {
       name: createStudyDto.name,
       description: createStudyDto.description,
       countryCodes,
       policies,
+      onboarding,
     } as Study;
 
     const createdStudy = fakeStudyRepository.create(newStudy);
@@ -111,6 +120,20 @@ export const fakeStudiesService: Partial<StudiesService> = {
 
       Object.assign(foundStudy, {
         policies: newPolicies,
+      });
+    }
+
+    if (updateStudyDto.onboardingId) {
+      const onboarding = await fakeOnboardingsService.findOne(
+        updateStudyDto.onboardingId,
+      );
+
+      if (!onboarding) {
+        throw new BadRequestException('No Onboarding with the given id exist');
+      }
+
+      Object.assign(foundStudy, {
+        onboarding,
       });
     }
 

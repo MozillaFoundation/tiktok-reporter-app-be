@@ -13,6 +13,7 @@ export const fakeCountryCodesService: Partial<CountryCodesService> = {
     const newCountryCode = {
       code: createCountryCodeDto.countryCode,
       countryName: createCountryCodeDto.countryName,
+      studies: [],
     } as CountryCode;
 
     const createdCountryCode = fakeCountryCodeRepository.create(newCountryCode);

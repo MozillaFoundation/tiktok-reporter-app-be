@@ -1,4 +1,6 @@
 import { CreateCountryCodeDto } from 'src/countryCodes/dtos/create-country-code.dto';
+import { CreateOnboardingDto } from 'src/onboardings/dtos/create-onboarding.dto';
+import { CreateOnboardingStepDto } from 'src/onboardingSteps/dtos/create-onboarding-step.dto';
 import { CreatePolicyDto } from 'src/policies/dtos/create-policy.dto';
 import { CreateStudyDto } from 'src/studies/dto/create-study.dto';
 import { PolicyType } from 'src/models/policyType';
@@ -10,6 +12,7 @@ export const defaultCreateStudyDto: CreateStudyDto = {
   description: 'The Description of the new Created Study',
   countryCodeIds: [],
   policyIds: [],
+  onboardingId: '',
 };
 
 export const defaultCreateCountryCodeDto: CreateCountryCodeDto = {
@@ -22,4 +25,17 @@ export const defaultCreatePolicyDto: CreatePolicyDto = {
   title: 'Test Policy Title',
   subtitle: 'Test Policy SubTitle',
   text: 'Test Policy Text',
+};
+
+export const defaultCreateOnboardingStepDto: CreateOnboardingStepDto = {
+  title: 'Test Onboarding Step Title',
+  description: 'Test Onboarding Step Description',
+  imageUrl: 'Test Onboarding Step ImageURL',
+  details: 'Test Onboarding Step Details',
+  order: 1,
+};
+
+export const defaultCreateOnboardingDto: CreateOnboardingDto = {
+  name: 'Test Onboarding Step Title',
+  stepIds: ['1', '2', '3'],
 };

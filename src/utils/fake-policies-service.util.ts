@@ -1,5 +1,6 @@
+import { In, IsNull } from 'typeorm';
+
 import { CreatePolicyDto } from 'src/policies/dtos/create-policy.dto';
-import { In } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { PoliciesService } from 'src/policies/policies.service';
 import { Policy } from 'src/policies/entities/policy.entity';
@@ -15,6 +16,7 @@ export const fakePoliciesService: Partial<PoliciesService> = {
       title: createPolicyDto.title,
       subtitle: createPolicyDto.subtitle,
       text: createPolicyDto.text,
+      studies: [],
     } as Policy;
 
     const createdPolicy = fakePolicyRepository.create(newPolicyDto);
@@ -39,6 +41,12 @@ export const fakePoliciesService: Partial<PoliciesService> = {
 
     return foundPolicy;
   },
+  findAppPolicies: async () => {
+    return await fakePolicyRepository.find({
+      where: { studies: { id: IsNull() } },
+      relations: { studies: true },
+    });
+  },
   findAllById: async (policyIds: string[]) => {
     return await fakePolicyRepository.findBy({
       id: In(policyIds),
@@ -56,8 +64,8 @@ export const fakePoliciesService: Partial<PoliciesService> = {
     return await fakePolicyRepository.save(foundPolicy);
   },
   remove: async (id: string) => {
-    const foundCountryCode = await fakePoliciesService.findOne(id);
+    const foundPolicy = await fakePoliciesService.findOne(id);
 
-    return await fakePolicyRepository.remove(foundCountryCode);
+    return await fakePolicyRepository.remove(foundPolicy);
   },
 };

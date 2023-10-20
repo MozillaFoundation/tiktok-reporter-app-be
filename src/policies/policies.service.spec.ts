@@ -37,17 +37,15 @@ describe('PoliciesService', () => {
     expect(repository).toBeDefined();
   });
 
-  it('create returns the newly created country code', async () => {
+  it('create returns the newly created policy', async () => {
     const createdEntity = await service.create(defaultCreatePolicyDto);
 
-    await expect(createdEntity).toBeDefined();
-    await expect(createdEntity.id).toBeDefined();
-    await expect(createdEntity.type).toEqual(defaultCreatePolicyDto.type);
-    await expect(createdEntity.title).toEqual(defaultCreatePolicyDto.title);
-    await expect(createdEntity.subtitle).toEqual(
-      defaultCreatePolicyDto.subtitle,
-    );
-    await expect(createdEntity.text).toEqual(defaultCreatePolicyDto.text);
+    expect(createdEntity).toBeDefined();
+    expect(createdEntity.id).toBeDefined();
+    expect(createdEntity.type).toEqual(defaultCreatePolicyDto.type);
+    expect(createdEntity.title).toEqual(defaultCreatePolicyDto.title);
+    expect(createdEntity.subtitle).toEqual(defaultCreatePolicyDto.subtitle);
+    expect(createdEntity.text).toEqual(defaultCreatePolicyDto.text);
   });
 
   it('findAll returns the list of all policies including the newly created one', async () => {
@@ -55,28 +53,38 @@ describe('PoliciesService', () => {
 
     const allEntities = await service.findAll();
 
-    await expect(allEntities).toBeDefined();
-    await expect(allEntities.length).toBeGreaterThan(0);
-    await expect(allEntities).toContain(createdEntity);
+    expect(allEntities).toBeDefined();
+    expect(allEntities.length).toBeGreaterThan(0);
+    expect(allEntities).toContain(createdEntity);
+  });
+
+  it('findAppPolicies returns the list of all policies not related to a study', async () => {
+    const createdEntity = await service.create(defaultCreatePolicyDto);
+
+    const allEntities = await service.findAppPolicies();
+
+    expect(allEntities).toBeDefined();
+    expect(allEntities.length).toBeGreaterThan(0);
+    expect(allEntities).toContain(createdEntity);
   });
 
   it('findAllById returns the list of policies with ids in the provided search list ', async () => {
     const createdEntity = await service.create(defaultCreatePolicyDto);
 
-    const foundCountries = await service.findAllById([createdEntity.id]);
+    const foundEntities = await service.findAllById([createdEntity.id]);
 
-    await expect(foundCountries).toBeDefined();
-    await expect(foundCountries.length).toBeGreaterThan(0);
-    await expect(foundCountries).toContain(createdEntity);
+    expect(foundEntities).toBeDefined();
+    expect(foundEntities.length).toBeGreaterThan(0);
+    expect(foundEntities).toContain(createdEntity);
   });
 
-  it('findOne returns newly created country code', async () => {
+  it('findOne returns newly created policy', async () => {
     const createdEntity = await service.create(defaultCreatePolicyDto);
 
     const foundEntity = await service.findOne(createdEntity.id);
 
-    await expect(foundEntity).toBeDefined();
-    await expect(foundEntity).toEqual(createdEntity);
+    expect(foundEntity).toBeDefined();
+    expect(foundEntity).toEqual(createdEntity);
   });
 
   it('findOne throws error when no policy was found', async () => {
@@ -99,12 +107,12 @@ describe('PoliciesService', () => {
       text: updatedText,
     });
 
-    await expect(updatedEntity).toBeDefined();
-    await expect(updatedEntity.type).toEqual(updatedType);
-    await expect(updatedEntity.title).toEqual(updatedTitle);
-    await expect(updatedEntity.subtitle).toEqual(updatedSubtitle);
-    await expect(updatedEntity.text).toEqual(updatedText);
-    await expect(updatedEntity).toEqual(createdEntity);
+    expect(updatedEntity).toBeDefined();
+    expect(updatedEntity.type).toEqual(updatedType);
+    expect(updatedEntity.title).toEqual(updatedTitle);
+    expect(updatedEntity.subtitle).toEqual(updatedSubtitle);
+    expect(updatedEntity.text).toEqual(updatedText);
+    expect(updatedEntity).toEqual(createdEntity);
   });
 
   it('update returns the updated policy with the partial changes updated', async () => {
@@ -115,15 +123,13 @@ describe('PoliciesService', () => {
       title: updatedTitle,
     });
 
-    await expect(updatedEntity).toBeDefined();
-    await expect(updatedEntity.title).toEqual(updatedTitle);
-    await expect(updatedEntity.type).toEqual(defaultCreatePolicyDto.type);
-    await expect(updatedEntity.subtitle).toEqual(
-      defaultCreatePolicyDto.subtitle,
-    );
-    await expect(updatedEntity.text).toEqual(defaultCreatePolicyDto.text);
+    expect(updatedEntity).toBeDefined();
+    expect(updatedEntity.title).toEqual(updatedTitle);
+    expect(updatedEntity.type).toEqual(defaultCreatePolicyDto.type);
+    expect(updatedEntity.subtitle).toEqual(defaultCreatePolicyDto.subtitle);
+    expect(updatedEntity.text).toEqual(defaultCreatePolicyDto.text);
 
-    await expect(updatedEntity).toEqual(createdEntity);
+    expect(updatedEntity).toEqual(createdEntity);
   });
 
   it('update throws error when no policy was found', async () => {

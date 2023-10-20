@@ -1,5 +1,6 @@
+import { IsNumber, IsString } from 'class-validator';
+
 import { ApiProperty } from '@nestjs/swagger';
-import { IsString } from 'class-validator';
 
 export class CreateOnboardingStepDto {
   @ApiProperty({
@@ -32,8 +33,8 @@ export class CreateOnboardingStepDto {
 
   @ApiProperty({
     description: 'The OnboardingStep Order',
-    type: String,
+    type: Number,
   })
-  @IsString()
+  @IsNumber()
   order: number;
 }

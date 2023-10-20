@@ -45,11 +45,11 @@ describe('CountryCodesController', () => {
 
     const newEntityCode = await controller.create(entityDto);
 
-    const allCountryCodes = await controller.findAll();
+    const allEntities = await controller.findAll();
 
-    await expect(allCountryCodes).toBeDefined();
-    await expect(allCountryCodes.length).toBeGreaterThan(0);
-    await expect(allCountryCodes).toContain(newEntityCode);
+    await expect(allEntities).toBeDefined();
+    await expect(allEntities.length).toBeGreaterThan(0);
+    await expect(allEntities).toContain(newEntityCode);
   });
 
   it('findOne returns newly created country code', async () => {
@@ -59,10 +59,10 @@ describe('CountryCodesController', () => {
 
     const newEntityCode = await controller.create(entityDto);
 
-    const foundCountryCode = await controller.findOne(newEntityCode.id);
+    const foundEntity = await controller.findOne(newEntityCode.id);
 
-    await expect(foundCountryCode).toBeDefined();
-    await expect(foundCountryCode).toEqual(newEntityCode);
+    await expect(foundEntity).toBeDefined();
+    await expect(foundEntity).toEqual(newEntityCode);
   });
 
   it('findOne throws error when no country code was found', async () => {
@@ -122,11 +122,9 @@ describe('CountryCodesController', () => {
     entityDto.countryCode = 'Test Delete Country Code';
     entityDto.countryName = 'Test Delete Country Code Name';
 
-    const newCreatedCountryCode = await controller.create(entityDto);
+    const createdEntity = await controller.create(entityDto);
 
-    const removedCountryCode = await controller.remove(
-      newCreatedCountryCode.id,
-    );
+    const removedCountryCode = await controller.remove(createdEntity.id);
     await expect(controller.findOne(removedCountryCode.id)).rejects.toThrow(
       NotFoundException,
     );

@@ -32,4 +32,11 @@ export class CreateStudyDto {
   @IsArray()
   @IsUUID('all', { each: true })
   policyIds: string[];
+
+  @ApiProperty({
+    description: 'The id of the onboarding associated to this study',
+    type: String,
+  })
+  @IsUUID()
+  onboardingId: string;
 }

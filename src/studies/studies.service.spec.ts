@@ -2,6 +2,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   DEFAULT_GUID,
   defaultCreateCountryCodeDto,
+  defaultCreateOnboardingDto,
   defaultCreatePolicyDto,
   defaultCreateStudyDto,
 } from 'src/utils/constants';
@@ -9,29 +10,36 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
+import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
+import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { PoliciesService } from 'src/policies/policies.service';
 import { Policy } from 'src/policies/entities/policy.entity';
 import { Repository } from 'typeorm';
 import { StudiesService } from './studies.service';
 import { Study } from './entities/study.entity';
 import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
+import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
 import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
-// TODO: Handle update scenario for duplicate country code ids;
+// TODO: Handle update scenario for non existent country code, policy and onboarding ids
 describe('StudiesService', () => {
   let service: StudiesService;
   let repository: Repository<Study>;
   const REPOSITORY_TOKEN = getRepositoryToken(Study);
   let countryCodeForTest: CountryCode;
   let policyForTest: Policy;
+  let onboardingForTest: Onboarding;
 
   beforeAll(async () => {
     countryCodeForTest = await fakeCountryCodesService.create(
       defaultCreateCountryCodeDto,
     );
     policyForTest = await fakePoliciesService.create(defaultCreatePolicyDto);
+    onboardingForTest = await fakeOnboardingsService.create(
+      defaultCreateOnboardingDto,
+    );
   });
 
   beforeEach(async () => {
@@ -40,6 +48,7 @@ describe('StudiesService', () => {
         StudiesService,
         { provide: CountryCodesService, useValue: fakeCountryCodesService },
         { provide: PoliciesService, useValue: fakePoliciesService },
+        { provide: OnboardingsService, useValue: fakeOnboardingsService },
         {
           provide: REPOSITORY_TOKEN,
           useValue: getFakeEntityRepository<Study>(),
@@ -64,6 +73,7 @@ describe('StudiesService', () => {
       ...defaultCreateStudyDto,
       countryCodeIds: [countryCodeForTest.id],
       policyIds: [policyForTest.id],
+      onboardingId: onboardingForTest.id,
     });
 
     await expect(createdEntity).toBeDefined();
@@ -74,10 +84,12 @@ describe('StudiesService', () => {
     );
     await expect(createdEntity.countryCodes).toBeDefined();
     await expect(createdEntity.countryCodes.length).toBeGreaterThan(0);
+    await expect(createdEntity.policies).toBeDefined();
+    await expect(createdEntity.onboarding).toBeDefined();
   });
 
   it('create returns the newly created study with no duplicate country codes or policies', async () => {
-    const newCreatedEntity = await service.create({
+    const createdEntity = await service.create({
       ...defaultCreateStudyDto,
       countryCodeIds: [
         countryCodeForTest.id,
@@ -85,18 +97,20 @@ describe('StudiesService', () => {
         countryCodeForTest.id,
       ],
       policyIds: [policyForTest.id, policyForTest.id, policyForTest.id],
+      onboardingId: onboardingForTest.id,
     });
 
-    await expect(newCreatedEntity).toBeDefined();
-    await expect(newCreatedEntity.id).toBeDefined();
-    await expect(newCreatedEntity.name).toEqual(defaultCreateStudyDto.name);
-    await expect(newCreatedEntity.description).toEqual(
+    await expect(createdEntity).toBeDefined();
+    await expect(createdEntity.id).toBeDefined();
+    await expect(createdEntity.name).toEqual(defaultCreateStudyDto.name);
+    await expect(createdEntity.description).toEqual(
       defaultCreateStudyDto.description,
     );
-    await expect(newCreatedEntity.countryCodes).toBeDefined();
-    await expect(newCreatedEntity.countryCodes.length).toEqual(1);
-    await expect(newCreatedEntity.policies).toBeDefined();
-    await expect(newCreatedEntity.policies.length).toEqual(1);
+    await expect(createdEntity.countryCodes).toBeDefined();
+    await expect(createdEntity.countryCodes.length).toEqual(1);
+    await expect(createdEntity.policies).toBeDefined();
+    await expect(createdEntity.policies.length).toEqual(1);
+    await expect(createdEntity.onboarding).toBeDefined();
   });
 
   it('create throws error if non existent country code id is provided', async () => {
@@ -115,35 +129,38 @@ describe('StudiesService', () => {
         ...defaultCreateStudyDto,
         countryCodeIds: [countryCodeForTest.id],
         policyIds: [DEFAULT_GUID],
+        onboardingId: onboardingForTest.id,
       }),
     ).rejects.toThrow(BadRequestException);
   });
 
   it('findAll returns the list of all studies including the newly created one', async () => {
-    const newCreatedEntity = await service.create({
+    const createdEntity = await service.create({
       ...defaultCreateStudyDto,
       countryCodeIds: [countryCodeForTest.id],
       policyIds: [policyForTest.id],
+      onboardingId: onboardingForTest.id,
     });
 
     const allStudies = await service.findAll();
 
     await expect(allStudies).toBeDefined();
     await expect(allStudies.length).toBeGreaterThan(0);
-    await expect(allStudies).toContain(newCreatedEntity);
+    await expect(allStudies).toContain(createdEntity);
   });
 
   it('findOne returns newly created study', async () => {
-    const newCreatedEntity = await service.create({
+    const createdEntity = await service.create({
       ...defaultCreateStudyDto,
       countryCodeIds: [countryCodeForTest.id],
       policyIds: [policyForTest.id],
+      onboardingId: onboardingForTest.id,
     });
 
-    const foundEntity = await service.findOne(newCreatedEntity.id);
+    const foundEntity = await service.findOne(createdEntity.id);
 
     await expect(foundEntity).toBeDefined();
-    await expect(foundEntity).toEqual(newCreatedEntity);
+    await expect(foundEntity).toEqual(createdEntity);
     await expect(foundEntity.countryCodes).toBeDefined();
   });
 
@@ -158,6 +175,7 @@ describe('StudiesService', () => {
       ...defaultCreateStudyDto,
       countryCodeIds: [countryCodeForTest.id],
       policyIds: [policyForTest.id],
+      onboardingId: onboardingForTest.id,
     });
 
     const foundEntities = await service.findByCountryCode(
@@ -173,6 +191,7 @@ describe('StudiesService', () => {
       ...defaultCreateStudyDto,
       countryCodeIds: [countryCodeForTest.id],
       policyIds: [policyForTest.id],
+      onboardingId: onboardingForTest.id,
     });
 
     const foundEntities = await service.findByCountryCode(
@@ -184,20 +203,21 @@ describe('StudiesService', () => {
   });
 
   it('update returns the updated study with all changes updated', async () => {
-    const newCreatedEntity = await service.create({
+    const createdEntity = await service.create({
       ...defaultCreateStudyDto,
       countryCodeIds: [countryCodeForTest.id],
       policyIds: [policyForTest.id],
+      onboardingId: onboardingForTest.id,
     });
     const updatedName = 'UPDATED Test Update Study';
 
-    const updatedEntity = await service.update(newCreatedEntity.id, {
+    const updatedEntity = await service.update(createdEntity.id, {
       name: updatedName,
     });
 
     await expect(updatedEntity).toBeDefined();
     await expect(updatedEntity.name).toEqual(updatedName);
-    await expect(updatedEntity).toEqual(newCreatedEntity);
+    await expect(updatedEntity).toEqual(createdEntity);
   });
 
   it('update returns the updated study with the partial changes updated', async () => {
@@ -205,11 +225,12 @@ describe('StudiesService', () => {
       ...defaultCreateStudyDto,
       countryCodeIds: [countryCodeForTest.id],
       policyIds: [policyForTest.id],
+      onboardingId: onboardingForTest.id,
     };
-    const newCreatedEntity = await service.create(entityDto);
+    const createdEntity = await service.create(entityDto);
     const updatedName = 'UPDATED Test Update Study';
 
-    const updatedEntity = await service.update(newCreatedEntity.id, {
+    const updatedEntity = await service.update(createdEntity.id, {
       name: updatedName,
     });
 
@@ -219,7 +240,7 @@ describe('StudiesService', () => {
     await expect(updatedEntity.countryCodes.map((cc) => cc.id)).toEqual(
       entityDto.countryCodeIds,
     );
-    await expect(updatedEntity).toEqual(newCreatedEntity);
+    await expect(updatedEntity).toEqual(createdEntity);
   });
 
   it('update throws error when no study was found', async () => {
@@ -231,13 +252,14 @@ describe('StudiesService', () => {
   });
 
   it('remove removes the study', async () => {
-    const newCreatedEntity = await service.create({
+    const createdEntity = await service.create({
       ...defaultCreateStudyDto,
       countryCodeIds: [countryCodeForTest.id],
       policyIds: [policyForTest.id],
+      onboardingId: onboardingForTest.id,
     });
 
-    const removedEntity = await service.remove(newCreatedEntity.id);
+    const removedEntity = await service.remove(createdEntity.id);
     await expect(service.findOne(removedEntity.id)).rejects.toThrow(
       NotFoundException,
     );
