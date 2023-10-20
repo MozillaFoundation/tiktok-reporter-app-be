@@ -92,7 +92,7 @@ describe('Onboarding Steps', () => {
     expect(getResponseBody.statusCode).toEqual(400);
   });
 
-  it('handles a findAll country codes request', async () => {
+  it('handles a findAll onboarding steps request', async () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboarding-steps')
       .send(defaultCreateOnboardingStepDto)
@@ -155,7 +155,7 @@ describe('Onboarding Steps', () => {
     expect(updateResponseBody.order).toEqual(updatedOrder);
   });
 
-  it('update returns the updated country code with the partial changes updated', async () => {
+  it('update returns the updated onboarding step with the partial changes updated', async () => {
     const updatedTitle = 'UPDATED Title';
 
     const { body: createResponseBody } = await request(app.getHttpServer())
@@ -199,11 +199,11 @@ describe('Onboarding Steps', () => {
   });
 
   it('update returns 400 Bad Request invalid id format was provided', async () => {
-    const countryCode = 'Test Create Second country code';
+    const onboardingStepTitle = 'Test Create Onboarding Step Title';
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch('/onboarding-steps/invalidformat')
-      .send({ countryCode })
+      .send({ title: onboardingStepTitle })
       .expect(400);
 
     expect(updateResponseBody.message).toEqual(
@@ -213,7 +213,7 @@ describe('Onboarding Steps', () => {
     expect(updateResponseBody.statusCode).toEqual(400);
   });
 
-  it('delete returns the deleted country code', async () => {
+  it('delete returns the deleted onboarding step', async () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboarding-steps')
       .send(defaultCreateOnboardingStepDto)

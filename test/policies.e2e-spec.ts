@@ -64,7 +64,7 @@ describe('Policies', () => {
     expect(getResponseBody.statusCode).toEqual(400);
   });
 
-  it('handles a findAll country codes request', async () => {
+  it('handles a findAll policies request', async () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/policies')
       .send(defaultCreatePolicyDto)
@@ -122,7 +122,7 @@ describe('Policies', () => {
     expect(createResponseBody.id).toEqual(updateResponseBody.id);
   });
 
-  it('update returns the updated country code with the partial changes updated', async () => {
+  it('update returns the updated policy with the partial changes updated', async () => {
     const updatedTitle = 'UPDATED Title';
 
     const { body: createResponseBody } = await request(app.getHttpServer())
@@ -166,11 +166,11 @@ describe('Policies', () => {
   });
 
   it('update returns 400 Bad Request invalid id format was provided', async () => {
-    const countryCode = 'Test Create Second country code';
+    const policyTitle = 'Test Create Policy Title';
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch('/policies/invalidformat')
-      .send({ countryCode })
+      .send({ title: policyTitle })
       .expect(400);
 
     expect(updateResponseBody.message).toEqual(
@@ -180,7 +180,7 @@ describe('Policies', () => {
     expect(updateResponseBody.statusCode).toEqual(400);
   });
 
-  it('delete returns the deleted country code', async () => {
+  it('delete returns the deleted policy', async () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/policies')
       .send(defaultCreatePolicyDto)

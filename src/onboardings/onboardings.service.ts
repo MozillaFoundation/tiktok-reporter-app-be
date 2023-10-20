@@ -87,7 +87,7 @@ export class OnboardingsService {
       );
 
       Object.assign(onboarding, {
-        countryCodes: updatedOnboardingSteps,
+        steps: updatedOnboardingSteps,
       });
     }
 

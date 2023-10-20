@@ -24,7 +24,7 @@ describe('OnboardingsController', () => {
     expect(controller).toBeDefined();
   });
 
-  it('create returns the newly created policy', async () => {
+  it('create returns the newly created onboarding step', async () => {
     const createdEntity = await controller.create(defaultCreateOnboardingDto);
 
     expect(createdEntity).toBeDefined();
@@ -32,7 +32,7 @@ describe('OnboardingsController', () => {
     expect(createdEntity.name).toEqual(defaultCreateOnboardingDto.name);
   });
 
-  it('findAll returns the list of all policies including the newly created one', async () => {
+  it('findAll returns the list of all onboarding steps including the newly created one', async () => {
     const createdEntity = await controller.create(defaultCreateOnboardingDto);
 
     const allEntities = await controller.findAll();
@@ -42,7 +42,7 @@ describe('OnboardingsController', () => {
     expect(allEntities).toContain(createdEntity);
   });
 
-  it('findOne returns newly created policy', async () => {
+  it('findOne returns newly created onboarding step', async () => {
     const createdEntity = await controller.create(defaultCreateOnboardingDto);
 
     const foundEntity = await controller.findOne(createdEntity.id);
@@ -51,13 +51,13 @@ describe('OnboardingsController', () => {
     expect(foundEntity).toEqual(createdEntity);
   });
 
-  it('findOne throws error when no policy was found', async () => {
+  it('findOne throws error when no onboarding step was found', async () => {
     await expect(controller.findOne(DEFAULT_GUID)).rejects.toThrow(
       NotFoundException,
     );
   });
 
-  it('update returns the updated policy with all changes updated', async () => {
+  it('update returns the updated onboarding step with all changes updated', async () => {
     const createdEntity = await controller.create(defaultCreateOnboardingDto);
 
     const updatedName = 'UPDATED Name';
@@ -71,7 +71,7 @@ describe('OnboardingsController', () => {
     expect(updatedEntity).toEqual(createdEntity);
   });
 
-  it('update throws error when no policy was found', async () => {
+  it('update throws error when no onboarding step was found', async () => {
     await expect(
       controller.update(DEFAULT_GUID, {
         name: 'UPDATED Title',
@@ -79,7 +79,7 @@ describe('OnboardingsController', () => {
     ).rejects.toThrow(NotFoundException);
   });
 
-  it('remove removes the policy', async () => {
+  it('remove removes the onboarding step', async () => {
     const createdEntity = await controller.create(defaultCreateOnboardingDto);
 
     const removedEntity = await controller.remove(createdEntity.id);
@@ -88,7 +88,7 @@ describe('OnboardingsController', () => {
     );
   });
 
-  it('remove throws error when no policy was found', async () => {
+  it('remove throws error when no onboarding step was found', async () => {
     await expect(controller.remove(DEFAULT_GUID)).rejects.toThrow(
       NotFoundException,
     );

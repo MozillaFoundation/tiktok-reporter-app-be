@@ -36,6 +36,6 @@ export const defaultCreateOnboardingStepDto: CreateOnboardingStepDto = {
 };
 
 export const defaultCreateOnboardingDto: CreateOnboardingDto = {
-  name: 'Test Onboarding Step Title',
+  name: 'Test Onboarding Step Name',
   stepIds: ['1', '2', '3'],
 };
