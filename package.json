@@ -85,13 +85,13 @@
       ".module.ts",
       ".entity.ts",
       ".dto.ts",
-      ".spec.utl.ts"
+      ".util.ts"
     ],
     "coveragePathIgnorePatterns": [
       ".module.ts",
       ".entity.ts",
       ".dto.ts",
-      ".spec.utl.ts"
+      ".util.ts"
     ]
   }
 }

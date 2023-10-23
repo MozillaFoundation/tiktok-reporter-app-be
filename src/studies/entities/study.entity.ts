@@ -22,6 +22,9 @@ export class Study {
   @Column()
   description: string;
 
+  @Column()
+  isActive: boolean;
+
   @ManyToMany(() => CountryCode, (countryCode) => countryCode.studies, {
     cascade: true,
     onDelete: 'NO ACTION',

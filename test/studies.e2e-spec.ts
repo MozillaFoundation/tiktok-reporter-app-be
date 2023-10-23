@@ -121,6 +121,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -133,16 +134,26 @@ describe('Study', () => {
 
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
-    expect(createResponseBody.countryCodes.at(0).id).toEqual(
+    expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.countryCodes.length).toEqual(1);
+    expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
-    );
-    expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
+    ]);
+    expect(createResponseBody.policies.length).toEqual(1);
+    expect(createResponseBody.policies.map((policy) => policy.id)).toEqual([
+      firstPolicy.id,
+    ]);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
 
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
-    expect(getResponseBody.countryCodes.at(0).id).toEqual(firstCountryCode.id);
-    expect(getResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
+    expect(getResponseBody.isActive).toEqual(true);
+    expect(getResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
+      firstCountryCode.id,
+    ]);
+    expect(getResponseBody.policies.map((policy) => policy.id)).toEqual([
+      firstPolicy.id,
+    ]);
     expect(getResponseBody.onboarding.id).toEqual(firstOnboarding.id);
   });
 
@@ -155,6 +166,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [
           firstCountryCode.id,
           firstCountryCode.id,
@@ -172,6 +184,7 @@ describe('Study', () => {
 
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
+    expect(createResponseBody.isActive).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
     expect(createResponseBody.countryCodes.at(0).id).toEqual(
       firstCountryCode.id,
@@ -181,6 +194,7 @@ describe('Study', () => {
 
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
+    expect(getResponseBody.isActive).toEqual(true);
     expect(getResponseBody.countryCodes.length).toEqual(1);
     expect(getResponseBody.countryCodes.at(0).id).toEqual(firstCountryCode.id);
     expect(getResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
@@ -196,6 +210,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [
           firstPolicy.id,
@@ -214,6 +229,7 @@ describe('Study', () => {
 
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
+    expect(createResponseBody.isActive).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
     expect(createResponseBody.countryCodes.at(0).id).toEqual(
       firstCountryCode.id,
@@ -224,6 +240,7 @@ describe('Study', () => {
 
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
+    expect(getResponseBody.isActive).toEqual(true);
     expect(getResponseBody.countryCodes.length).toEqual(1);
     expect(getResponseBody.countryCodes.at(0).id).toEqual(firstCountryCode.id);
     expect(getResponseBody.policies.length).toEqual(1);
@@ -240,6 +257,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: ['Invalid id format'],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -259,6 +277,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: ['Invalid id format'],
         onboardingId: firstOnboarding.id,
@@ -278,6 +297,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: 'Invalid Id Format',
@@ -292,11 +312,12 @@ describe('Study', () => {
     const studyName = 'Test Create Second Study';
     const studyDescription = 'Test Create Second Study DESCRIPTION';
 
-    const { body: createResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/studies')
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -307,16 +328,10 @@ describe('Study', () => {
       .get(`/studies/country-codes/${firstCountryCode.id}`)
       .expect(200);
 
-    expect(createResponseBody.name).toEqual(studyName);
-    expect(createResponseBody.description).toEqual(studyDescription);
-    expect(createResponseBody.countryCodes.at(0).id).toEqual(
-      firstCountryCode.id,
-    );
-    expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
-    expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
-
     expect(getResponseBody.at(0).name).toEqual(studyName);
     expect(getResponseBody.at(0).description).toEqual(studyDescription);
+    expect(getResponseBody.at(0).isActive).toEqual(true);
+    expect(getResponseBody.at(0).isActive).toEqual(true);
     expect(getResponseBody.at(0).countryCodes.at(0).id).toEqual(
       firstCountryCode.id,
     );
@@ -328,11 +343,12 @@ describe('Study', () => {
     const studyName = 'Test Create Second Study';
     const studyDescription = 'Test Create Second Study DESCRIPTION';
 
-    const { body: createResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/studies')
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -343,16 +359,9 @@ describe('Study', () => {
       .get(`/studies/country-codes/${firstCountryCode.code}`)
       .expect(200);
 
-    expect(createResponseBody.name).toEqual(studyName);
-    expect(createResponseBody.description).toEqual(studyDescription);
-    expect(createResponseBody.countryCodes.at(0).id).toEqual(
-      firstCountryCode.id,
-    );
-    expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
-    expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
-
     expect(getResponseBody.at(0).name).toEqual(studyName);
     expect(getResponseBody.at(0).description).toEqual(studyDescription);
+    expect(getResponseBody.at(0).isActive).toEqual(true);
     expect(getResponseBody.at(0).countryCodes.at(0).id).toEqual(
       firstCountryCode.id,
     );
@@ -369,6 +378,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -379,16 +389,9 @@ describe('Study', () => {
       .get(`/studies/${createResponseBody.id}`)
       .expect(200);
 
-    expect(createResponseBody.name).toEqual(studyName);
-    expect(createResponseBody.description).toEqual(studyDescription);
-    expect(createResponseBody.countryCodes.at(0).id).toEqual(
-      firstCountryCode.id,
-    );
-    expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
-    expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
-
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
+    expect(getResponseBody.isActive).toEqual(true);
     expect(getResponseBody.countryCodes.at(0).id).toEqual(firstCountryCode.id);
     expect(getResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
     expect(getResponseBody.onboarding.id).toEqual(firstOnboarding.id);
@@ -415,6 +418,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -425,13 +429,6 @@ describe('Study', () => {
       .get('/studies')
       .expect(200);
 
-    expect(createResponseBody.name).toEqual(studyName);
-    expect(createResponseBody.description).toEqual(studyDescription);
-    expect(createResponseBody.countryCodes.at(0).id).toEqual(
-      firstCountryCode.id,
-    );
-    expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
-    expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
     const studyNames = getResponseBody.map((study) => study.name);
     expect(studyNames).toContain(createResponseBody.name);
   });
@@ -448,6 +445,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -459,31 +457,42 @@ describe('Study', () => {
       .send({
         name: updatedStudyName,
         description: updateStudyDescription,
+        isActive: false,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,
       })
       .expect(200);
 
+    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
-    expect(createResponseBody.countryCodes.at(0).id).toEqual(
+    expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.countryCodes.length).toEqual(1);
+    expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
-    );
-    expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
+    ]);
+    expect(createResponseBody.policies.length).toEqual(1);
+    expect(createResponseBody.policies.map((policy) => policy.id)).toEqual([
+      firstPolicy.id,
+    ]);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
 
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(updateStudyDescription);
+    expect(updateResponseBody.isActive).toEqual(false);
     expect(updateResponseBody.countryCodes.length).toEqual(2);
-    expect(updateResponseBody.countryCodes.at(1).id).toEqual(
+    expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
+      firstCountryCode.id,
       secondCountryCode.id,
-    );
-    expect(updateResponseBody.policies.at(1).id).toEqual(secondPolicy.id);
+    ]);
     expect(updateResponseBody.policies.length).toEqual(2);
+    expect(updateResponseBody.policies.map((policy) => policy.id)).toEqual([
+      firstPolicy.id,
+      secondPolicy.id,
+    ]);
     expect(updateResponseBody.onboarding.id).toEqual(secondOnboarding.id);
-
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
   });
 
   it('update returns the updated study with all changes updated and no duplicate country codes', async () => {
@@ -498,6 +507,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -509,6 +519,7 @@ describe('Study', () => {
       .send({
         name: updatedStudyName,
         description: updateStudyDescription,
+        isActive: false,
         countryCodeIds: [
           secondCountryCode.id,
           secondCountryCode.id,
@@ -519,26 +530,35 @@ describe('Study', () => {
       })
       .expect(200);
 
+    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
+    expect(createResponseBody.isActive).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
-    expect(createResponseBody.countryCodes.at(0).id).toEqual(
+    expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
-    );
-    expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
+    ]);
+    expect(createResponseBody.policies.length).toEqual(1);
+    expect(createResponseBody.policies.map((policy) => policy.id)).toEqual([
+      firstPolicy.id,
+    ]);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
 
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(updateStudyDescription);
+    expect(updateResponseBody.isActive).toEqual(false);
     expect(updateResponseBody.countryCodes.length).toEqual(2);
-    expect(updateResponseBody.countryCodes.at(1).id).toEqual(
+    expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
+      firstCountryCode.id,
       secondCountryCode.id,
-    );
+    ]);
     expect(updateResponseBody.policies.length).toEqual(2);
-    expect(updateResponseBody.policies.at(1).id).toEqual(secondPolicy.id);
+    expect(updateResponseBody.policies.map((policy) => policy.id)).toEqual([
+      firstPolicy.id,
+      secondPolicy.id,
+    ]);
     expect(updateResponseBody.onboarding.id).toEqual(secondOnboarding.id);
-
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
   });
 
   it('update returns the updated study with all changes updated and no duplicate policies', async () => {
@@ -553,6 +573,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -564,33 +585,42 @@ describe('Study', () => {
       .send({
         name: updatedStudyName,
         description: updateStudyDescription,
+        isActive: false,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id, secondPolicy.id, secondPolicy.id],
         onboardingId: secondOnboarding.id,
       })
       .expect(200);
 
+    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
+    expect(createResponseBody.isActive).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
-    expect(createResponseBody.countryCodes.at(0).id).toEqual(
+    expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
-    );
+    ]);
     expect(createResponseBody.policies.length).toEqual(1);
-    expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
+    expect(createResponseBody.policies.map((policy) => policy.id)).toEqual([
+      firstPolicy.id,
+    ]);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
 
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(updateStudyDescription);
+    expect(updateResponseBody.isActive).toEqual(false);
     expect(updateResponseBody.countryCodes.length).toEqual(2);
-    expect(updateResponseBody.countryCodes.at(1).id).toEqual(
+    expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
+      firstCountryCode.id,
       secondCountryCode.id,
-    );
+    ]);
     expect(updateResponseBody.policies.length).toEqual(2);
-    expect(updateResponseBody.policies.at(1).id).toEqual(secondPolicy.id);
+    expect(updateResponseBody.policies.map((policy) => policy.id)).toEqual([
+      firstPolicy.id,
+      secondPolicy.id,
+    ]);
     expect(updateResponseBody.onboarding.id).toEqual(secondOnboarding.id);
-
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
   });
 
   it('update returns the updated study with the partial changes updated', async () => {
@@ -604,6 +634,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -615,25 +646,33 @@ describe('Study', () => {
       .send({ name: updatedStudyName })
       .expect(200);
 
+    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
-    expect(createResponseBody.countryCodes.at(0).id).toEqual(
+    expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.countryCodes.length).toEqual(1);
+    expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
-    );
-    expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
+    ]);
+    expect(createResponseBody.policies.length).toEqual(1);
+    expect(createResponseBody.policies.map((policy) => policy.id)).toEqual([
+      firstPolicy.id,
+    ]);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
 
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(studyDescription);
+    expect(updateResponseBody.isActive).toEqual(true);
     expect(updateResponseBody.countryCodes.length).toEqual(1);
-    expect(updateResponseBody.countryCodes.at(0).id).toEqual(
+    expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
-    );
+    ]);
     expect(updateResponseBody.policies.length).toEqual(1);
-    expect(updateResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
+    expect(updateResponseBody.policies.map((policy) => policy.id)).toEqual([
+      firstPolicy.id,
+    ]);
     expect(updateResponseBody.onboarding.id).toEqual(firstOnboarding.id);
-
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
   });
 
   it('update return 404 NotFound when no study was found', async () => {
@@ -645,6 +684,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
       })
@@ -664,6 +704,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
       })
@@ -688,6 +729,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -699,6 +741,7 @@ describe('Study', () => {
       .send({
         name: updatedStudyName,
         description: updateStudyDescription,
+        isActive: true,
         countryCodeIds: ['Invalid id format'],
         policyIds: [firstPolicy.id],
       })
@@ -720,6 +763,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -731,6 +775,7 @@ describe('Study', () => {
       .send({
         name: updatedStudyName,
         description: updateStudyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: ['Invalid id format'],
       })
@@ -752,6 +797,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -763,6 +809,7 @@ describe('Study', () => {
       .send({
         name: updatedStudyName,
         description: updateStudyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: 'Invalid Id Format',
@@ -782,6 +829,7 @@ describe('Study', () => {
       .send({
         name: studyName,
         description: studyDescription,
+        isActive: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,

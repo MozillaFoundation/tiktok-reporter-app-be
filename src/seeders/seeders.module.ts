@@ -130,6 +130,7 @@ export class SeedersModule {
     return await this.studyRepository.save({
       name: 'Custom Study for testing only',
       description: 'Custom Study for testing only',
+      isActive: true,
       countryCodes,
       onboarding,
       policies: [studyPolicy],

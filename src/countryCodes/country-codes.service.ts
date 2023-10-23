@@ -32,10 +32,6 @@ export class CountryCodesService {
   }
 
   async findOne(id: string) {
-    if (!id) {
-      return null;
-    }
-
     const countryCode = await this.countryCodeRepository.findOneBy({ id });
 
     if (!countryCode) {

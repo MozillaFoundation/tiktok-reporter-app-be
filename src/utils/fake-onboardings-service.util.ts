@@ -1,24 +1,38 @@
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+
 import { CreateOnboardingDto } from 'src/onboardings/dtos/create-onboarding.dto';
 import { In } from 'typeorm';
-import { NotFoundException } from '@nestjs/common';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { UpdateOnboardingDto } from 'src/onboardings/dtos/update-onboarding.dto';
-import { getFakeEntityRepository } from './fake-repository.spec.util';
+import { fakeOnboardingStepsService } from './fake-onboarding-steps-service.util';
+import { getFakeEntityRepository } from './fake-repository.util';
+import { removeDuplicateObjects } from './remove-duplicates';
 
 const fakeOnboardingRepository = getFakeEntityRepository<Onboarding>();
 
 export const fakeOnboardingsService: Partial<OnboardingsService> = {
   create: async (createOnboardingDto: CreateOnboardingDto) => {
-    const newPolicyDto = {
+    const onboardingSteps = await fakeOnboardingStepsService.findAllById(
+      createOnboardingDto.stepIds,
+    );
+
+    if (!onboardingSteps.length) {
+      throw new BadRequestException(
+        'No Onboarding steps with the given id exist',
+      );
+    }
+
+    const newOnboarding = {
       name: createOnboardingDto.name,
+      steps: onboardingSteps,
     } as Onboarding;
 
-    const createdPolicy = fakeOnboardingRepository.create(newPolicyDto);
+    const createdOnboarding = fakeOnboardingRepository.create(newOnboarding);
 
-    const savedPolicy = fakeOnboardingRepository.save(createdPolicy);
+    const savedOnboarding = fakeOnboardingRepository.save(createdOnboarding);
 
-    return await savedPolicy;
+    return await savedOnboarding;
   },
   findAll: async () => {
     return await fakeOnboardingRepository.find();
@@ -28,13 +42,13 @@ export const fakeOnboardingsService: Partial<OnboardingsService> = {
       return null;
     }
 
-    const foundPolicy = await fakeOnboardingRepository.findOneBy({ id });
+    const foundOnboarding = await fakeOnboardingRepository.findOneBy({ id });
 
-    if (!foundPolicy) {
+    if (!foundOnboarding) {
       throw new NotFoundException('Onboarding was not found');
     }
 
-    return foundPolicy;
+    return foundOnboarding;
   },
   findAllById: async (policyIds: string[]) => {
     return await fakeOnboardingRepository.findBy({
@@ -47,6 +61,28 @@ export const fakeOnboardingsService: Partial<OnboardingsService> = {
     Object.assign(foundOnboarding, {
       name: updateOnboardingDto.name || foundOnboarding.name,
     });
+
+    if (updateOnboardingDto.stepIds) {
+      const onboardingSteps = await fakeOnboardingStepsService.findAllById(
+        updateOnboardingDto.stepIds,
+      );
+
+      if (!onboardingSteps.length) {
+        throw new BadRequestException(
+          'No Onboarding steps with the given id exist',
+        );
+      }
+
+      const updatedOnboardingSteps = removeDuplicateObjects(
+        [...foundOnboarding.steps, ...onboardingSteps],
+        'id',
+      );
+
+      Object.assign(foundOnboarding, {
+        steps: updatedOnboardingSteps,
+      });
+    }
+
     return await fakeOnboardingRepository.save(foundOnboarding);
   },
   remove: async (id: string) => {

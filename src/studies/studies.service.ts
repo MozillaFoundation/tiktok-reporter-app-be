@@ -9,7 +9,7 @@ import { Study } from './entities/study.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
-import { isUUID } from 'class-validator';
+import { isDefined, isUUID } from 'class-validator';
 import { removeDuplicateObjects } from 'src/utils/remove-duplicates';
 import { PoliciesService } from 'src/policies/policies.service';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
@@ -44,13 +44,11 @@ export class StudiesService {
     const onboarding = await this.onboardingsService.findOne(
       createStudyDto.onboardingId,
     );
-    if (!onboarding) {
-      throw new BadRequestException('No Onboarding with the given id exist');
-    }
 
     const createdStudy = await this.studyRepository.create({
       name: createStudyDto.name,
       description: createStudyDto.description,
+      isActive: createStudyDto.isActive,
       countryCodes,
       policies,
       onboarding,
@@ -93,10 +91,6 @@ export class StudiesService {
   }
 
   async findOne(id: string) {
-    if (!id) {
-      return null;
-    }
-
     const study = await this.studyRepository.findOne({
       where: { id },
       relations: { countryCodes: true, policies: true, onboarding: true },
@@ -114,6 +108,9 @@ export class StudiesService {
     Object.assign(study, {
       name: updateStudyDto.name || study.name,
       description: updateStudyDto.description || study.description,
+      isActive: isDefined(updateStudyDto?.isActive)
+        ? updateStudyDto.isActive
+        : study.isActive,
     });
 
     if (updateStudyDto.countryCodeIds) {
@@ -156,10 +153,6 @@ export class StudiesService {
       const onboarding = await this.onboardingsService.findOne(
         updateStudyDto.onboardingId,
       );
-
-      if (!onboarding) {
-        throw new BadRequestException('No Onboarding with the given id exist');
-      }
 
       Object.assign(study, {
         onboarding,

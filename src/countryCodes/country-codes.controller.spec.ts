@@ -5,7 +5,7 @@ import { CountryCodesService } from './country-codes.service';
 import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
 import { DEFAULT_GUID } from 'src/utils/constants';
 import { NotFoundException } from '@nestjs/common';
-import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.spec.util';
+import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
 
 describe('CountryCodesController', () => {
   let controller: CountryCodesController;

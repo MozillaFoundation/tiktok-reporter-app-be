@@ -1,14 +1,14 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { isDefined, isUUID } from 'class-validator';
 
 import { CreateStudyDto } from 'src/studies/dto/create-study.dto';
 import { StudiesService } from 'src/studies/studies.service';
 import { Study } from 'src/studies/entities/study.entity';
 import { UpdateStudyDto } from 'src/studies/dto/update-study.dto';
-import { fakeCountryCodesService } from './fake-country-codes-service.spec.util';
-import { fakeOnboardingsService } from './fake-onboardings-service.spec.util';
-import { fakePoliciesService } from './fake-policies-service..spec.util';
-import { getFakeEntityRepository } from './fake-repository.spec.util';
-import { isUUID } from 'class-validator';
+import { fakeCountryCodesService } from './fake-country-codes-service.util';
+import { fakeOnboardingsService } from './fake-onboardings-service.util';
+import { fakePoliciesService } from './fake-policies-service.util';
+import { getFakeEntityRepository } from './fake-repository.util';
 import { removeDuplicateObjects } from './remove-duplicates';
 
 const fakeStudyRepository = getFakeEntityRepository<Study>();
@@ -34,13 +34,11 @@ export const fakeStudiesService: Partial<StudiesService> = {
     const onboarding = await fakeOnboardingsService.findOne(
       createStudyDto.onboardingId,
     );
-    if (!onboarding) {
-      throw new BadRequestException('No Onboarding with the given id exist');
-    }
 
     const newStudy = {
       name: createStudyDto.name,
       description: createStudyDto.description,
+      isActive: createStudyDto.isActive,
       countryCodes,
       policies,
       onboarding,
@@ -93,12 +91,21 @@ export const fakeStudiesService: Partial<StudiesService> = {
     Object.assign(foundStudy, {
       name: updateStudyDto.name || foundStudy.name,
       description: updateStudyDto.description || foundStudy.description,
+      isActive: isDefined(updateStudyDto?.isActive)
+        ? updateStudyDto?.isActive
+        : foundStudy.isActive,
     });
 
     if (updateStudyDto.countryCodeIds) {
       const countryCodes = await fakeCountryCodesService.findAllById(
         updateStudyDto.countryCodeIds,
       );
+
+      if (!countryCodes.length) {
+        throw new BadRequestException(
+          'No Country Codes with the given id exist',
+        );
+      }
 
       const newCountryCodes = removeDuplicateObjects(
         [...foundStudy.countryCodes, ...countryCodes],
@@ -112,6 +119,10 @@ export const fakeStudiesService: Partial<StudiesService> = {
       const policies = await fakePoliciesService.findAllById(
         updateStudyDto.policyIds,
       );
+
+      if (!policies.length) {
+        throw new BadRequestException('No Policies with the given id exist');
+      }
 
       const newPolicies = removeDuplicateObjects(
         [...foundStudy.policies, ...policies],
@@ -127,10 +138,6 @@ export const fakeStudiesService: Partial<StudiesService> = {
       const onboarding = await fakeOnboardingsService.findOne(
         updateStudyDto.onboardingId,
       );
-
-      if (!onboarding) {
-        throw new BadRequestException('No Onboarding with the given id exist');
-      }
 
       Object.assign(foundStudy, {
         onboarding,

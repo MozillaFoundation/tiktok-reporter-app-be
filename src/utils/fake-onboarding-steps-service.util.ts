@@ -4,7 +4,7 @@ import { NotFoundException } from '@nestjs/common';
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { OnboardingStepsService } from 'src/onboardingSteps/onboarding-steps.service';
 import { UpdateOnboardingStepDto } from 'src/onboardingSteps/dtos/update-onboarding-step.dto';
-import { getFakeEntityRepository } from './fake-repository.spec.util';
+import { getFakeEntityRepository } from './fake-repository.util';
 
 const fakeOnboardingStepRepository = getFakeEntityRepository<OnboardingStep>();
 

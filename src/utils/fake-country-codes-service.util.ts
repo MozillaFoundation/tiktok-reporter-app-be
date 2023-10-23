@@ -4,7 +4,7 @@ import { CreateCountryCodeDto } from 'src/countryCodes/dtos/create-country-code.
 import { In } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
 import { UpdateCountryCodeDto } from 'src/countryCodes/dtos/update-country-code.dto';
-import { getFakeEntityRepository } from './fake-repository.spec.util';
+import { getFakeEntityRepository } from './fake-repository.util';
 
 const fakeCountryCodeRepository = getFakeEntityRepository<CountryCode>();
 

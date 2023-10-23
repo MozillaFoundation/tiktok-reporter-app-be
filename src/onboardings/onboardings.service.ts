@@ -53,10 +53,6 @@ export class OnboardingsService {
   }
 
   async findOne(id: string) {
-    if (!id) {
-      return null;
-    }
-
     const onboarding = await this.onboardingRepository.findOne({
       where: { id },
       relations: { steps: true },
@@ -80,6 +76,12 @@ export class OnboardingsService {
       const onboardingSteps = await this.onboardingStepsService.findAllById(
         updateOnboardingDto.stepIds,
       );
+
+      if (!onboardingSteps.length) {
+        throw new BadRequestException(
+          'No Onboarding steps with the given id exist',
+        );
+      }
 
       const updatedOnboardingSteps = removeDuplicateObjects(
         [...onboarding.steps, ...onboardingSteps],

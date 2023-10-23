@@ -5,7 +5,7 @@ import { NotFoundException } from '@nestjs/common';
 import { PoliciesService } from 'src/policies/policies.service';
 import { Policy } from 'src/policies/entities/policy.entity';
 import { UpdatePolicyDto } from 'src/policies/dtos/update-policy.dto';
-import { getFakeEntityRepository } from './fake-repository.spec.util';
+import { getFakeEntityRepository } from './fake-repository.util';
 
 const fakePolicyRepository = getFakeEntityRepository<Policy>();
 

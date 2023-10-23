@@ -10,6 +10,7 @@ export const DEFAULT_GUID = '00000000-0000-0000-0000-000000000000';
 export const defaultCreateStudyDto: CreateStudyDto = {
   name: 'Test Create Study',
   description: 'The Description of the new Created Study',
+  isActive: true,
   countryCodeIds: [],
   policyIds: [],
   onboardingId: '',

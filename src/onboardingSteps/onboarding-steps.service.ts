@@ -35,10 +35,6 @@ export class OnboardingStepsService {
   }
 
   async findOne(id: string) {
-    if (!id) {
-      return null;
-    }
-
     const onboardingStep = await this.onboardingStepRepository.findOneBy({
       id,
     });

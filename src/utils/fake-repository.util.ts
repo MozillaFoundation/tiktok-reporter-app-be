@@ -89,7 +89,8 @@ export function getFakeEntityRepository<TEntity>(): Partial<
       .fn()
       .mockImplementation((options?: FindManyOptions<TEntity>) => {
         const entities = filterEntities(options);
-        return !isEmpty(entities);
+
+        return entities.length > 0;
       }),
     findBy: jest
       .fn()

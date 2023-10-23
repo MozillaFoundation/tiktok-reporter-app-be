@@ -42,10 +42,6 @@ export class PoliciesService {
   }
 
   async findOne(id: string) {
-    if (!id) {
-      return null;
-    }
-
     const policy = await this.policyRepository.findOneBy({ id });
 
     if (!policy) {

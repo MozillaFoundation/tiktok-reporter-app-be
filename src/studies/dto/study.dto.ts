@@ -1,4 +1,4 @@
-import { IsArray, IsString, IsUUID } from 'class-validator';
+import { IsArray, IsBoolean, IsString, IsUUID } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 import { CountryCodeDto } from 'src/countryCodes/dtos/country-code.dto';
@@ -27,6 +27,13 @@ export class StudyDto {
   })
   @IsString()
   description: string;
+
+  @ApiProperty({
+    description: 'The active state of the study',
+    type: Boolean,
+  })
+  @IsBoolean()
+  isActive: boolean;
 
   @ApiProperty({
     description: 'The country Codes for this study',

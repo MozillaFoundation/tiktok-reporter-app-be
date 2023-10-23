@@ -1,3 +1,4 @@
+import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   DEFAULT_GUID,
   defaultCreateOnboardingDto,
@@ -5,26 +6,34 @@ import {
 } from 'src/utils/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { NotFoundException } from '@nestjs/common';
 import { Onboarding } from './entities/onboarding.entity';
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { OnboardingStepsService } from 'src/onboardingSteps/onboarding-steps.service';
 import { OnboardingsService } from './onboardings.service';
 import { Repository } from 'typeorm';
-import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.spec.util';
-import { getFakeEntityRepository } from 'src/utils/fake-repository.spec.util';
+import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
+import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
 
 describe('OnboardingsService', () => {
   let service: OnboardingsService;
   let repository: Repository<Onboarding>;
   const REPOSITORY_TOKEN = getRepositoryToken(Onboarding);
-  let onboardingStepsForTest: OnboardingStep;
+  let firstOnboardingStep: OnboardingStep;
+  let secondOnboardingStep: OnboardingStep;
 
   beforeAll(async () => {
-    onboardingStepsForTest = await fakeOnboardingStepsService.create(
+    firstOnboardingStep = await fakeOnboardingStepsService.create(
       defaultCreateOnboardingStepDto,
     );
+
+    secondOnboardingStep = await fakeOnboardingStepsService.create({
+      title: 'Test Second Onboarding Step Title',
+      description: 'Test Second Onboarding Step Description',
+      imageUrl: 'Test Second Onboarding Step ImageURL',
+      details: 'Test Second Onboarding Step Details',
+      order: 2,
+    });
   });
 
   beforeEach(async () => {
@@ -57,7 +66,7 @@ describe('OnboardingsService', () => {
   it('create returns the newly created onboarding', async () => {
     const createdEntity = await service.create({
       ...defaultCreateOnboardingDto,
-      stepIds: [onboardingStepsForTest.id],
+      stepIds: [firstOnboardingStep.id],
     });
 
     expect(createdEntity).toBeDefined();
@@ -65,10 +74,19 @@ describe('OnboardingsService', () => {
     expect(createdEntity.name).toEqual(defaultCreateOnboardingDto.name);
   });
 
+  it('create throws error if non existent onboarding step id is provided', async () => {
+    await expect(
+      service.create({
+        ...defaultCreateOnboardingDto,
+        stepIds: [DEFAULT_GUID],
+      }),
+    ).rejects.toThrow(BadRequestException);
+  });
+
   it('findAll returns the list of all onboardings including the newly created one', async () => {
     const createdEntity = await service.create({
       ...defaultCreateOnboardingDto,
-      stepIds: [onboardingStepsForTest.id],
+      stepIds: [firstOnboardingStep.id],
     });
 
     const allEntities = await service.findAll();
@@ -81,7 +99,7 @@ describe('OnboardingsService', () => {
   it('findAllById returns the list of onboardings with ids in the provided search list ', async () => {
     const createdEntity = await service.create({
       ...defaultCreateOnboardingDto,
-      stepIds: [onboardingStepsForTest.id],
+      stepIds: [firstOnboardingStep.id],
     });
 
     const foundEntities = await service.findAllById([createdEntity.id]);
@@ -94,7 +112,7 @@ describe('OnboardingsService', () => {
   it('findOne returns newly created onboarding', async () => {
     const createdEntity = await service.create({
       ...defaultCreateOnboardingDto,
-      stepIds: [onboardingStepsForTest.id],
+      stepIds: [firstOnboardingStep.id],
     });
 
     const foundEntity = await service.findOne(createdEntity.id);
@@ -112,20 +130,39 @@ describe('OnboardingsService', () => {
   it('update returns the updated onboarding with all changes updated', async () => {
     const createdEntity = await service.create({
       ...defaultCreateOnboardingDto,
-      stepIds: [onboardingStepsForTest.id],
+      stepIds: [firstOnboardingStep.id],
     });
     const updatedName = 'UPDATED Name';
 
     const updatedEntity = await service.update(createdEntity.id, {
       name: updatedName,
+      stepIds: [secondOnboardingStep.id],
     });
 
     expect(updatedEntity).toBeDefined();
     expect(updatedEntity.name).toEqual(updatedName);
-    expect(updatedEntity).toEqual(createdEntity);
+    expect(updatedEntity.steps.length).toEqual(2);
+    expect(updatedEntity.steps.map((step) => step.id)).toEqual([
+      firstOnboardingStep.id,
+      secondOnboardingStep.id,
+    ]);
   });
 
   it('update throws error when no onboarding was found', async () => {
+    const createdEntity = await service.create({
+      ...defaultCreateOnboardingDto,
+      stepIds: [firstOnboardingStep.id],
+    });
+
+    await expect(
+      service.update(createdEntity.id, {
+        name: 'Updated Name',
+        stepIds: [DEFAULT_GUID],
+      }),
+    ).rejects.toThrow(BadRequestException);
+  });
+
+  it('update throws error if non existent onboarding step id is provided', async () => {
     await expect(
       service.update(DEFAULT_GUID, {
         name: 'Updated Name',
@@ -136,7 +173,7 @@ describe('OnboardingsService', () => {
   it('remove removes the onboarding', async () => {
     const createdEntity = await service.create({
       ...defaultCreateOnboardingDto,
-      stepIds: [onboardingStepsForTest.id],
+      stepIds: [firstOnboardingStep.id],
     });
 
     const removedEntity = await service.remove(createdEntity.id);
