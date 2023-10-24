@@ -10,6 +10,7 @@ import { fakeOnboardingsService } from './fake-onboardings-service.util';
 import { fakePoliciesService } from './fake-policies-service.util';
 import { getFakeEntityRepository } from './fake-repository.util';
 import { removeDuplicateObjects } from './remove-duplicates';
+import { fakeFormsService } from './fake-forms-service.util';
 
 const fakeStudyRepository = getFakeEntityRepository<Study>();
 
@@ -35,6 +36,8 @@ export const fakeStudiesService: Partial<StudiesService> = {
       createStudyDto.onboardingId,
     );
 
+    const form = await fakeFormsService.findOne(createStudyDto.formId);
+
     const newStudy = {
       name: createStudyDto.name,
       description: createStudyDto.description,
@@ -42,6 +45,7 @@ export const fakeStudiesService: Partial<StudiesService> = {
       countryCodes,
       policies,
       onboarding,
+      form,
     } as Study;
 
     const createdStudy = fakeStudyRepository.create(newStudy);
@@ -141,6 +145,14 @@ export const fakeStudiesService: Partial<StudiesService> = {
 
       Object.assign(foundStudy, {
         onboarding,
+      });
+    }
+
+    if (updateStudyDto.formId) {
+      const form = await fakeFormsService.findOne(updateStudyDto.formId);
+
+      Object.assign(foundStudy, {
+        form,
       });
     }
 

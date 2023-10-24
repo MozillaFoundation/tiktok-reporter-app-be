@@ -8,15 +8,20 @@ import {
 import { INestApplication } from '@nestjs/common';
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { RegretsReporterTestSetup } from './regretsReporterTestSetup';
+import { Form } from 'src/forms/entities/form.entity';
+import { FieldType } from 'src/forms/types/fields/field.type';
 
 describe('Onboardings', () => {
   let app: INestApplication;
   let firstOnboardingStep: OnboardingStep;
   let secondOnboardingStep: OnboardingStep;
+  let firstOnboardingForm: Form;
+  let secondOnboardingForm: Form;
 
   beforeEach(async () => {
     app = await RegretsReporterTestSetup.getInstance().getApp();
     await createOnboardingSteps();
+    await createOnboardingForms();
   });
 
   const createOnboardingSteps = async () => {
@@ -48,12 +53,53 @@ describe('Onboardings', () => {
     secondOnboardingStep = secondOnboardingStepBody;
   };
 
+  const createOnboardingForms = async () => {
+    const { body: firstOnboardingFormBody } = await request(app.getHttpServer())
+      .post('/forms')
+      .send({
+        name: 'Name of first onboarding form',
+        fields: [
+          {
+            type: FieldType.TextField,
+            label: 'First Text Field Label',
+            placeholder: 'First Text Field Placeholder',
+            isRequired: true,
+            multiline: true,
+            maxLines: 2,
+          },
+        ],
+      })
+      .expect(201);
+    firstOnboardingForm = firstOnboardingFormBody;
+
+    const { body: secondOnboardingFormBody } = await request(
+      app.getHttpServer(),
+    )
+      .post('/forms')
+      .send({
+        name: 'Name of first onboarding form',
+        fields: [
+          {
+            type: FieldType.TextField,
+            label: 'Second Text Field Label',
+            placeholder: 'Second Text Field Placeholder',
+            isRequired: true,
+            multiline: true,
+            maxLines: 2,
+          },
+        ],
+      })
+      .expect(201);
+    secondOnboardingForm = secondOnboardingFormBody;
+  };
+
   it('handles a create onboarding request', async () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboardings')
       .send({
-        name: 'Test Onboarding Step Name',
+        name: 'Test Onboarding Name',
         stepIds: [firstOnboardingStep.id],
+        formId: firstOnboardingForm.id,
       })
       .expect(201);
 
@@ -74,8 +120,9 @@ describe('Onboardings', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboardings')
       .send({
-        name: 'Test Onboarding Step Name',
+        name: 'Test Onboarding Name',
         stepIds: [firstOnboardingStep.id],
+        formId: firstOnboardingForm.id,
       })
       .expect(201);
     const { body: getResponseBody } = await request(app.getHttpServer())
@@ -103,8 +150,9 @@ describe('Onboardings', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboardings')
       .send({
-        name: 'Test Onboarding Step Name',
+        name: 'Test Onboarding Name',
         stepIds: [firstOnboardingStep.id],
+        formId: firstOnboardingForm.id,
       })
       .expect(201);
 
@@ -119,13 +167,14 @@ describe('Onboardings', () => {
   });
 
   it('update returns the updated onboarding with all changes updated', async () => {
-    const updatedName = 'UPDATE Test Onboarding Step Name';
+    const updatedName = 'UPDATE Test Onboarding Name';
 
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboardings')
       .send({
-        name: 'Test Onboarding Step Name',
+        name: 'Test Onboarding Name',
         stepIds: [firstOnboardingStep.id],
+        formId: firstOnboardingForm.id,
       })
       .expect(201);
 
@@ -134,6 +183,7 @@ describe('Onboardings', () => {
       .send({
         name: updatedName,
         stepIds: [secondOnboardingStep.id],
+        formId: secondOnboardingForm.id,
       })
       .expect(200);
 
@@ -145,13 +195,14 @@ describe('Onboardings', () => {
   });
 
   it('update returns the updated onboarding with the partial changes updated', async () => {
-    const updatedName = 'Test Onboarding Step Name';
+    const updatedName = 'Test Onboarding Name';
 
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboardings')
       .send({
-        name: 'Test Onboarding Step Name',
+        name: 'Test Onboarding Name',
         stepIds: [firstOnboardingStep.id],
+        formId: firstOnboardingForm.id,
       })
       .expect(201);
 
@@ -169,7 +220,7 @@ describe('Onboardings', () => {
   });
 
   it('update returns 404 NotFound when no onboarding was found', async () => {
-    const updatedName = 'Test Onboarding Step Name';
+    const updatedName = 'Test Onboarding Name';
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch(`/onboardings/${DEFAULT_GUID}`)
@@ -181,8 +232,8 @@ describe('Onboardings', () => {
     expect(updateResponseBody.statusCode).toEqual(404);
   });
 
-  it('update returns 400 Bad Request invalid id format was provided', async () => {
-    const updatedName = 'Test Onboarding Step Name';
+  it('update returns 400 Bad Request when invalid id format was provided', async () => {
+    const updatedName = 'Test Onboarding Name';
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch('/onboardings/invalidformat')
@@ -196,12 +247,64 @@ describe('Onboardings', () => {
     expect(updateResponseBody.statusCode).toEqual(400);
   });
 
+  it('update returns 400 Bad Request when non existent onboarding step id was provided', async () => {
+    const updatedName = 'Test Onboarding Name';
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/onboardings')
+      .send({
+        name: 'Test Onboarding Name',
+        stepIds: [firstOnboardingStep.id],
+        formId: firstOnboardingForm.id,
+      })
+      .expect(201);
+
+    const { body: updateResponseBody } = await request(app.getHttpServer())
+      .patch(`/onboardings/${createResponseBody.id}`)
+      .send({
+        name: updatedName,
+        stepIds: [DEFAULT_GUID],
+        formId: secondOnboardingForm.id,
+      })
+      .expect(400);
+
+    expect(updateResponseBody.error).toEqual('Bad Request');
+    expect(updateResponseBody.statusCode).toEqual(400);
+  });
+
+  it('update returns 404 Not Found when non existent form id was provided', async () => {
+    const updatedName = 'Test Onboarding Name';
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/onboardings')
+      .send({
+        name: 'Test Onboarding Name',
+        stepIds: [firstOnboardingStep.id],
+        formId: firstOnboardingForm.id,
+      })
+      .expect(201);
+
+    const { body: updateResponseBody } = await request(app.getHttpServer())
+      .patch(`/onboardings/${createResponseBody.id}`)
+      .send({
+        name: updatedName,
+        stepIds: [DEFAULT_GUID],
+        formId: secondOnboardingForm.id,
+      })
+      .expect(400);
+
+    expect(updateResponseBody.message).toEqual(
+      'No Onboarding steps with the given id exist',
+    );
+    expect(updateResponseBody.error).toEqual('Bad Request');
+    expect(updateResponseBody.statusCode).toEqual(400);
+  });
+
   it('delete returns the deleted onboarding', async () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboardings')
       .send({
-        name: 'Test Onboarding Step Name',
+        name: 'Test Onboarding Name',
         stepIds: [firstOnboardingStep.id],
+        formId: firstOnboardingForm.id,
       })
       .expect(201);
 

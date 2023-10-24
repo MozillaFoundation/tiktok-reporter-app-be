@@ -2,6 +2,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   DEFAULT_GUID,
   defaultCreateCountryCodeDto,
+  defaultCreateFormDto,
   defaultCreateOnboardingDto,
   defaultCreateOnboardingStepDto,
   defaultCreatePolicyDto,
@@ -25,8 +26,10 @@ import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util'
 import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { Form } from 'src/forms/entities/form.entity';
+import { fakeFormsService } from 'src/utils/fake-forms-service.util';
+import { FormsService } from 'src/forms/forms.service';
 
-// TODO: Handle update scenario for non existent country code, policy and onboarding ids
 describe('StudiesService', () => {
   let service: StudiesService;
   let repository: Repository<Study>;
@@ -37,6 +40,8 @@ describe('StudiesService', () => {
   let secondPolicy: Policy;
   let firstOnboarding: Onboarding;
   let secondOnboarding: Onboarding;
+  let firstStudyForm: Form;
+  let secondStudyForm: Form;
 
   beforeAll(async () => {
     firstCountryCode = await fakeCountryCodesService.create(
@@ -55,6 +60,9 @@ describe('StudiesService', () => {
       text: 'Test Second Policy Text',
     });
 
+    firstStudyForm = await fakeFormsService.create(defaultCreateFormDto);
+    secondStudyForm = await fakeFormsService.create(defaultCreateFormDto);
+
     const firstOnboardingStep = await fakeOnboardingStepsService.create(
       defaultCreateOnboardingStepDto,
     );
@@ -62,6 +70,7 @@ describe('StudiesService', () => {
     firstOnboarding = await fakeOnboardingsService.create({
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
+      formId: firstStudyForm.id,
     });
 
     const secondOnboardingStep = await fakeOnboardingStepsService.create({
@@ -75,6 +84,7 @@ describe('StudiesService', () => {
     secondOnboarding = await fakeOnboardingsService.create({
       name: 'Test Second Onboarding Step Name',
       stepIds: [secondOnboardingStep.id],
+      formId: secondStudyForm.id,
     });
   });
 
@@ -85,6 +95,7 @@ describe('StudiesService', () => {
         { provide: CountryCodesService, useValue: fakeCountryCodesService },
         { provide: PoliciesService, useValue: fakePoliciesService },
         { provide: OnboardingsService, useValue: fakeOnboardingsService },
+        { provide: FormsService, useValue: fakeFormsService },
         {
           provide: REPOSITORY_TOKEN,
           useValue: getFakeEntityRepository<Study>(),
@@ -110,6 +121,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     await expect(createdEntity).toBeDefined();
@@ -130,6 +142,7 @@ describe('StudiesService', () => {
       firstPolicy.id,
     ]);
     expect(createdEntity.onboarding.id).toEqual(firstOnboarding.id);
+    expect(createdEntity.form.id).toEqual(firstStudyForm.id);
   });
 
   it('create returns the newly created study with no duplicate country codes or policies', async () => {
@@ -142,6 +155,7 @@ describe('StudiesService', () => {
       ],
       policyIds: [firstPolicy.id, firstPolicy.id, firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     await expect(createdEntity).toBeDefined();
@@ -170,6 +184,8 @@ describe('StudiesService', () => {
         ...defaultCreateStudyDto,
         countryCodeIds: [DEFAULT_GUID],
         policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       }),
     ).rejects.toThrow(BadRequestException);
   });
@@ -181,6 +197,7 @@ describe('StudiesService', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [DEFAULT_GUID],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       }),
     ).rejects.toThrow(BadRequestException);
   });
@@ -192,6 +209,19 @@ describe('StudiesService', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: DEFAULT_GUID,
+        formId: firstStudyForm.id,
+      }),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  it('create throws error if non existent form id is provided', async () => {
+    await expect(
+      service.create({
+        ...defaultCreateStudyDto,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: DEFAULT_GUID,
       }),
     ).rejects.toThrow(NotFoundException);
   });
@@ -202,6 +232,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     const allStudies = await service.findAll();
@@ -217,6 +248,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     const foundEntity = await service.findOne(createdEntity.id);
@@ -238,6 +270,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     const foundEntities = await service.findByCountryCode(firstCountryCode.id);
@@ -252,6 +285,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     const foundEntities = await service.findByCountryCode(
@@ -268,6 +302,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     const foundEntities = await service.findByCountryCode(
@@ -284,6 +319,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     const updatedStudyName = 'UPDATE Test Create Third Study';
@@ -295,6 +331,7 @@ describe('StudiesService', () => {
       countryCodeIds: [secondCountryCode.id],
       policyIds: [secondPolicy.id],
       onboardingId: secondOnboarding.id,
+      formId: secondStudyForm.id,
     });
 
     expect(updatedEntity.name).toEqual(updatedStudyName);
@@ -319,6 +356,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     };
     const createdEntity = await service.create(entityDto);
     const updatedName = 'UPDATED Test Update Study';
@@ -350,6 +388,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     const updatedStudyName = 'UPDATE Test Create Third Study';
@@ -362,6 +401,7 @@ describe('StudiesService', () => {
         countryCodeIds: [DEFAULT_GUID],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,
+        formId: secondStudyForm.id,
       }),
     ).rejects.toThrow(BadRequestException);
   });
@@ -372,6 +412,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     const updatedStudyName = 'UPDATE Test Create Third Study';
@@ -384,6 +425,7 @@ describe('StudiesService', () => {
         countryCodeIds: [secondCountryCode.id],
         policyIds: [DEFAULT_GUID],
         onboardingId: secondOnboarding.id,
+        formId: secondStudyForm.id,
       }),
     ).rejects.toThrow(BadRequestException);
   });
@@ -394,6 +436,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     const updatedStudyName = 'UPDATE Test Create Third Study';
@@ -406,6 +449,31 @@ describe('StudiesService', () => {
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id],
         onboardingId: DEFAULT_GUID,
+        formId: secondStudyForm.id,
+      }),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  it('update throws error when invalid form is provided', async () => {
+    const createdEntity = await service.create({
+      ...defaultCreateStudyDto,
+      countryCodeIds: [firstCountryCode.id],
+      policyIds: [firstPolicy.id],
+      onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
+    });
+
+    const updatedStudyName = 'UPDATE Test Create Third Study';
+    const updateStudyDescription = 'UPDATE Test Create Third Study DESCRIPTION';
+    await expect(
+      service.update(createdEntity.id, {
+        name: updatedStudyName,
+        description: updateStudyDescription,
+        isActive: false,
+        countryCodeIds: [secondCountryCode.id],
+        policyIds: [secondPolicy.id],
+        onboardingId: secondOnboarding.id,
+        formId: DEFAULT_GUID,
       }),
     ).rejects.toThrow(NotFoundException);
   });
@@ -416,6 +484,7 @@ describe('StudiesService', () => {
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
     });
 
     const removedEntity = await service.remove(createdEntity.id);

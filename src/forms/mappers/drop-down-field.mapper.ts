@@ -13,8 +13,6 @@ export function mapDropDownField(
     (option) => option.title === dropDownFieldDto.selected,
   );
 
-  console.log('mappedOptions', mappedOptions);
-  console.log('selectedOption', selectedOption);
   return {
     id: randomUuidv4(),
     type: FieldType.DropDown,

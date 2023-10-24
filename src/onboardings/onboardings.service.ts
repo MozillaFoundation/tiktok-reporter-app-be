@@ -10,11 +10,13 @@ import { CreateOnboardingDto } from './dtos/create-onboarding.dto';
 import { OnboardingStepsService } from 'src/onboardingSteps/onboarding-steps.service';
 import { UpdateOnboardingDto } from './dtos/update-onboarding.dto';
 import { removeDuplicateObjects } from 'src/utils/remove-duplicates';
+import { FormsService } from 'src/forms/forms.service';
 
 @Injectable()
 export class OnboardingsService {
   constructor(
     private readonly onboardingStepsService: OnboardingStepsService,
+    private readonly formsService: FormsService,
     @InjectRepository(Onboarding)
     private readonly onboardingRepository: Repository<Onboarding>,
   ) {}
@@ -30,9 +32,12 @@ export class OnboardingsService {
       );
     }
 
+    const form = await this.formsService.findOne(createOnboardingDto.formId);
+
     const cratedOnboarding = this.onboardingRepository.create({
       name: createOnboardingDto.name,
       steps: onboardingSteps,
+      form,
     });
 
     return await this.onboardingRepository.save(cratedOnboarding);
@@ -42,6 +47,7 @@ export class OnboardingsService {
     return await this.onboardingRepository.find({
       relations: {
         steps: true,
+        form: true,
       },
     });
   }
@@ -55,7 +61,7 @@ export class OnboardingsService {
   async findOne(id: string) {
     const onboarding = await this.onboardingRepository.findOne({
       where: { id },
-      relations: { steps: true },
+      relations: { steps: true, form: true },
     });
 
     if (!onboarding) {
@@ -90,6 +96,14 @@ export class OnboardingsService {
 
       Object.assign(onboarding, {
         steps: updatedOnboardingSteps,
+      });
+    }
+
+    if (updateOnboardingDto.formId) {
+      const form = await this.formsService.findOne(updateOnboardingDto.formId);
+
+      Object.assign(onboarding, {
+        form,
       });
     }
 

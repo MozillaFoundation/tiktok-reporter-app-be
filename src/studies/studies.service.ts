@@ -13,6 +13,7 @@ import { isDefined, isUUID } from 'class-validator';
 import { removeDuplicateObjects } from 'src/utils/remove-duplicates';
 import { PoliciesService } from 'src/policies/policies.service';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
+import { FormsService } from 'src/forms/forms.service';
 
 @Injectable()
 export class StudiesService {
@@ -20,6 +21,7 @@ export class StudiesService {
     private readonly countryCodeService: CountryCodesService,
     private readonly policiesService: PoliciesService,
     private readonly onboardingsService: OnboardingsService,
+    private readonly formsService: FormsService,
     @InjectRepository(Study)
     private readonly studyRepository: Repository<Study>,
   ) {}
@@ -45,6 +47,8 @@ export class StudiesService {
       createStudyDto.onboardingId,
     );
 
+    const form = await this.formsService.findOne(createStudyDto.formId);
+
     const createdStudy = await this.studyRepository.create({
       name: createStudyDto.name,
       description: createStudyDto.description,
@@ -52,6 +56,7 @@ export class StudiesService {
       countryCodes,
       policies,
       onboarding,
+      form,
     });
 
     return await this.studyRepository.save(createdStudy);
@@ -63,6 +68,7 @@ export class StudiesService {
         countryCodes: true,
         policies: true,
         onboarding: true,
+        form: true,
       },
     });
   }
@@ -86,6 +92,7 @@ export class StudiesService {
         countryCodes: true,
         policies: true,
         onboarding: true,
+        form: true,
       },
     });
   }
@@ -93,7 +100,12 @@ export class StudiesService {
   async findOne(id: string) {
     const study = await this.studyRepository.findOne({
       where: { id },
-      relations: { countryCodes: true, policies: true, onboarding: true },
+      relations: {
+        countryCodes: true,
+        policies: true,
+        onboarding: true,
+        form: true,
+      },
     });
 
     if (!study) {
@@ -156,6 +168,14 @@ export class StudiesService {
 
       Object.assign(study, {
         onboarding,
+      });
+    }
+
+    if (updateStudyDto.formId) {
+      const form = await this.formsService.findOne(updateStudyDto.formId);
+
+      Object.assign(study, {
+        form,
       });
     }
 

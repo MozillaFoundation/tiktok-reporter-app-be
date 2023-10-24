@@ -6,6 +6,7 @@ import { StudiesService } from './studies.service';
 import { Study } from './entities/study.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OnboardingsModule } from 'src/onboardings/onboardings.module';
+import { FormsModule } from 'src/forms/forms.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { OnboardingsModule } from 'src/onboardings/onboardings.module';
     CountryCodesModule,
     PoliciesModule,
     OnboardingsModule,
+    FormsModule,
   ],
   controllers: [StudiesController],
   providers: [StudiesService],

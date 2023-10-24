@@ -8,6 +8,7 @@ import { UpdateOnboardingDto } from 'src/onboardings/dtos/update-onboarding.dto'
 import { fakeOnboardingStepsService } from './fake-onboarding-steps-service.util';
 import { getFakeEntityRepository } from './fake-repository.util';
 import { removeDuplicateObjects } from './remove-duplicates';
+import { fakeFormsService } from './fake-forms-service.util';
 
 const fakeOnboardingRepository = getFakeEntityRepository<Onboarding>();
 
@@ -23,9 +24,12 @@ export const fakeOnboardingsService: Partial<OnboardingsService> = {
       );
     }
 
+    const form = await fakeFormsService.findOne(createOnboardingDto.formId);
+
     const newOnboarding = {
       name: createOnboardingDto.name,
       steps: onboardingSteps,
+      form,
     } as Onboarding;
 
     const createdOnboarding = fakeOnboardingRepository.create(newOnboarding);
@@ -80,6 +84,14 @@ export const fakeOnboardingsService: Partial<OnboardingsService> = {
 
       Object.assign(foundOnboarding, {
         steps: updatedOnboardingSteps,
+      });
+    }
+
+    if (updateOnboardingDto.formId) {
+      const form = await fakeFormsService.findOne(updateOnboardingDto.formId);
+
+      Object.assign(foundOnboarding, {
+        form,
       });
     }
 

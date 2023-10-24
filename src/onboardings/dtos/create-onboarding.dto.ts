@@ -17,4 +17,11 @@ export class CreateOnboardingDto {
   @IsArray()
   @IsUUID('all', { each: true })
   stepIds: string[];
+
+  @ApiProperty({
+    description: 'The id of the form associated to this study',
+    type: String,
+  })
+  @IsUUID()
+  formId: string;
 }

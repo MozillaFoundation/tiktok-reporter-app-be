@@ -46,4 +46,11 @@ export class CreateStudyDto {
   })
   @IsUUID()
   onboardingId: string;
+
+  @ApiProperty({
+    description: 'The id of the form associated to this study',
+    type: String,
+  })
+  @IsUUID()
+  formId: string;
 }

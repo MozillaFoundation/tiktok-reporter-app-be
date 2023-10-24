@@ -44,7 +44,6 @@ export class FormFieldValidator implements ValidatorConstraintInterface {
         }
 
         const validationResult = this.validateField(fieldDto);
-        console.log('validationResult', validationResult);
         this.messages = this.messages.concat(validationResult.messages);
         isValid = isValid && validationResult.isValid;
       }

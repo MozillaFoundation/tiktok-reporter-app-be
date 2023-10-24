@@ -4,6 +4,7 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -11,6 +12,7 @@ import {
 
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { Study } from 'src/studies/entities/study.entity';
+import { Form } from 'src/forms/entities/form.entity';
 
 @Entity()
 export class Onboarding {
@@ -33,6 +35,9 @@ export class Onboarding {
 
   @OneToMany(() => Study, (study) => study.onboarding)
   studies: Study[];
+
+  @ManyToOne(() => Form, (form) => form.onboardings)
+  form: Form;
 
   @CreateDateColumn()
   createdAt: Date;

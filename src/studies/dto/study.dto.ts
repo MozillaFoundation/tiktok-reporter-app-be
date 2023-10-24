@@ -5,6 +5,7 @@ import { CountryCodeDto } from 'src/countryCodes/dtos/country-code.dto';
 import { OnboardingDto } from 'src/onboardings/dtos/onboarding.dto';
 import { PolicyDto } from 'src/policies/dtos/policy.dto';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
+import { FormDto } from 'src/forms/dtos/form.dto';
 
 export class StudyDto {
   @ApiProperty({
@@ -50,8 +51,14 @@ export class StudyDto {
   policies: PolicyDto[];
 
   @ApiProperty({
-    description: 'The onboardings for this study',
+    description: 'The onboarding for this study',
     type: OnboardingDto,
   })
-  onboardings: OnboardingDto;
+  onboarding: OnboardingDto;
+
+  @ApiProperty({
+    description: 'The form for this study',
+    type: FormDto,
+  })
+  form: FormDto;
 }

@@ -8,6 +8,8 @@ import { PolicyType } from 'src/types/policy.type';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { Study } from 'src/studies/entities/study.entity';
+import { Form } from 'src/forms/entities/form.entity';
+import { FieldType } from 'src/forms/types/fields/field.type';
 
 @Module({
   imports: [
@@ -17,6 +19,7 @@ import { Study } from 'src/studies/entities/study.entity';
       Onboarding,
       OnboardingStep,
       Study,
+      Form,
     ]),
   ],
 })
@@ -30,6 +33,8 @@ export class SeedersModule {
     private readonly onboardingRepository: Repository<Onboarding>,
     @InjectRepository(OnboardingStep)
     private readonly onboardingStepRepository: Repository<OnboardingStep>,
+    @InjectRepository(Form)
+    private readonly formRepository: Repository<Form>,
     @InjectRepository(Study)
     private readonly studyRepository: Repository<Study>,
   ) {}
@@ -92,6 +97,7 @@ export class SeedersModule {
     const newOnboarding = await this.onboardingRepository.create({
       name: 'TEST Onboarding step',
       steps: [],
+      form: {},
     });
 
     for (let i = 0; i < onboardingSteps.length; i++) {
@@ -108,6 +114,25 @@ export class SeedersModule {
       );
       newOnboarding.steps.push(savedOnboardingStep);
     }
+
+    const createdForm = await this.formRepository.create({
+      name: 'OnboardingForm',
+      fields: [
+        {
+          type: FieldType.TextField,
+          isRequired: true,
+          label: 'Email field',
+          placeholder: 'Email placeholder',
+          multiline: false,
+          maxLines: 1,
+        },
+      ],
+    });
+
+    const savedForm = await this.formRepository.save(createdForm);
+
+    newOnboarding.form = savedForm;
+
     return await this.onboardingRepository.save(newOnboarding);
   }
 
@@ -127,13 +152,54 @@ export class SeedersModule {
       where: { code: 'ro' },
     });
 
+    const createdForm = await this.formRepository.create({
+      name: 'StudyForm',
+      fields: [
+        {
+          type: FieldType.TextField,
+          isRequired: true,
+          label: 'TikTok Link',
+          placeholder: 'TikTok Link',
+          multiline: false,
+          maxLines: 1,
+        },
+        {
+          type: FieldType.DropDown,
+          isRequired: true,
+          label: 'Category',
+          placeholder: 'Category',
+          options: [
+            { title: 'Category 1' },
+            { title: 'Category 2' },
+            { title: 'Category 3' },
+            { title: 'Category 4' },
+            { title: 'Category 5' },
+          ],
+          selected: 'Category 1',
+          hasNoneOption: true,
+        },
+        {
+          type: FieldType.Slider,
+          label: 'Slider Field Label',
+          isRequired: true,
+          max: 100,
+          leftLabel: 'Min value',
+          rightLabel: 'Max value',
+          step: 10,
+        },
+      ],
+    });
+
+    const savedForm = await this.formRepository.save(createdForm);
+
     return await this.studyRepository.save({
       name: 'Custom Study for testing only',
       description: 'Custom Study for testing only',
       isActive: true,
       countryCodes,
-      onboarding,
       policies: [studyPolicy],
+      onboarding,
+      form: savedForm,
     });
   }
 }

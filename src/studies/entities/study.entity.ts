@@ -12,6 +12,7 @@ import {
 import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { Policy } from 'src/policies/entities/policy.entity';
+import { Form } from 'src/forms/entities/form.entity';
 
 @Entity()
 export class Study {
@@ -43,6 +44,9 @@ export class Study {
 
   @ManyToOne(() => Onboarding, (onboarding) => onboarding.studies)
   onboarding: Onboarding;
+
+  @ManyToOne(() => Form, (form) => form.studies)
+  form: Form;
 
   @CreateDateColumn()
   createdAt: Date;

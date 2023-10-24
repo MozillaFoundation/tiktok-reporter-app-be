@@ -1,6 +1,7 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   DEFAULT_GUID,
+  defaultCreateFormDto,
   defaultCreateOnboardingDto,
   defaultCreateOnboardingStepDto,
 } from 'src/utils/constants';
@@ -11,11 +12,15 @@ import { OnboardingsController } from './onboardings.controller';
 import { OnboardingsService } from './onboardings.service';
 import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
 import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
+import { Form } from 'src/forms/entities/form.entity';
+import { fakeFormsService } from 'src/utils/fake-forms-service.util';
 
 describe('OnboardingsController', () => {
   let controller: OnboardingsController;
   let firstOnboardingStep: OnboardingStep;
+  let firstOnboardingForm: Form;
   let secondOnboardingStep: OnboardingStep;
+  let secondOnboardingForm: Form;
 
   beforeAll(async () => {
     firstOnboardingStep = await fakeOnboardingStepsService.create(
@@ -29,6 +34,8 @@ describe('OnboardingsController', () => {
       details: 'Test Second Onboarding Step Details',
       order: 2,
     });
+    firstOnboardingForm = await fakeFormsService.create(defaultCreateFormDto);
+    secondOnboardingForm = await fakeFormsService.create(defaultCreateFormDto);
   });
 
   beforeEach(async () => {
@@ -50,6 +57,7 @@ describe('OnboardingsController', () => {
     const createdEntity = await controller.create({
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
+      formId: firstOnboardingForm.id,
     });
 
     expect(createdEntity).toBeDefined();
@@ -62,6 +70,7 @@ describe('OnboardingsController', () => {
       controller.create({
         ...defaultCreateOnboardingDto,
         stepIds: [DEFAULT_GUID],
+        formId: firstOnboardingForm.id,
       }),
     ).rejects.toThrow(BadRequestException);
   });
@@ -70,6 +79,7 @@ describe('OnboardingsController', () => {
     const createdEntity = await controller.create({
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
+      formId: firstOnboardingForm.id,
     });
 
     const allEntities = await controller.findAll();
@@ -83,6 +93,7 @@ describe('OnboardingsController', () => {
     const createdEntity = await controller.create({
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
+      formId: firstOnboardingForm.id,
     });
 
     const foundEntity = await controller.findOne(createdEntity.id);
@@ -101,6 +112,7 @@ describe('OnboardingsController', () => {
     const createdEntity = await controller.create({
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
+      formId: firstOnboardingForm.id,
     });
 
     const updatedName = 'UPDATED Name';
@@ -108,6 +120,7 @@ describe('OnboardingsController', () => {
     const updatedEntity = await controller.update(createdEntity.id, {
       name: updatedName,
       stepIds: [secondOnboardingStep.id],
+      formId: secondOnboardingForm.id,
     });
 
     expect(updatedEntity).toBeDefined();
@@ -117,12 +130,45 @@ describe('OnboardingsController', () => {
       firstOnboardingStep.id,
       secondOnboardingStep.id,
     ]);
+    expect(updatedEntity.form.id).toEqual(secondOnboardingForm.id);
   });
 
-  it('update throws error when no onboarding step was found', async () => {
+  it('update throws error when no onboarding was found', async () => {
     await expect(
       controller.update(DEFAULT_GUID, {
-        name: 'UPDATED Title',
+        name: 'Updated Name',
+      }),
+    ).rejects.toThrow(NotFoundException);
+  });
+
+  it('update throws error if non existent onboarding step id is provided', async () => {
+    const createdEntity = await controller.create({
+      ...defaultCreateOnboardingDto,
+      stepIds: [firstOnboardingStep.id],
+      formId: firstOnboardingForm.id,
+    });
+
+    await expect(
+      controller.update(createdEntity.id, {
+        name: 'Updated Name',
+        stepIds: [DEFAULT_GUID],
+        formId: secondOnboardingForm.id,
+      }),
+    ).rejects.toThrow(BadRequestException);
+  });
+
+  it('update throws error if non existent form id is provided', async () => {
+    const createdEntity = await controller.create({
+      ...defaultCreateOnboardingDto,
+      stepIds: [firstOnboardingStep.id],
+      formId: firstOnboardingForm.id,
+    });
+
+    await expect(
+      controller.update(createdEntity.id, {
+        name: 'Updated Name',
+        stepIds: [secondOnboardingStep.id],
+        formId: DEFAULT_GUID,
       }),
     ).rejects.toThrow(NotFoundException);
   });
@@ -131,6 +177,7 @@ describe('OnboardingsController', () => {
     const createdEntity = await controller.create({
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
+      formId: firstOnboardingForm.id,
     });
 
     const removedEntity = await controller.remove(createdEntity.id);

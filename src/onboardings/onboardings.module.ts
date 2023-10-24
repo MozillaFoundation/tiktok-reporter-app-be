@@ -4,9 +4,14 @@ import { OnboardingStepsModule } from 'src/onboardingSteps/onboarding-steps.modu
 import { OnboardingsController } from './onboardings.controller';
 import { OnboardingsService } from './onboardings.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { FormsModule } from 'src/forms/forms.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Onboarding]), OnboardingStepsModule],
+  imports: [
+    TypeOrmModule.forFeature([Onboarding]),
+    OnboardingStepsModule,
+    FormsModule,
+  ],
   controllers: [OnboardingsController],
   providers: [OnboardingsService],
   exports: [OnboardingsService],

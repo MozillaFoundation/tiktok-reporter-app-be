@@ -29,7 +29,6 @@ export class FormsController {
   @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
   create(@Body() createFormDto: CreateFormDto) {
-    console.log('createFormDto', createFormDto);
     return this.formsService.create(createFormDto);
   }
 

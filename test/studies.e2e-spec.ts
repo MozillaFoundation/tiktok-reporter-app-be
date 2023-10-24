@@ -7,6 +7,8 @@ import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { Policy } from 'src/policies/entities/policy.entity';
 import { PolicyType } from 'src/types/policy.type';
 import { RegretsReporterTestSetup } from './regretsReporterTestSetup';
+import { Form } from 'src/forms/entities/form.entity';
+import { FieldType } from 'src/forms/types/fields/field.type';
 
 describe('Study', () => {
   let app: INestApplication;
@@ -16,12 +18,15 @@ describe('Study', () => {
   let secondPolicy: Policy;
   let firstOnboarding: Onboarding;
   let secondOnboarding: Onboarding;
+  let firstStudyForm: Form;
+  let secondStudyForm: Form;
 
   beforeEach(async () => {
     app = await RegretsReporterTestSetup.getInstance().getApp();
     await createCountryCode();
     await createPolicy();
     await createOnboarding();
+    await createStudyForms();
   });
 
   const createCountryCode = async () => {
@@ -92,11 +97,29 @@ describe('Study', () => {
       })
       .expect(201);
 
+    const { body: firstOnboardingFormBody } = await request(app.getHttpServer())
+      .post('/forms')
+      .send({
+        name: 'Name of first onboarding form',
+        fields: [
+          {
+            type: FieldType.TextField,
+            label: 'First Text Field Label',
+            placeholder: 'First Text Field Placeholder',
+            isRequired: true,
+            multiline: true,
+            maxLines: 2,
+          },
+        ],
+      })
+      .expect(201);
+
     const { body: firstOnboardingBody } = await request(app.getHttpServer())
       .post('/onboardings')
       .send({
         name: 'Test First Onboarding Name',
         stepIds: [firstOnboardingStep.id],
+        formId: firstOnboardingFormBody.id,
       })
       .expect(201);
 
@@ -105,11 +128,50 @@ describe('Study', () => {
       .send({
         name: 'Test Second Onboarding Name',
         stepIds: [secondOnboardingStep.id],
+        formId: firstOnboardingFormBody.id,
       })
       .expect(201);
 
     firstOnboarding = firstOnboardingBody;
     secondOnboarding = secondOnboardingBody;
+  };
+
+  const createStudyForms = async () => {
+    const { body: firstStudyFormBody } = await request(app.getHttpServer())
+      .post('/forms')
+      .send({
+        name: 'Name of first onboarding form',
+        fields: [
+          {
+            type: FieldType.TextField,
+            label: 'First Text Field Label',
+            placeholder: 'First Text Field Placeholder',
+            isRequired: true,
+            multiline: true,
+            maxLines: 2,
+          },
+        ],
+      })
+      .expect(201);
+    firstStudyForm = firstStudyFormBody;
+
+    const { body: secondStudyFormBody } = await request(app.getHttpServer())
+      .post('/forms')
+      .send({
+        name: 'Name of first onboarding form',
+        fields: [
+          {
+            type: FieldType.TextField,
+            label: 'Second Text Field Label',
+            placeholder: 'Second Text Field Placeholder',
+            isRequired: true,
+            multiline: true,
+            maxLines: 2,
+          },
+        ],
+      })
+      .expect(201);
+    secondStudyForm = secondStudyFormBody;
   };
 
   it('handles a create study request', async () => {
@@ -125,6 +187,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -175,6 +238,7 @@ describe('Study', () => {
         ],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -220,6 +284,7 @@ describe('Study', () => {
           firstPolicy.id,
         ],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -261,6 +326,7 @@ describe('Study', () => {
         countryCodeIds: ['Invalid id format'],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(400);
 
@@ -281,6 +347,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: ['Invalid id format'],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(400);
 
@@ -301,6 +368,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: 'Invalid Id Format',
+        formId: firstStudyForm.id,
       })
       .expect(400);
 
@@ -321,6 +389,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -352,6 +421,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -382,6 +452,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -422,6 +493,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -449,6 +521,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -461,6 +534,7 @@ describe('Study', () => {
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,
+        formId: secondStudyForm.id,
       })
       .expect(200);
 
@@ -511,6 +585,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -527,6 +602,7 @@ describe('Study', () => {
         ],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,
+        formId: secondStudyForm.id,
       })
       .expect(200);
 
@@ -577,6 +653,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -589,6 +666,7 @@ describe('Study', () => {
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id, secondPolicy.id, secondPolicy.id],
         onboardingId: secondOnboarding.id,
+        formId: secondStudyForm.id,
       })
       .expect(200);
 
@@ -638,6 +716,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -733,6 +812,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -767,6 +847,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -801,6 +882,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
@@ -813,6 +895,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: 'Invalid Id Format',
+        formId: secondStudyForm.id,
       })
       .expect(400);
 
@@ -833,6 +916,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
       })
       .expect(201);
 
