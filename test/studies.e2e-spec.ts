@@ -207,6 +207,7 @@ describe('Study', () => {
       firstPolicy.id,
     ]);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
@@ -218,6 +219,7 @@ describe('Study', () => {
       firstPolicy.id,
     ]);
     expect(getResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(getResponseBody.form.id).toEqual(firstStudyForm.id);
   });
 
   it('create study request returns the new study no duplicate country codes', async () => {
@@ -255,6 +257,7 @@ describe('Study', () => {
     );
     expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
@@ -263,6 +266,7 @@ describe('Study', () => {
     expect(getResponseBody.countryCodes.at(0).id).toEqual(firstCountryCode.id);
     expect(getResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
     expect(getResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(getResponseBody.form.id).toEqual(firstStudyForm.id);
   });
 
   it('create study request returns the new study no duplicate policies', async () => {
@@ -302,6 +306,7 @@ describe('Study', () => {
     expect(createResponseBody.policies.length).toEqual(1);
     expect(createResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
@@ -311,6 +316,7 @@ describe('Study', () => {
     expect(getResponseBody.policies.length).toEqual(1);
     expect(getResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
     expect(getResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(getResponseBody.form.id).toEqual(firstStudyForm.id);
   });
 
   it('create study return 400 when invalid id format is provided to countryCodeIds', async () => {
@@ -324,6 +330,27 @@ describe('Study', () => {
         description: studyDescription,
         isActive: true,
         countryCodeIds: ['Invalid id format'],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
+      })
+      .expect(400);
+
+    expect(createResponseBody.error).toEqual('Bad Request');
+    expect(createResponseBody.statusCode).toEqual(400);
+  });
+
+  it('create study return 400 when non existent id is provided to countryCodeIds', async () => {
+    const studyName = 'Test Create First Study';
+    const studyDescription = 'Test Create First Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [DEFAULT_GUID],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
@@ -355,6 +382,27 @@ describe('Study', () => {
     expect(createResponseBody.statusCode).toEqual(400);
   });
 
+  it('create study return 400 when non existent id is provided to policyIds', async () => {
+    const studyName = 'Test Create First Study';
+    const studyDescription = 'Test Create First Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [DEFAULT_GUID],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
+      })
+      .expect(400);
+
+    expect(createResponseBody.error).toEqual('Bad Request');
+    expect(createResponseBody.statusCode).toEqual(400);
+  });
+
   it('create study return 400 when invalid id format is provided to onboardingId', async () => {
     const studyName = 'Test Create First Study';
     const studyDescription = 'Test Create First Study DESCRIPTION';
@@ -374,6 +422,69 @@ describe('Study', () => {
 
     expect(createResponseBody.error).toEqual('Bad Request');
     expect(createResponseBody.statusCode).toEqual(400);
+  });
+
+  it('create study return 404 when non existent id is provided to onboardingId', async () => {
+    const studyName = 'Test Create First Study';
+    const studyDescription = 'Test Create First Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: DEFAULT_GUID,
+        formId: firstStudyForm.id,
+      })
+      .expect(404);
+
+    expect(createResponseBody.error).toEqual('Not Found');
+    expect(createResponseBody.statusCode).toEqual(404);
+  });
+
+  it('create study return 400 when invalid id format is provided to formId', async () => {
+    const studyName = 'Test Create First Study';
+    const studyDescription = 'Test Create First Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: 'Invalid Id Format',
+      })
+      .expect(400);
+
+    expect(createResponseBody.error).toEqual('Bad Request');
+    expect(createResponseBody.statusCode).toEqual(400);
+  });
+
+  it('create study return 404 when non existent id is provided to formId', async () => {
+    const studyName = 'Test Create First Study';
+    const studyDescription = 'Test Create First Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: DEFAULT_GUID,
+      })
+      .expect(404);
+
+    expect(createResponseBody.error).toEqual('Not Found');
+    expect(createResponseBody.statusCode).toEqual(404);
   });
 
   it('handles a findByCountryCode study request returns study by country code id', async () => {
@@ -406,6 +517,7 @@ describe('Study', () => {
     );
     expect(getResponseBody.at(0).policies.at(0).id).toEqual(firstPolicy.id);
     expect(getResponseBody.at(0).onboarding.id).toEqual(firstOnboarding.id);
+    expect(getResponseBody.at(0).form.id).toEqual(firstStudyForm.id);
   });
 
   it('handles a findByCountryCode study request returns study by country code value', async () => {
@@ -437,6 +549,7 @@ describe('Study', () => {
     );
     expect(getResponseBody.at(0).policies.at(0).id).toEqual(firstPolicy.id);
     expect(getResponseBody.at(0).onboarding.id).toEqual(firstOnboarding.id);
+    expect(getResponseBody.at(0).form.id).toEqual(firstStudyForm.id);
   });
 
   it('handles a findOne study request', async () => {
@@ -466,6 +579,7 @@ describe('Study', () => {
     expect(getResponseBody.countryCodes.at(0).id).toEqual(firstCountryCode.id);
     expect(getResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
     expect(getResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(getResponseBody.form.id).toEqual(firstStudyForm.id);
   });
 
   it('findOne returns 400 Bad Request when invalid id format was provided', async () => {
@@ -478,6 +592,16 @@ describe('Study', () => {
     );
     expect(getResponseBody.error).toEqual('Bad Request');
     expect(getResponseBody.statusCode).toEqual(400);
+  });
+
+  it('findOne returns 404 Not Found when non existent id was provided', async () => {
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/${DEFAULT_GUID}`)
+      .expect(404);
+
+    expect(getResponseBody.message).toEqual('Study not found');
+    expect(getResponseBody.error).toEqual('Not Found');
+    expect(getResponseBody.statusCode).toEqual(404);
   });
 
   it('handles a findAll study request', async () => {
@@ -552,6 +676,7 @@ describe('Study', () => {
       firstPolicy.id,
     ]);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(updateStudyDescription);
@@ -567,6 +692,7 @@ describe('Study', () => {
       secondPolicy.id,
     ]);
     expect(updateResponseBody.onboarding.id).toEqual(secondOnboarding.id);
+    expect(updateResponseBody.form.id).toEqual(secondStudyForm.id);
   });
 
   it('update returns the updated study with all changes updated and no duplicate country codes', async () => {
@@ -620,6 +746,7 @@ describe('Study', () => {
       firstPolicy.id,
     ]);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(updateStudyDescription);
@@ -635,6 +762,7 @@ describe('Study', () => {
       secondPolicy.id,
     ]);
     expect(updateResponseBody.onboarding.id).toEqual(secondOnboarding.id);
+    expect(updateResponseBody.form.id).toEqual(secondStudyForm.id);
   });
 
   it('update returns the updated study with all changes updated and no duplicate policies', async () => {
@@ -684,6 +812,7 @@ describe('Study', () => {
       firstPolicy.id,
     ]);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(updateStudyDescription);
@@ -699,6 +828,7 @@ describe('Study', () => {
       secondPolicy.id,
     ]);
     expect(updateResponseBody.onboarding.id).toEqual(secondOnboarding.id);
+    expect(updateResponseBody.form.id).toEqual(secondStudyForm.id);
   });
 
   it('update returns the updated study with the partial changes updated', async () => {
@@ -739,6 +869,7 @@ describe('Study', () => {
       firstPolicy.id,
     ]);
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(studyDescription);
@@ -752,6 +883,7 @@ describe('Study', () => {
       firstPolicy.id,
     ]);
     expect(updateResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(updateResponseBody.form.id).toEqual(firstStudyForm.id);
   });
 
   it('update return 404 NotFound when no study was found', async () => {
@@ -901,6 +1033,117 @@ describe('Study', () => {
 
     expect(updateResponseBody.error).toEqual('Bad Request');
     expect(updateResponseBody.statusCode).toEqual(400);
+  });
+
+  it('update return 404 Not Found when non existent id was provided to onboardingId', async () => {
+    const studyName = 'Test Create Fourth Study';
+    const studyDescription = 'Test Create Fourth Study DESCRIPTION';
+
+    const updatedStudyName = 'UPDATE Test Create Third Study';
+    const updateStudyDescription = 'UPDATE Test Create Third Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
+      })
+      .expect(201);
+
+    const { body: updateResponseBody } = await request(app.getHttpServer())
+      .patch(`/studies/${createResponseBody.id}`)
+      .send({
+        name: updatedStudyName,
+        description: updateStudyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: DEFAULT_GUID,
+        formId: secondStudyForm.id,
+      })
+      .expect(404);
+
+    expect(updateResponseBody.error).toEqual('Not Found');
+    expect(updateResponseBody.statusCode).toEqual(404);
+  });
+
+  it('update return 400 Bad Request invalid id format was provided to formId', async () => {
+    const studyName = 'Test Create Fourth Study';
+    const studyDescription = 'Test Create Fourth Study DESCRIPTION';
+
+    const updatedStudyName = 'UPDATE Test Create Third Study';
+    const updateStudyDescription = 'UPDATE Test Create Third Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
+      })
+      .expect(201);
+
+    const { body: updateResponseBody } = await request(app.getHttpServer())
+      .patch(`/studies/${createResponseBody.id}`)
+      .send({
+        name: updatedStudyName,
+        description: updateStudyDescription,
+        isActive: true,
+        countryCodeIds: [secondCountryCode.id],
+        policyIds: [secondPolicy.id],
+        onboardingId: secondOnboarding.id,
+        formId: 'Invalid Id Format',
+      })
+      .expect(400);
+
+    expect(updateResponseBody.error).toEqual('Bad Request');
+    expect(updateResponseBody.statusCode).toEqual(400);
+  });
+
+  it('update return 404 Not Found when non existent id was provided to formId', async () => {
+    const studyName = 'Test Create Fourth Study';
+    const studyDescription = 'Test Create Fourth Study DESCRIPTION';
+
+    const updatedStudyName = 'UPDATE Test Create Third Study';
+    const updateStudyDescription = 'UPDATE Test Create Third Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
+      })
+      .expect(201);
+
+    const { body: updateResponseBody } = await request(app.getHttpServer())
+      .patch(`/studies/${createResponseBody.id}`)
+      .send({
+        name: updatedStudyName,
+        description: updateStudyDescription,
+        isActive: true,
+        countryCodeIds: [secondCountryCode.id],
+        policyIds: [secondPolicy.id],
+        onboardingId: secondOnboarding.id,
+        formId: DEFAULT_GUID,
+      })
+      .expect(404);
+
+    expect(updateResponseBody.error).toEqual('Not Found');
+    expect(updateResponseBody.statusCode).toEqual(404);
   });
 
   it('delete returns the deleted study', async () => {
