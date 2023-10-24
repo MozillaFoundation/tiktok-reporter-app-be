@@ -4,7 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Policy } from 'src/policies/entities/policy.entity';
-import { PolicyType } from 'src/models/policyType';
+import { PolicyType } from 'src/types/policy.type';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { Study } from 'src/studies/entities/study.entity';

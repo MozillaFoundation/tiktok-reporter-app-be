@@ -5,7 +5,7 @@ import { DEFAULT_GUID } from '../src/utils/constants';
 import { INestApplication } from '@nestjs/common';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { Policy } from 'src/policies/entities/policy.entity';
-import { PolicyType } from 'src/models/policyType';
+import { PolicyType } from 'src/types/policy.type';
 import { RegretsReporterTestSetup } from './regretsReporterTestSetup';
 
 describe('Study', () => {

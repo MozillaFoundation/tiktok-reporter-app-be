@@ -65,8 +65,8 @@ export class PoliciesService {
   }
 
   async remove(id: string) {
-    const countryCode = await this.findOne(id);
+    const policy = await this.findOne(id);
 
-    return await this.policyRepository.remove(countryCode);
+    return await this.policyRepository.remove(policy);
   }
 }

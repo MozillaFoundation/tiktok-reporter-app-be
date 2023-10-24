@@ -6,13 +6,13 @@ import { AppService } from './app.service';
 import { ConfigModule } from '@nestjs/config';
 import { CountryCodesModule } from './countryCodes/country-codes.module';
 import { DataBaseModule } from './database/database.module';
+import { FormsModule } from './forms/forms.module';
 import { OnboardingStepsModule } from './onboardingSteps/onboarding-steps.module';
 import { OnboardingsModule } from './onboardings/onboardings.module';
 import { PoliciesModule } from './policies/policies.module';
 import { SeedersModule } from './seeders/seeders.module';
 import { StudiesModule } from './studies/studies.module';
 
-// TEST Cloud Build 11
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +25,7 @@ import { StudiesModule } from './studies/studies.module';
     PoliciesModule,
     OnboardingStepsModule,
     OnboardingsModule,
+    FormsModule,
     SeedersModule,
   ],
   controllers: [AppController],

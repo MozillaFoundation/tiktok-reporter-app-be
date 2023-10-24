@@ -1,10 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
@@ -31,4 +33,10 @@ export class Onboarding {
 
   @OneToMany(() => Study, (study) => study.onboarding)
   studies: Study[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

@@ -4,7 +4,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundException } from '@nestjs/common';
 import { PoliciesService } from './policies.service';
 import { Policy } from './entities/policy.entity';
-import { PolicyType } from 'src/models/policyType';
+import { PolicyType } from 'src/types/policy.type';
 import { Repository } from 'typeorm';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';

@@ -1,7 +1,7 @@
 import { IsArray, IsEnum, IsString, IsUUID } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { PolicyType } from 'src/models/policyType';
+import { PolicyType } from 'src/types/policy.type';
 import { StudyDto } from 'src/studies/dto/study.dto';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 

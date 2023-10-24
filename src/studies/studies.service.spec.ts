@@ -15,7 +15,7 @@ import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { PoliciesService } from 'src/policies/policies.service';
 import { Policy } from 'src/policies/entities/policy.entity';
-import { PolicyType } from 'src/models/policyType';
+import { PolicyType } from 'src/types/policy.type';
 import { Repository } from 'typeorm';
 import { StudiesService } from './studies.service';
 import { Study } from './entities/study.entity';

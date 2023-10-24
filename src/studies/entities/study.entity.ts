@@ -1,10 +1,12 @@
 import {
   Column,
+  CreateDateColumn,
   Entity,
   JoinTable,
   ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
+  UpdateDateColumn,
 } from 'typeorm';
 
 import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
@@ -42,12 +44,11 @@ export class Study {
   @ManyToOne(() => Onboarding, (onboarding) => onboarding.studies)
   onboarding: Onboarding;
 
-  // studies/:id/onboard
-  // class Onboard:{
-  // Many to many OnboardSteps
-  // steps:{id, title?, description, imageUrl, details, order},
-  // onboardForm:Form
-  // }
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   // Form:
   /* studies/id/form

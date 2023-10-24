@@ -3,7 +3,7 @@ import { CreateOnboardingDto } from 'src/onboardings/dtos/create-onboarding.dto'
 import { CreateOnboardingStepDto } from 'src/onboardingSteps/dtos/create-onboarding-step.dto';
 import { CreatePolicyDto } from 'src/policies/dtos/create-policy.dto';
 import { CreateStudyDto } from 'src/studies/dto/create-study.dto';
-import { PolicyType } from 'src/models/policyType';
+import { PolicyType } from 'src/types/policy.type';
 
 export const DEFAULT_GUID = '00000000-0000-0000-0000-000000000000';
 

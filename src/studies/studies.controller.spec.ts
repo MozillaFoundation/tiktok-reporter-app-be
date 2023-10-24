@@ -14,14 +14,14 @@ import { CountryCodesService } from 'src/countryCodes/country-codes.service';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { Policy } from 'src/policies/entities/policy.entity';
-import { PolicyType } from 'src/models/policyType';
+import { PolicyType } from 'src/types/policy.type';
 import { StudiesController } from './studies.controller';
 import { StudiesService } from './studies.service';
 import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
+import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
 import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
 import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
 import { fakeStudiesService } from 'src/utils/fake-studies-service.util';
-import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
 
 describe('StudiesController', () => {
   let controller: StudiesController;
