@@ -10,6 +10,10 @@ import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.ent
 import { Study } from 'src/studies/entities/study.entity';
 import { Form } from 'src/forms/entities/form.entity';
 import { FieldType } from 'src/forms/types/fields/field.type';
+import { mapFormFields } from 'src/forms/mappers/form-fields.mapper';
+import { TextFieldDto } from 'src/forms/dtos/text-field.dto';
+import { DropDownFieldDto } from 'src/forms/dtos/drop-down-field.dto';
+import { SliderFieldDto } from 'src/forms/dtos/slider-field.dto';
 
 @Module({
   imports: [
@@ -115,18 +119,20 @@ export class SeedersModule {
       newOnboarding.steps.push(savedOnboardingStep);
     }
 
+    const mappedFields = mapFormFields([
+      {
+        type: FieldType.TextField,
+        isRequired: true,
+        label: 'Email field',
+        placeholder: 'Email placeholder',
+        multiline: false,
+        maxLines: 1,
+      } as TextFieldDto,
+    ]);
+
     const createdForm = await this.formRepository.create({
       name: 'OnboardingForm',
-      fields: [
-        {
-          type: FieldType.TextField,
-          isRequired: true,
-          label: 'Email field',
-          placeholder: 'Email placeholder',
-          multiline: false,
-          maxLines: 1,
-        },
-      ],
+      fields: mappedFields,
     });
 
     const savedForm = await this.formRepository.save(createdForm);
@@ -152,42 +158,44 @@ export class SeedersModule {
       where: { code: 'ro' },
     });
 
+    const mappedFields = mapFormFields([
+      {
+        type: FieldType.TextField,
+        isRequired: true,
+        label: 'TikTok Link',
+        placeholder: 'TikTok Link',
+        multiline: false,
+        maxLines: 1,
+      } as TextFieldDto,
+      {
+        type: FieldType.DropDown,
+        isRequired: true,
+        label: 'Category',
+        placeholder: 'Category',
+        options: [
+          { title: 'Category 1' },
+          { title: 'Category 2' },
+          { title: 'Category 3' },
+          { title: 'Category 4' },
+          { title: 'Category 5' },
+        ],
+        selected: 'Category 1',
+        hasNoneOption: true,
+      } as DropDownFieldDto,
+      {
+        type: FieldType.Slider,
+        label: 'Slider Field Label',
+        isRequired: true,
+        max: 100,
+        leftLabel: 'Min value',
+        rightLabel: 'Max value',
+        step: 10,
+      } as SliderFieldDto,
+    ]);
+
     const createdForm = await this.formRepository.create({
       name: 'StudyForm',
-      fields: [
-        {
-          type: FieldType.TextField,
-          isRequired: true,
-          label: 'TikTok Link',
-          placeholder: 'TikTok Link',
-          multiline: false,
-          maxLines: 1,
-        },
-        {
-          type: FieldType.DropDown,
-          isRequired: true,
-          label: 'Category',
-          placeholder: 'Category',
-          options: [
-            { title: 'Category 1' },
-            { title: 'Category 2' },
-            { title: 'Category 3' },
-            { title: 'Category 4' },
-            { title: 'Category 5' },
-          ],
-          selected: 'Category 1',
-          hasNoneOption: true,
-        },
-        {
-          type: FieldType.Slider,
-          label: 'Slider Field Label',
-          isRequired: true,
-          max: 100,
-          leftLabel: 'Min value',
-          rightLabel: 'Max value',
-          step: 10,
-        },
-      ],
+      fields: mappedFields,
     });
 
     const savedForm = await this.formRepository.save(createdForm);
