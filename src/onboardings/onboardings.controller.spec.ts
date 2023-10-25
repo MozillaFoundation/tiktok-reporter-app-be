@@ -7,13 +7,13 @@ import {
 } from 'src/utils/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { Form } from 'src/forms/entities/form.entity';
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { OnboardingsController } from './onboardings.controller';
 import { OnboardingsService } from './onboardings.service';
+import { fakeFormsService } from 'src/utils/fake-forms-service.util';
 import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
 import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
-import { Form } from 'src/forms/entities/form.entity';
-import { fakeFormsService } from 'src/utils/fake-forms-service.util';
 
 describe('OnboardingsController', () => {
   let controller: OnboardingsController;
@@ -29,6 +29,7 @@ describe('OnboardingsController', () => {
 
     secondOnboardingStep = await fakeOnboardingStepsService.create({
       title: 'Test Second Onboarding Step Title',
+      subtitle: 'Test Second Onboarding Step SubTitle',
       description: 'Test Second Onboarding Step Description',
       imageUrl: 'Test Second Onboarding Step ImageURL',
       details: 'Test Second Onboarding Step Details',

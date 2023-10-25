@@ -8,6 +8,7 @@ export function mapSliderField(sliderFieldDto: SliderFieldDto): SliderField {
     id: randomUuidv4(),
     type: FieldType.Slider,
     label: sliderFieldDto.label,
+    description: sliderFieldDto.description,
     isRequired: sliderFieldDto.isRequired || false,
     max: sliderFieldDto.max || 100,
     leftLabel: sliderFieldDto.leftLabel || 'Min',

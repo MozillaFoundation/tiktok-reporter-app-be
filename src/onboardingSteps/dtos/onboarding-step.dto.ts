@@ -20,6 +20,13 @@ export class OnboardingStepDto {
   title: string;
 
   @ApiProperty({
+    description: 'The OnboardingStep SubTitle',
+    type: String,
+  })
+  @IsString()
+  subtitle: string;
+
+  @ApiProperty({
     description: 'The OnboardingStep Description',
     type: String,
   })

@@ -45,6 +45,9 @@ describe('OnboardingStepsService', () => {
     expect(createdEntity).toBeDefined();
     expect(createdEntity.id).toBeDefined();
     expect(createdEntity.title).toEqual(defaultCreateOnboardingStepDto.title);
+    expect(createdEntity.subtitle).toEqual(
+      defaultCreateOnboardingStepDto.subtitle,
+    );
     expect(createdEntity.description).toEqual(
       defaultCreateOnboardingStepDto.description,
     );
@@ -95,6 +98,7 @@ describe('OnboardingStepsService', () => {
   it('update returns the updated onboarding step with all changes updated', async () => {
     const createdEntity = await service.create(defaultCreateOnboardingStepDto);
     const updatedTitle = 'UPDATED Test Onboarding Step Title';
+    const updatedSubtitle = 'UPDATED Test Onboarding Step SubTitle';
     const updatedDescription = 'UPDATED Test Onboarding Step Description';
     const updatedImageUrl = 'UPDATED Test Onboarding Step ImageURL';
     const updatedDetails = 'UPDATED Test Onboarding Step Details';
@@ -102,6 +106,7 @@ describe('OnboardingStepsService', () => {
 
     const updatedEntity = await service.update(createdEntity.id, {
       title: updatedTitle,
+      subtitle: updatedSubtitle,
       description: updatedDescription,
       imageUrl: updatedImageUrl,
       details: updatedDetails,
@@ -110,6 +115,7 @@ describe('OnboardingStepsService', () => {
 
     expect(updatedEntity).toBeDefined();
     expect(updatedEntity.title).toEqual(updatedTitle);
+    expect(updatedEntity.subtitle).toEqual(updatedSubtitle);
     expect(updatedEntity.description).toEqual(updatedDescription);
     expect(updatedEntity.imageUrl).toEqual(updatedImageUrl);
     expect(updatedEntity.details).toEqual(updatedDetails);
@@ -127,6 +133,10 @@ describe('OnboardingStepsService', () => {
 
     expect(updatedEntity).toBeDefined();
     expect(updatedEntity.title).toEqual(updatedTitle);
+    expect(updatedEntity.subtitle).toEqual(
+      defaultCreateOnboardingStepDto.subtitle,
+    );
+
     expect(updatedEntity.description).toEqual(
       defaultCreateOnboardingStepDto.description,
     );

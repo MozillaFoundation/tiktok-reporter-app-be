@@ -8,6 +8,7 @@ export function mapTextField(textFieldDto: TextFieldDto): TextField {
     id: randomUuidv4(),
     type: FieldType.TextField,
     label: textFieldDto.label,
+    description: textFieldDto.description,
     isRequired: textFieldDto.isRequired || false,
     placeholder: textFieldDto.placeholder,
     multiline: textFieldDto.multiline || false,

@@ -15,6 +15,7 @@ export class OnboardingStepsService {
   async create(createOnboardingStepDto: CreateOnboardingStepDto) {
     const createdCountryCode = this.onboardingStepRepository.create({
       title: createOnboardingStepDto.title,
+      subtitle: createOnboardingStepDto.subtitle,
       description: createOnboardingStepDto.description,
       imageUrl: createOnboardingStepDto.imageUrl,
       details: createOnboardingStepDto.details,
@@ -51,6 +52,7 @@ export class OnboardingStepsService {
 
     Object.assign(onboardingStep, {
       title: updateCountryCodeDto.title || onboardingStep.title,
+      subtitle: updateCountryCodeDto.subtitle || onboardingStep.subtitle,
       description:
         updateCountryCodeDto.description || onboardingStep.description,
       imageUrl: updateCountryCodeDto.imageUrl || onboardingStep.imageUrl,

@@ -7,17 +7,17 @@ import {
 } from 'src/utils/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { Form } from 'src/forms/entities/form.entity';
+import { FormsService } from 'src/forms/forms.service';
 import { Onboarding } from './entities/onboarding.entity';
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { OnboardingStepsService } from 'src/onboardingSteps/onboarding-steps.service';
 import { OnboardingsService } from './onboardings.service';
 import { Repository } from 'typeorm';
+import { fakeFormsService } from 'src/utils/fake-forms-service.util';
 import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Form } from 'src/forms/entities/form.entity';
-import { fakeFormsService } from 'src/utils/fake-forms-service.util';
-import { FormsService } from 'src/forms/forms.service';
 
 describe('OnboardingsService', () => {
   let service: OnboardingsService;
@@ -35,6 +35,7 @@ describe('OnboardingsService', () => {
 
     secondOnboardingStep = await fakeOnboardingStepsService.create({
       title: 'Test Second Onboarding Step Title',
+      subtitle: 'Test Second Onboarding Step SubTitle',
       description: 'Test Second Onboarding Step Description',
       imageUrl: 'Test Second Onboarding Step ImageURL',
       details: 'Test Second Onboarding Step Details',

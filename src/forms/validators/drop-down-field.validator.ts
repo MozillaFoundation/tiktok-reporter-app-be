@@ -23,9 +23,9 @@ export function validateDropDownField(
     messages.push('Selected must be a valid string value');
   }
 
-  if (!isBoolean(dropDownFieldDto.hasNoneOption)) {
+  if (!isBoolean(dropDownFieldDto.hasOtherOption)) {
     isValid = false;
-    messages.push('Has None Option must be a valid boolean value');
+    messages.push('Has Other Option must be a valid boolean value');
   }
 
   return { isValid, messages };

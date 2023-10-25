@@ -29,6 +29,9 @@ describe('Onboarding Steps', () => {
     expect(createResponseBody.title).toEqual(
       defaultCreateOnboardingStepDto.title,
     );
+    expect(createResponseBody.subtitle).toEqual(
+      defaultCreateOnboardingStepDto.subtitle,
+    );
     expect(createResponseBody.description).toEqual(
       defaultCreateOnboardingStepDto.description,
     );
@@ -44,6 +47,10 @@ describe('Onboarding Steps', () => {
 
     expect(getResponseBody.id).toBeDefined();
     expect(getResponseBody.title).toEqual(defaultCreateOnboardingStepDto.title);
+    expect(getResponseBody.subtitle).toEqual(
+      defaultCreateOnboardingStepDto.subtitle,
+    );
+
     expect(getResponseBody.description).toEqual(
       defaultCreateOnboardingStepDto.description,
     );
@@ -68,6 +75,10 @@ describe('Onboarding Steps', () => {
 
     expect(getResponseBody.id).toEqual(createResponseBody.id);
     expect(getResponseBody.title).toEqual(defaultCreateOnboardingStepDto.title);
+    expect(getResponseBody.subtitle).toEqual(
+      defaultCreateOnboardingStepDto.subtitle,
+    );
+
     expect(getResponseBody.description).toEqual(
       defaultCreateOnboardingStepDto.description,
     );
@@ -109,6 +120,7 @@ describe('Onboarding Steps', () => {
 
   it('update returns the updated onboarding Step with all changes updated', async () => {
     const updatedTitle = 'UPDATE Test Onboarding Step Title';
+    const updatedSubtitle = 'UPDATE Test Onboarding Step SubTitle';
     const updatedDescription = 'UPDATE Test Onboarding Step Description';
     const updatedImageUrl = 'UPDATE Test Onboarding Step ImageURL';
     const updatedDetails = 'UPDATE Test Onboarding Step Details';
@@ -123,6 +135,7 @@ describe('Onboarding Steps', () => {
       .patch(`/onboarding-steps/${createResponseBody.id}`)
       .send({
         title: updatedTitle,
+        subtitle: updatedSubtitle,
         description: updatedDescription,
         imageUrl: updatedImageUrl,
         details: updatedDetails,
@@ -133,6 +146,9 @@ describe('Onboarding Steps', () => {
     expect(createResponseBody.id).toBeDefined();
     expect(createResponseBody.title).toEqual(
       defaultCreateOnboardingStepDto.title,
+    );
+    expect(createResponseBody.subtitle).toEqual(
+      defaultCreateOnboardingStepDto.subtitle,
     );
     expect(createResponseBody.description).toEqual(
       defaultCreateOnboardingStepDto.description,
@@ -149,6 +165,7 @@ describe('Onboarding Steps', () => {
 
     expect(updateResponseBody.id).toEqual(createResponseBody.id);
     expect(updateResponseBody.title).toEqual(updatedTitle);
+    expect(updateResponseBody.subtitle).toEqual(updatedSubtitle);
     expect(updateResponseBody.description).toEqual(updatedDescription);
     expect(updateResponseBody.imageUrl).toEqual(updatedImageUrl);
     expect(updateResponseBody.details).toEqual(updatedDetails);
@@ -173,6 +190,9 @@ describe('Onboarding Steps', () => {
     expect(updateResponseBody.id).toEqual(createResponseBody.id);
 
     expect(updateResponseBody.title).toEqual(updatedTitle);
+    expect(updateResponseBody.subtitle).toEqual(
+      defaultCreateOnboardingStepDto.subtitle,
+    );
     expect(updateResponseBody.description).toEqual(
       defaultCreateOnboardingStepDto.description,
     );
@@ -225,6 +245,9 @@ describe('Onboarding Steps', () => {
 
     expect(deleteResponseBody.title).toEqual(
       defaultCreateOnboardingStepDto.title,
+    );
+    expect(deleteResponseBody.subtitle).toEqual(
+      defaultCreateOnboardingStepDto.subtitle,
     );
     expect(deleteResponseBody.description).toEqual(
       defaultCreateOnboardingStepDto.description,

@@ -12,6 +12,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 
 import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
+import { Form } from 'src/forms/entities/form.entity';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { Policy } from 'src/policies/entities/policy.entity';
@@ -19,12 +20,11 @@ import { PolicyType } from 'src/types/policy.type';
 import { StudiesController } from './studies.controller';
 import { StudiesService } from './studies.service';
 import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
+import { fakeFormsService } from 'src/utils/fake-forms-service.util';
 import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
 import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
 import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
 import { fakeStudiesService } from 'src/utils/fake-studies-service.util';
-import { Form } from 'src/forms/entities/form.entity';
-import { fakeFormsService } from 'src/utils/fake-forms-service.util';
 
 describe('StudiesController', () => {
   let controller: StudiesController;
@@ -68,6 +68,7 @@ describe('StudiesController', () => {
 
     const secondOnboardingStep = await fakeOnboardingStepsService.create({
       title: 'Test Second Onboarding Step Title',
+      subtitle: 'Test Second Onboarding Step SubTitle',
       description: 'Test Second Onboarding Step Description',
       imageUrl: 'Test Second Onboarding Step ImageURL',
       details: 'Test Second Onboarding Step Details',

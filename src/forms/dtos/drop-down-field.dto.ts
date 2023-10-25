@@ -27,9 +27,9 @@ export class DropDownFieldDto extends FieldDto {
   selected: string;
 
   @ApiProperty({
-    description: 'Should display a None option',
+    description: 'Should display a Other option',
     type: Boolean,
   })
   @IsBoolean()
-  hasNoneOption;
+  hasOtherOption;
 }

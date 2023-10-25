@@ -17,12 +17,13 @@ export function mapDropDownField(
     id: randomUuidv4(),
     type: FieldType.DropDown,
     label: dropDownFieldDto.label,
+    description: dropDownFieldDto.description,
     placeholder: dropDownFieldDto.placeholder,
     isRequired: dropDownFieldDto.isRequired || false,
     options: mappedOptions,
     selected: selectedOption.id || '',
-    hasNoneOption: isDefined(dropDownFieldDto.hasNoneOption)
-      ? dropDownFieldDto.hasNoneOption
+    hasOtherOption: isDefined(dropDownFieldDto.hasOtherOption)
+      ? dropDownFieldDto.hasOtherOption
       : false,
   };
 }

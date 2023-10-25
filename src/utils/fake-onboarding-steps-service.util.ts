@@ -12,6 +12,7 @@ export const fakeOnboardingStepsService: Partial<OnboardingStepsService> = {
   create: async (createOnboardingStepDto: CreateOnboardingStepDto) => {
     const newOnboardingStep = {
       title: createOnboardingStepDto.title,
+      subtitle: createOnboardingStepDto.subtitle,
       description: createOnboardingStepDto.description,
       imageUrl: createOnboardingStepDto.imageUrl,
       details: createOnboardingStepDto.details,
@@ -59,6 +60,7 @@ export const fakeOnboardingStepsService: Partial<OnboardingStepsService> = {
 
     Object.assign(onboardingStep, {
       title: updateOnboardingStepDto.title || onboardingStep.title,
+      subtitle: updateOnboardingStepDto.subtitle || onboardingStep.subtitle,
       description:
         updateOnboardingStepDto.description || onboardingStep.description,
       imageUrl: updateOnboardingStepDto.imageUrl || onboardingStep.imageUrl,

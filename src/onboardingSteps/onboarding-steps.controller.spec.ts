@@ -40,6 +40,9 @@ describe('OnboardingStepsController', () => {
     expect(createdEntity).toBeDefined();
     expect(createdEntity.id).toBeDefined();
     expect(createdEntity.title).toEqual(defaultCreateOnboardingStepDto.title);
+    expect(createdEntity.subtitle).toEqual(
+      defaultCreateOnboardingStepDto.subtitle,
+    );
     expect(createdEntity.description).toEqual(
       defaultCreateOnboardingStepDto.description,
     );
@@ -87,6 +90,7 @@ describe('OnboardingStepsController', () => {
     );
 
     const updatedTitle = 'UPDATED Test Onboarding Step Title';
+    const updatedSubtitle = 'UPDATED Test Onboarding Step SubTitle';
     const updatedDescription = 'UPDATED Test Onboarding Step Description';
     const updatedImageUrl = 'UPDATED Test Onboarding Step ImageURL';
     const updatedDetails = 'UPDATED Test Onboarding Step Details';
@@ -94,6 +98,7 @@ describe('OnboardingStepsController', () => {
 
     const updatedEntity = await controller.update(createdEntity.id, {
       title: updatedTitle,
+      subtitle: updatedSubtitle,
       description: updatedDescription,
       imageUrl: updatedImageUrl,
       details: updatedDetails,
@@ -102,6 +107,7 @@ describe('OnboardingStepsController', () => {
 
     expect(updatedEntity).toBeDefined();
     expect(updatedEntity.title).toEqual(updatedTitle);
+    expect(updatedEntity.subtitle).toEqual(updatedSubtitle);
     expect(updatedEntity.description).toEqual(updatedDescription);
     expect(updatedEntity.imageUrl).toEqual(updatedImageUrl);
     expect(updatedEntity.details).toEqual(updatedDetails);
@@ -121,6 +127,10 @@ describe('OnboardingStepsController', () => {
 
     expect(updatedEntity).toBeDefined();
     expect(updatedEntity.title).toEqual(updatedTitle);
+    expect(updatedEntity.subtitle).toEqual(
+      defaultCreateOnboardingStepDto.subtitle,
+    );
+
     expect(updatedEntity.description).toEqual(
       defaultCreateOnboardingStepDto.description,
     );

@@ -19,6 +19,13 @@ export class FieldDto {
   label;
 
   @ApiProperty({
+    description: 'The Description of the Field',
+    type: String,
+  })
+  @IsString()
+  description;
+
+  @ApiProperty({
     description: 'The Required state of the Field',
     type: Boolean,
   })

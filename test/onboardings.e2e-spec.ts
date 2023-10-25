@@ -5,11 +5,11 @@ import {
   defaultCreateOnboardingDto,
 } from '../src/utils/constants';
 
+import { FieldType } from 'src/forms/types/fields/field.type';
+import { Form } from 'src/forms/entities/form.entity';
 import { INestApplication } from '@nestjs/common';
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { RegretsReporterTestSetup } from './regretsReporterTestSetup';
-import { Form } from 'src/forms/entities/form.entity';
-import { FieldType } from 'src/forms/types/fields/field.type';
 
 describe('Onboardings', () => {
   let app: INestApplication;
@@ -29,6 +29,7 @@ describe('Onboardings', () => {
       .post('/onboarding-steps')
       .send({
         title: 'Test First Onboarding Step Title',
+        subtitle: 'Test First Onboarding Step SubTitle',
         description: 'Test First Onboarding Step Description',
         imageUrl: 'Test First Onboarding Step ImageURL',
         details: 'Test First Onboarding Step Details',
@@ -43,6 +44,7 @@ describe('Onboardings', () => {
       .post('/onboarding-steps')
       .send({
         title: 'Test Second Onboarding Step Title',
+        subtitle: 'Test Second Onboarding Step SubTitle',
         description: 'Test Second Onboarding Step Description',
         imageUrl: 'Test Second Onboarding Step ImageURL',
         details: 'Test Second Onboarding Step Details',
@@ -62,6 +64,7 @@ describe('Onboardings', () => {
           {
             type: FieldType.TextField,
             label: 'First Text Field Label',
+            description: 'First Text Field description',
             placeholder: 'First Text Field Placeholder',
             isRequired: true,
             multiline: true,
@@ -77,11 +80,12 @@ describe('Onboardings', () => {
     )
       .post('/forms')
       .send({
-        name: 'Name of first onboarding form',
+        name: 'Name of second onboarding form',
         fields: [
           {
             type: FieldType.TextField,
             label: 'Second Text Field Label',
+            description: 'Second Text Field description',
             placeholder: 'Second Text Field Placeholder',
             isRequired: true,
             multiline: true,

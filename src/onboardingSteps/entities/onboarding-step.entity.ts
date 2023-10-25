@@ -18,6 +18,9 @@ export class OnboardingStep {
   title: string;
 
   @Column()
+  subtitle: string;
+
+  @Column()
   description: string;
 
   @Column()

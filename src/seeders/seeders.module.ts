@@ -108,6 +108,7 @@ export class SeedersModule {
       const onboardingStep = onboardingSteps[i];
       const createdOnboardingStep = await this.onboardingStepRepository.create({
         title: onboardingStep.title,
+        subtitle: onboardingStep.subtitle,
         description: onboardingStep.description,
         imageUrl: onboardingStep.imageUrl,
         details: onboardingStep.details,
@@ -123,6 +124,7 @@ export class SeedersModule {
       {
         type: FieldType.TextField,
         isRequired: true,
+        description: 'Email Field description',
         label: 'Email field',
         placeholder: 'Email placeholder',
         multiline: false,
@@ -163,6 +165,7 @@ export class SeedersModule {
         type: FieldType.TextField,
         isRequired: true,
         label: 'TikTok Link',
+        description: 'TikTok Link Field description',
         placeholder: 'TikTok Link',
         multiline: false,
         maxLines: 1,
@@ -171,6 +174,7 @@ export class SeedersModule {
         type: FieldType.DropDown,
         isRequired: true,
         label: 'Category',
+        description: 'Category Field description',
         placeholder: 'Category',
         options: [
           { title: 'Category 1' },
@@ -180,17 +184,27 @@ export class SeedersModule {
           { title: 'Category 5' },
         ],
         selected: 'Category 1',
-        hasNoneOption: true,
+        hasOtherOption: true,
       } as DropDownFieldDto,
       {
         type: FieldType.Slider,
         label: 'Slider Field Label',
+        description: 'Slider Field description',
         isRequired: true,
         max: 100,
         leftLabel: 'Min value',
         rightLabel: 'Max value',
         step: 10,
       } as SliderFieldDto,
+      {
+        type: FieldType.TextField,
+        isRequired: true,
+        label: 'Comments',
+        description: 'The Comments field',
+        placeholder: 'Comments field',
+        multiline: true,
+        maxLines: 8,
+      } as TextFieldDto,
     ]);
 
     const createdForm = await this.formRepository.create({
@@ -215,6 +229,7 @@ export class SeedersModule {
 const onboardingSteps = [
   {
     title: 'OnboardingStep title',
+    subtitle: 'OnboardingStep subtitle',
     description: 'Onboarding step description',
     details: 'Onboarding step details',
     order: 1,
@@ -223,6 +238,7 @@ const onboardingSteps = [
   },
   {
     title: 'OnboardingStep title',
+    subtitle: 'OnboardingStep subtitle',
     description: 'Onboarding step description',
     details: 'Onboarding step details',
     order: 2,
@@ -231,6 +247,7 @@ const onboardingSteps = [
   },
   {
     title: 'OnboardingStep title',
+    subtitle: 'OnboardingStep subtitle',
     description: 'Onboarding step description',
     details: 'Onboarding step details',
     order: 3,
@@ -239,6 +256,7 @@ const onboardingSteps = [
   },
   {
     title: 'OnboardingStep title',
+    subtitle: 'OnboardingStep subtitle',
     description: 'Onboarding step description',
     details: 'Onboarding step details',
     order: 4,
@@ -247,6 +265,7 @@ const onboardingSteps = [
   },
   {
     title: 'OnboardingStep title',
+    subtitle: 'OnboardingStep subtitle',
     description: 'Onboarding step description',
     details: 'Onboarding step details',
     order: 5,
@@ -255,6 +274,7 @@ const onboardingSteps = [
   },
   {
     title: 'OnboardingStep title',
+    subtitle: 'OnboardingStep subtitle',
     description: 'Onboarding step description',
     details: 'Onboarding step details',
     order: 6,

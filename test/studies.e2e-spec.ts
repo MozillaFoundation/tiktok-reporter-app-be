@@ -2,13 +2,13 @@ import * as request from 'supertest';
 
 import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
 import { DEFAULT_GUID } from '../src/utils/constants';
+import { FieldType } from 'src/forms/types/fields/field.type';
+import { Form } from 'src/forms/entities/form.entity';
 import { INestApplication } from '@nestjs/common';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { Policy } from 'src/policies/entities/policy.entity';
 import { PolicyType } from 'src/types/policy.type';
 import { RegretsReporterTestSetup } from './regretsReporterTestSetup';
-import { Form } from 'src/forms/entities/form.entity';
-import { FieldType } from 'src/forms/types/fields/field.type';
 
 describe('Study', () => {
   let app: INestApplication;
@@ -79,6 +79,7 @@ describe('Study', () => {
       .post('/onboarding-steps')
       .send({
         title: 'Test First Onboarding Step Title',
+        subtitle: 'Test First Onboarding Step SubTitle',
         description: 'Test First Onboarding Step Description',
         imageUrl: 'Test First Onboarding Step ImageURL',
         details: 'Test First Onboarding Step Details',
@@ -90,6 +91,7 @@ describe('Study', () => {
       .post('/onboarding-steps')
       .send({
         title: 'Test Second Onboarding Step Title',
+        subtitle: 'Test Second Onboarding Step SubTitle',
         description: 'Test Second Onboarding Step Description',
         imageUrl: 'Test Second Onboarding Step ImageURL',
         details: 'Test Second Onboarding Step Details',
@@ -105,6 +107,7 @@ describe('Study', () => {
           {
             type: FieldType.TextField,
             label: 'First Text Field Label',
+            description: 'First Text Field description',
             placeholder: 'First Text Field Placeholder',
             isRequired: true,
             multiline: true,
@@ -145,6 +148,7 @@ describe('Study', () => {
           {
             type: FieldType.TextField,
             label: 'First Text Field Label',
+            description: 'First Text Field description',
             placeholder: 'First Text Field Placeholder',
             isRequired: true,
             multiline: true,
@@ -163,6 +167,7 @@ describe('Study', () => {
           {
             type: FieldType.TextField,
             label: 'Second Text Field Label',
+            description: 'Second Text Field description',
             placeholder: 'Second Text Field Placeholder',
             isRequired: true,
             multiline: true,
