@@ -1,4 +1,4 @@
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
   Body,
   Controller,
@@ -8,7 +8,9 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  UseGuards,
   UseInterceptors,
+  Headers,
 } from '@nestjs/common';
 
 import { FormDto } from './dtos/form.dto';
@@ -16,10 +18,18 @@ import { FormsService } from './forms.service';
 import { CreateFormDto } from './dtos/create-form.dto';
 import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
 import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
+import { AuthGuard } from '@nestjs/passport';
+import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
 
 @UseInterceptors(SentryInterceptor)
-@Controller('forms')
 @ApiTags('Forms')
+@UseGuards(AuthGuard('api-key'))
+@Controller('forms')
+@ApiHeader({
+  name: 'X-API-KEY',
+  description: 'Mandatory API Key to use the regrets reporter API',
+  required: true,
+})
 export class FormsController {
   constructor(private readonly formsService: FormsService) {}
 
@@ -31,8 +41,11 @@ export class FormsController {
   })
   @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
-  create(@Body() createFormDto: CreateFormDto) {
-    return this.formsService.create(createFormDto);
+  create(@Headers() headers, @Body() createFormDto: CreateFormDto) {
+    return this.formsService.create(
+      headers[API_KEY_HEADER_VALUE] as string,
+      createFormDto,
+    );
   }
 
   @Get()

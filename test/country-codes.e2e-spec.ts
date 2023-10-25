@@ -18,10 +18,12 @@ describe('Country Code', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/country-codes')
       .send({ countryCode, countryName })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/country-codes/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.code).toEqual(countryCode);
@@ -38,10 +40,12 @@ describe('Country Code', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/country-codes')
       .send({ countryCode, countryName })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/country-codes/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.code).toEqual(countryCode);
@@ -54,6 +58,7 @@ describe('Country Code', () => {
   it('findOne returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/country-codes/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(getResponseBody.message).toEqual(
@@ -70,10 +75,12 @@ describe('Country Code', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/country-codes')
       .send({ countryCode, countryName })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/country-codes')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.code).toEqual(countryCode);
@@ -97,6 +104,7 @@ describe('Country Code', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/country-codes')
       .send({ countryCode, countryName })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -105,6 +113,7 @@ describe('Country Code', () => {
         countryCode: updatedCountryCode,
         countryName: updatedCountryName,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.code).toEqual(countryCode);
@@ -125,6 +134,7 @@ describe('Country Code', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/country-codes')
       .send({ countryCode, countryName })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -132,6 +142,7 @@ describe('Country Code', () => {
       .send({
         countryCode: updatedCountryCode,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.code).toEqual(countryCode);
@@ -149,6 +160,7 @@ describe('Country Code', () => {
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch(`/country-codes/${DEFAULT_GUID}`)
       .send({ countryCode })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(updateResponseBody.message).toEqual('Country Code not found');
@@ -162,6 +174,7 @@ describe('Country Code', () => {
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch('/country-codes/invalidformat')
       .send({ countryCode })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.message).toEqual(
@@ -178,10 +191,12 @@ describe('Country Code', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/country-codes')
       .send({ countryCode, countryName })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/country-codes/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.code).toEqual(countryCode);
@@ -194,6 +209,7 @@ describe('Country Code', () => {
   it('delete returns 404 NotFound when no country code was found', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/country-codes/${DEFAULT_GUID}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(deleteResponseBody.message).toEqual('Country Code not found');
@@ -204,6 +220,7 @@ describe('Country Code', () => {
   it('delete returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete('/country-codes/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(deleteResponseBody.message).toEqual(

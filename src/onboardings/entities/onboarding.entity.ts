@@ -13,6 +13,7 @@ import {
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { Study } from 'src/studies/entities/study.entity';
 import { Form } from 'src/forms/entities/form.entity';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 
 @Entity()
 export class Onboarding {
@@ -44,4 +45,10 @@ export class Onboarding {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => ApiKey)
+  createdBy: ApiKey;
+
+  @ManyToOne(() => ApiKey)
+  updatedBy: ApiKey;
 }

@@ -5,10 +5,11 @@ import { OnboardingsController } from './onboardings.controller';
 import { OnboardingsService } from './onboardings.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { FormsModule } from 'src/forms/forms.module';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Onboarding]),
+    TypeOrmModule.forFeature([Onboarding, ApiKey]),
     OnboardingStepsModule,
     FormsModule,
   ],

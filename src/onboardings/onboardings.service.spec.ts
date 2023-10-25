@@ -7,10 +7,8 @@ import {
 } from 'src/utils/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 
-import { Form } from 'src/forms/entities/form.entity';
 import { FormsService } from 'src/forms/forms.service';
 import { Onboarding } from './entities/onboarding.entity';
-import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { OnboardingStepsService } from 'src/onboardingSteps/onboarding-steps.service';
 import { OnboardingsService } from './onboardings.service';
 import { Repository } from 'typeorm';
@@ -18,22 +16,33 @@ import { fakeFormsService } from 'src/utils/fake-forms-service.util';
 import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { OnboardingStepDto } from 'src/onboardingSteps/dtos/onboarding-step.dto';
+import { FormDto } from 'src/forms/dtos/form.dto';
 
 describe('OnboardingsService', () => {
   let service: OnboardingsService;
   let repository: Repository<Onboarding>;
+  let apiKeyRepository: Repository<ApiKey>;
+  let configService: ConfigService;
+
   const REPOSITORY_TOKEN = getRepositoryToken(Onboarding);
-  let firstOnboardingStep: OnboardingStep;
-  let secondOnboardingStep: OnboardingStep;
-  let firstOnboardingForm: Form;
-  let secondOnboardingForm: Form;
+  const API_KEY_REPOSITORY_TOKEN = getRepositoryToken(ApiKey);
+
+  let firstOnboardingStep: OnboardingStepDto;
+  let secondOnboardingStep: OnboardingStepDto;
+  let firstOnboardingForm: FormDto;
+  let secondOnboardingForm: FormDto;
+  let apiKey: string;
 
   beforeAll(async () => {
     firstOnboardingStep = await fakeOnboardingStepsService.create(
+      apiKey,
       defaultCreateOnboardingStepDto,
     );
 
-    secondOnboardingStep = await fakeOnboardingStepsService.create({
+    secondOnboardingStep = await fakeOnboardingStepsService.create(apiKey, {
       title: 'Test Second Onboarding Step Title',
       subtitle: 'Test Second Onboarding Step SubTitle',
       description: 'Test Second Onboarding Step Description',
@@ -42,12 +51,24 @@ describe('OnboardingsService', () => {
       order: 2,
     });
 
-    firstOnboardingForm = await fakeFormsService.create(defaultCreateFormDto);
-    secondOnboardingForm = await fakeFormsService.create(defaultCreateFormDto);
+    firstOnboardingForm = await fakeFormsService.create(
+      apiKey,
+      defaultCreateFormDto,
+    );
+    secondOnboardingForm = await fakeFormsService.create(
+      apiKey,
+      defaultCreateFormDto,
+    );
   });
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: `.env.${process.env.NODE_ENV}`,
+        }),
+      ],
       providers: [
         OnboardingsService,
         {
@@ -62,12 +83,29 @@ describe('OnboardingsService', () => {
           provide: REPOSITORY_TOKEN,
           useValue: { ...getFakeEntityRepository<Onboarding>() },
         },
+        {
+          provide: API_KEY_REPOSITORY_TOKEN,
+          useValue: { ...getFakeEntityRepository<ApiKey>() },
+        },
       ],
     }).compile();
 
     service = module.get<OnboardingsService>(OnboardingsService);
     repository = module.get<Repository<Onboarding>>(REPOSITORY_TOKEN);
+    initApiKey(module);
   });
+
+  function initApiKey(module: TestingModule) {
+    apiKeyRepository = module.get<Repository<ApiKey>>(API_KEY_REPOSITORY_TOKEN);
+    configService = module.get<ConfigService>(ConfigService);
+    apiKey = configService.get<string>('API_KEY');
+
+    const createdApiKey = apiKeyRepository.create({
+      key: apiKey,
+      appName: 'Dev Testing',
+    });
+    apiKeyRepository.save(createdApiKey);
+  }
 
   it('should be defined', () => {
     expect(service).toBeDefined();
@@ -78,7 +116,7 @@ describe('OnboardingsService', () => {
   });
 
   it('create returns the newly created onboarding', async () => {
-    const createdEntity = await service.create({
+    const createdEntity = await service.create(apiKey, {
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
       formId: firstOnboardingForm.id,
@@ -91,7 +129,7 @@ describe('OnboardingsService', () => {
 
   it('create throws error if non existent onboarding step id is provided', async () => {
     await expect(
-      service.create({
+      service.create(apiKey, {
         ...defaultCreateOnboardingDto,
         stepIds: [DEFAULT_GUID],
       }),
@@ -100,7 +138,7 @@ describe('OnboardingsService', () => {
 
   it('create throws error if non existent form id is provided', async () => {
     await expect(
-      service.create({
+      service.create(apiKey, {
         ...defaultCreateOnboardingDto,
         stepIds: [firstOnboardingStep.id],
         formId: DEFAULT_GUID,
@@ -109,7 +147,7 @@ describe('OnboardingsService', () => {
   });
 
   it('findAll returns the list of all onboardings including the newly created one', async () => {
-    const createdEntity = await service.create({
+    const createdEntity = await service.create(apiKey, {
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
       formId: firstOnboardingForm.id,
@@ -119,11 +157,11 @@ describe('OnboardingsService', () => {
 
     expect(allEntities).toBeDefined();
     expect(allEntities.length).toBeGreaterThan(0);
-    expect(allEntities).toContain(createdEntity);
+    expect(allEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
   it('findAllById returns the list of onboardings with ids in the provided search list ', async () => {
-    const createdEntity = await service.create({
+    const createdEntity = await service.create(apiKey, {
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
       formId: firstOnboardingForm.id,
@@ -133,11 +171,11 @@ describe('OnboardingsService', () => {
 
     expect(foundEntities).toBeDefined();
     expect(foundEntities.length).toBeGreaterThan(0);
-    expect(foundEntities).toContain(createdEntity);
+    expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
   it('findOne returns newly created onboarding', async () => {
-    const createdEntity = await service.create({
+    const createdEntity = await service.create(apiKey, {
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
       formId: firstOnboardingForm.id,
@@ -156,14 +194,14 @@ describe('OnboardingsService', () => {
   });
 
   it('update returns the updated onboarding with all changes updated', async () => {
-    const createdEntity = await service.create({
+    const createdEntity = await service.create(apiKey, {
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
       formId: firstOnboardingForm.id,
     });
     const updatedName = 'UPDATED Name';
 
-    const updatedEntity = await service.update(createdEntity.id, {
+    const updatedEntity = await service.update(apiKey, createdEntity.id, {
       name: updatedName,
       stepIds: [secondOnboardingStep.id],
       formId: secondOnboardingForm.id,
@@ -181,21 +219,21 @@ describe('OnboardingsService', () => {
 
   it('update throws error when no onboarding was found', async () => {
     await expect(
-      service.update(DEFAULT_GUID, {
+      service.update(apiKey, DEFAULT_GUID, {
         name: 'Updated Name',
       }),
     ).rejects.toThrow(NotFoundException);
   });
 
   it('update throws error if non existent onboarding step id is provided', async () => {
-    const createdEntity = await service.create({
+    const createdEntity = await service.create(apiKey, {
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
       formId: firstOnboardingForm.id,
     });
 
     await expect(
-      service.update(createdEntity.id, {
+      service.update(apiKey, createdEntity.id, {
         name: 'Updated Name',
         stepIds: [DEFAULT_GUID],
         formId: secondOnboardingForm.id,
@@ -204,14 +242,14 @@ describe('OnboardingsService', () => {
   });
 
   it('update throws error if non existent form id is provided', async () => {
-    const createdEntity = await service.create({
+    const createdEntity = await service.create(apiKey, {
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
       formId: firstOnboardingForm.id,
     });
 
     await expect(
-      service.update(createdEntity.id, {
+      service.update(apiKey, createdEntity.id, {
         name: 'Updated Name',
         stepIds: [secondOnboardingStep.id],
         formId: DEFAULT_GUID,
@@ -220,7 +258,7 @@ describe('OnboardingsService', () => {
   });
 
   it('remove removes the onboarding', async () => {
-    const createdEntity = await service.create({
+    const createdEntity = await service.create(apiKey, {
       ...defaultCreateOnboardingDto,
       stepIds: [firstOnboardingStep.id],
       formId: firstOnboardingForm.id,

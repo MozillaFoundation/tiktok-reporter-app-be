@@ -35,6 +35,7 @@ describe('Onboardings', () => {
         details: 'Test First Onboarding Step Details',
         order: 1,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     firstOnboardingStep = firstOnboardingStepBody;
@@ -50,6 +51,7 @@ describe('Onboardings', () => {
         details: 'Test Second Onboarding Step Details',
         order: 1,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     secondOnboardingStep = secondOnboardingStepBody;
@@ -72,6 +74,7 @@ describe('Onboardings', () => {
           },
         ],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
     firstOnboardingForm = firstOnboardingFormBody;
 
@@ -93,6 +96,7 @@ describe('Onboardings', () => {
           },
         ],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
     secondOnboardingForm = secondOnboardingFormBody;
   };
@@ -105,10 +109,12 @@ describe('Onboardings', () => {
         stepIds: [firstOnboardingStep.id],
         formId: firstOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/onboardings/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.id).toBeDefined();
@@ -128,9 +134,11 @@ describe('Onboardings', () => {
         stepIds: [firstOnboardingStep.id],
         formId: firstOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/onboardings/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(getResponseBody.id).toEqual(createResponseBody.id);
@@ -141,6 +149,7 @@ describe('Onboardings', () => {
   it('findOne returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/onboardings/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(getResponseBody.message).toEqual(
@@ -158,10 +167,12 @@ describe('Onboardings', () => {
         stepIds: [firstOnboardingStep.id],
         formId: firstOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/onboardings')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(getResponseBody.length).toEqual(2);
@@ -180,6 +191,7 @@ describe('Onboardings', () => {
         stepIds: [firstOnboardingStep.id],
         formId: firstOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -189,6 +201,7 @@ describe('Onboardings', () => {
         stepIds: [secondOnboardingStep.id],
         formId: secondOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.steps.length).toEqual(1);
@@ -208,6 +221,7 @@ describe('Onboardings', () => {
         stepIds: [firstOnboardingStep.id],
         formId: firstOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -215,6 +229,7 @@ describe('Onboardings', () => {
       .send({
         name: updatedName,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.id).toEqual(updateResponseBody.id);
@@ -229,6 +244,7 @@ describe('Onboardings', () => {
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch(`/onboardings/${DEFAULT_GUID}`)
       .send({ name: updatedName })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(updateResponseBody.message).toEqual('Onboarding was not found');
@@ -242,6 +258,7 @@ describe('Onboardings', () => {
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch('/onboardings/invalidformat')
       .send({ name: updatedName })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.message).toEqual(
@@ -260,6 +277,7 @@ describe('Onboardings', () => {
         stepIds: [firstOnboardingStep.id],
         formId: firstOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -269,6 +287,7 @@ describe('Onboardings', () => {
         stepIds: [DEFAULT_GUID],
         formId: secondOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.error).toEqual('Bad Request');
@@ -284,6 +303,7 @@ describe('Onboardings', () => {
         stepIds: [firstOnboardingStep.id],
         formId: firstOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -293,6 +313,7 @@ describe('Onboardings', () => {
         stepIds: [DEFAULT_GUID],
         formId: secondOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.message).toEqual(
@@ -310,10 +331,12 @@ describe('Onboardings', () => {
         stepIds: [firstOnboardingStep.id],
         formId: firstOnboardingForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/onboardings/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(deleteResponseBody.name).toEqual(defaultCreateOnboardingDto.name);
@@ -322,6 +345,7 @@ describe('Onboardings', () => {
   it('delete returns 404 NotFound when no onboarding was found', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/onboardings/${DEFAULT_GUID}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(deleteResponseBody.message).toEqual('Onboarding was not found');
@@ -332,6 +356,7 @@ describe('Onboardings', () => {
   it('delete returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete('/onboardings/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(deleteResponseBody.message).toEqual(

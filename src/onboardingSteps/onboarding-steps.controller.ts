@@ -9,19 +9,29 @@ import {
   ParseUUIDPipe,
   HttpStatus,
   UseInterceptors,
+  UseGuards,
+  Headers,
 } from '@nestjs/common';
 
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { OnboardingStepsService } from './onboarding-steps.service';
 import { CreateOnboardingStepDto } from './dtos/create-onboarding-step.dto';
 import { UpdateOnboardingStepDto } from './dtos/update-onboarding-step.dto';
 import { OnboardingStepDto } from './dtos/onboarding-step.dto';
 import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
 import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
+import { AuthGuard } from '@nestjs/passport';
+import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
 
 @UseInterceptors(SentryInterceptor)
-@Controller('onboarding-steps')
 @ApiTags('Onboarding Steps')
+@UseGuards(AuthGuard('api-key'))
+@Controller('onboarding-steps')
+@ApiHeader({
+  name: 'X-API-KEY',
+  description: 'Mandatory API Key to use the regrets reporter API',
+  required: true,
+})
 export class OnboardingStepsController {
   constructor(
     private readonly onboardingStepsService: OnboardingStepsService,
@@ -35,8 +45,14 @@ export class OnboardingStepsController {
   })
   @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
-  create(@Body() createOnboardingStepDto: CreateOnboardingStepDto) {
-    return this.onboardingStepsService.create(createOnboardingStepDto);
+  create(
+    @Headers() headers,
+    @Body() createOnboardingStepDto: CreateOnboardingStepDto,
+  ) {
+    return this.onboardingStepsService.create(
+      headers[API_KEY_HEADER_VALUE] as string,
+      createOnboardingStepDto,
+    );
   }
 
   @Get()
@@ -68,10 +84,15 @@ export class OnboardingStepsController {
   @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   update(
+    @Headers() headers,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateOnboardingStepDto: UpdateOnboardingStepDto,
   ) {
-    return this.onboardingStepsService.update(id, updateOnboardingStepDto);
+    return this.onboardingStepsService.update(
+      headers[API_KEY_HEADER_VALUE] as string,
+      id,
+      updateOnboardingStepDto,
+    );
   }
 
   @Delete(':id')

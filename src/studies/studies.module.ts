@@ -7,10 +7,11 @@ import { Study } from './entities/study.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OnboardingsModule } from 'src/onboardings/onboardings.module';
 import { FormsModule } from 'src/forms/forms.module';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Study]),
+    TypeOrmModule.forFeature([Study, ApiKey]),
     CountryCodesModule,
     PoliciesModule,
     OnboardingsModule,

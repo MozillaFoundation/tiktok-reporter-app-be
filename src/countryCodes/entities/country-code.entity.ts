@@ -3,11 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { Study } from 'src/studies/entities/study.entity';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 
 @Entity()
 export class CountryCode {
@@ -30,4 +32,10 @@ export class CountryCode {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => ApiKey)
+  createdBy: ApiKey;
+
+  @ManyToOne(() => ApiKey)
+  updatedBy: ApiKey;
 }

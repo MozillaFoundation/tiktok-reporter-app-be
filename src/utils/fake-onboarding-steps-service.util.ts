@@ -5,11 +5,24 @@ import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.ent
 import { OnboardingStepsService } from 'src/onboardingSteps/onboarding-steps.service';
 import { UpdateOnboardingStepDto } from 'src/onboardingSteps/dtos/update-onboarding-step.dto';
 import { getFakeEntityRepository } from './fake-repository.util';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import {
+  mapOnboardingStepEntityToDto,
+  mapOnboardingStepsToDtos,
+} from 'src/onboardingSteps/mappers/mapEntitiesToDto';
 
 const fakeOnboardingStepRepository = getFakeEntityRepository<OnboardingStep>();
+const fakeApiKeyRepository = getFakeEntityRepository<ApiKey>();
 
 export const fakeOnboardingStepsService: Partial<OnboardingStepsService> = {
-  create: async (createOnboardingStepDto: CreateOnboardingStepDto) => {
+  create: async (
+    headerApiKey: string,
+    createOnboardingStepDto: CreateOnboardingStepDto,
+  ) => {
+    const savedApiKey = await fakeApiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
+
     const newOnboardingStep = {
       title: createOnboardingStepDto.title,
       subtitle: createOnboardingStepDto.subtitle,
@@ -18,25 +31,24 @@ export const fakeOnboardingStepsService: Partial<OnboardingStepsService> = {
       details: createOnboardingStepDto.details,
       order: createOnboardingStepDto.order,
       onboardings: [],
+      createdBy: savedApiKey,
     } as OnboardingStep;
 
     const createdOnboardingStep =
       await fakeOnboardingStepRepository.create(newOnboardingStep);
 
-    const savedCountryCode = await fakeOnboardingStepRepository.save(
+    const savedOnboardingStep = await fakeOnboardingStepRepository.save(
       createdOnboardingStep,
     );
 
-    return await savedCountryCode;
+    return mapOnboardingStepEntityToDto(savedOnboardingStep);
   },
   findAll: async () => {
-    return await fakeOnboardingStepRepository.find();
+    const allOnboardingSteps = await fakeOnboardingStepRepository.find();
+
+    return mapOnboardingStepsToDtos(allOnboardingSteps);
   },
   findOne: async (id: string) => {
-    if (!id) {
-      return null;
-    }
-
     const foundOnboardingStep = await fakeOnboardingStepRepository.findOneBy({
       id,
     });
@@ -45,18 +57,24 @@ export const fakeOnboardingStepsService: Partial<OnboardingStepsService> = {
       throw new NotFoundException('Onboarding step was not found');
     }
 
-    return foundOnboardingStep;
+    return mapOnboardingStepEntityToDto(foundOnboardingStep);
   },
   findAllById: async (onboardingStepIds: string[]) => {
-    return await fakeOnboardingStepRepository.findBy({
+    const allOnboardingStepsById = await fakeOnboardingStepRepository.findBy({
       id: In(onboardingStepIds),
     });
+
+    return mapOnboardingStepsToDtos(allOnboardingStepsById);
   },
   update: async (
+    headerApiKey: string,
     id: string,
     updateOnboardingStepDto: UpdateOnboardingStepDto,
   ) => {
     const onboardingStep = await fakeOnboardingStepsService.findOne(id);
+    const savedApiKey = await fakeApiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
 
     Object.assign(onboardingStep, {
       title: updateOnboardingStepDto.title || onboardingStep.title,
@@ -66,13 +84,35 @@ export const fakeOnboardingStepsService: Partial<OnboardingStepsService> = {
       imageUrl: updateOnboardingStepDto.imageUrl || onboardingStep.imageUrl,
       details: updateOnboardingStepDto.details || onboardingStep.details,
       order: updateOnboardingStepDto.order || onboardingStep.order,
+      updatedBy: savedApiKey,
     });
 
-    return await fakeOnboardingStepRepository.save(onboardingStep);
+    const updatedStep = await fakeOnboardingStepRepository.save(onboardingStep);
+
+    return mapOnboardingStepEntityToDto(updatedStep);
   },
   remove: async (id: string) => {
-    const foundOnboardingStep = await fakeOnboardingStepsService.findOne(id);
+    const foundOnboardingStep = await fakeOnboardingStepRepository.findOneBy({
+      id,
+    });
 
-    return await fakeOnboardingStepRepository.remove(foundOnboardingStep);
+    if (!foundOnboardingStep) {
+      throw new NotFoundException('Onboarding step was not found');
+    }
+
+    const removedOnboardingStep =
+      await fakeOnboardingStepRepository.remove(foundOnboardingStep);
+
+    return mapOnboardingStepEntityToDto(removedOnboardingStep);
   },
 };
+
+Object.assign(fakeOnboardingStepsService, {
+  initApiKey: async () => {
+    const createdApiKey = await fakeApiKeyRepository.create({
+      key: process.env.API_KEY,
+      appName: 'Dev Testing',
+    });
+    await fakeApiKeyRepository.save(createdApiKey);
+  },
+});

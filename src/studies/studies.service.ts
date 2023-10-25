@@ -14,6 +14,11 @@ import { removeDuplicateObjects } from 'src/utils/remove-duplicates';
 import { PoliciesService } from 'src/policies/policies.service';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { FormsService } from 'src/forms/forms.service';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import {
+  mapStudiesToDtos,
+  mapStudyEntityToDto,
+} from './mappers/mapEntitiesToDto';
 
 @Injectable()
 export class StudiesService {
@@ -24,9 +29,11 @@ export class StudiesService {
     private readonly formsService: FormsService,
     @InjectRepository(Study)
     private readonly studyRepository: Repository<Study>,
+    @InjectRepository(ApiKey)
+    private readonly apiKeyRepository: Repository<ApiKey>,
   ) {}
 
-  async create(createStudyDto: CreateStudyDto) {
+  async create(headerApiKey: string, createStudyDto: CreateStudyDto) {
     const countryCodes = await this.countryCodeService.findAllById(
       createStudyDto.countryCodeIds,
     );
@@ -49,6 +56,10 @@ export class StudiesService {
 
     const form = await this.formsService.findOne(createStudyDto.formId);
 
+    const savedApiKey = await this.apiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
+
     const createdStudy = await this.studyRepository.create({
       name: createStudyDto.name,
       description: createStudyDto.description,
@@ -57,13 +68,16 @@ export class StudiesService {
       policies,
       onboarding,
       form,
+      createdBy: savedApiKey,
     });
 
-    return await this.studyRepository.save(createdStudy);
+    const savedStudy = await this.studyRepository.save(createdStudy);
+
+    return mapStudyEntityToDto(savedStudy);
   }
 
   async findAll() {
-    return await this.studyRepository.find({
+    const allStudies = await this.studyRepository.find({
       relations: {
         countryCodes: true,
         policies: true,
@@ -71,6 +85,8 @@ export class StudiesService {
         form: true,
       },
     });
+
+    return mapStudiesToDtos(allStudies);
   }
 
   async findByCountryCode(countryCode: string) {
@@ -86,7 +102,7 @@ export class StudiesService {
       return await this.findAll();
     }
 
-    return await this.studyRepository.find({
+    const foundStudies = await this.studyRepository.find({
       where: condition,
       relations: {
         countryCodes: true,
@@ -95,6 +111,8 @@ export class StudiesService {
         form: true,
       },
     });
+
+    return mapStudiesToDtos(foundStudies);
   }
 
   async findOne(id: string) {
@@ -111,11 +129,19 @@ export class StudiesService {
     if (!study) {
       throw new NotFoundException('Study not found');
     }
-    return study;
+
+    return mapStudyEntityToDto(study);
   }
 
-  async update(id: string, updateStudyDto: UpdateStudyDto) {
+  async update(
+    headerApiKey: string,
+    id: string,
+    updateStudyDto: UpdateStudyDto,
+  ) {
     const study = await this.findOne(id);
+    const savedApiKey = await this.apiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
 
     Object.assign(study, {
       name: updateStudyDto.name || study.name,
@@ -123,6 +149,7 @@ export class StudiesService {
       isActive: isDefined(updateStudyDto?.isActive)
         ? updateStudyDto.isActive
         : study.isActive,
+      updatedBy: savedApiKey,
     });
 
     if (updateStudyDto.countryCodeIds) {
@@ -179,12 +206,22 @@ export class StudiesService {
       });
     }
 
-    return await this.studyRepository.save(study);
+    const updatedStudy = await this.studyRepository.save(study);
+
+    return mapStudyEntityToDto(updatedStudy);
   }
 
   async remove(id: string) {
-    const study = await this.findOne(id);
+    const study = await this.studyRepository.findOne({
+      where: { id },
+    });
 
-    return this.studyRepository.remove(study);
+    if (!study) {
+      throw new NotFoundException('Study not found');
+    }
+
+    const removedStudy = await this.studyRepository.remove(study);
+
+    return mapStudyEntityToDto(removedStudy);
   }
 }

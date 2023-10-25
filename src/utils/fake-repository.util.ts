@@ -78,7 +78,7 @@ export function getFakeEntityRepository<TEntity>(): Partial<
     create: jest.fn().mockImplementation((newEntity: DeepPartial<TEntity>) => {
       const newId = randomUuidv4();
 
-      return { ...newEntity, id: newId };
+      return { ...newEntity, id: newId, createdAt: new Date() };
     }),
     find: jest.fn().mockImplementation((options?: FindManyOptions<TEntity>) => {
       if (hasOtherPropertiesThan('relations', options)) {
@@ -132,8 +132,9 @@ export function getFakeEntityRepository<TEntity>(): Partial<
       .fn()
       .mockImplementation((options: FindOneOptions<TEntity>) => {
         const where = options?.['where'];
+        const [firstWhereKey] = Object.keys(where);
         const foundEntity = entities.find(
-          (entity) => entity?.['id'] === where?.['id'],
+          (entity) => entity?.[firstWhereKey] === where?.[firstWhereKey],
         );
 
         return foundEntity;
@@ -150,6 +151,8 @@ export function getFakeEntityRepository<TEntity>(): Partial<
         } as TEntity;
         return entities[foundCountryCodeIndex];
       }
+
+      newEntity['updatedAt'] = new Date();
 
       entities.push(newEntity as TEntity);
 

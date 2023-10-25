@@ -4,31 +4,53 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CountryCode } from './entities/country-code.entity';
 import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
 import { UpdateCountryCodeDto } from './dtos/update-country-code.dto';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import {
+  mapCountryCodeEntityToDto,
+  mapCountryCodesToDtos,
+} from './mappers/mapEntitiiesToDto';
 
 @Injectable()
 export class CountryCodesService {
   constructor(
     @InjectRepository(CountryCode)
     private readonly countryCodeRepository: Repository<CountryCode>,
+    @InjectRepository(ApiKey)
+    private readonly apiKeyRepository: Repository<ApiKey>,
   ) {}
 
-  async create(createCountryCodeDto: CreateCountryCodeDto) {
+  async create(
+    headerApiKey: string,
+    createCountryCodeDto: CreateCountryCodeDto,
+  ) {
+    const savedApiKey = await this.apiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
+
     const createdCountryCode = this.countryCodeRepository.create({
       countryName: createCountryCodeDto.countryName,
       code: createCountryCodeDto.countryCode,
+      createdBy: savedApiKey,
     });
 
-    return await this.countryCodeRepository.save(createdCountryCode);
+    const savedCountryCode =
+      await this.countryCodeRepository.save(createdCountryCode);
+
+    return mapCountryCodeEntityToDto(savedCountryCode);
   }
 
   async findAll() {
-    return await this.countryCodeRepository.find();
+    const allCountryCodes = await this.countryCodeRepository.find();
+
+    return mapCountryCodesToDtos(allCountryCodes);
   }
 
   async findAllById(countryCodeIds: string[]) {
-    return await this.countryCodeRepository.findBy({
+    const allCountryCodesById = await this.countryCodeRepository.findBy({
       id: In(countryCodeIds),
     });
+
+    return mapCountryCodesToDtos(allCountryCodesById);
   }
 
   async findOne(id: string) {
@@ -38,23 +60,42 @@ export class CountryCodesService {
       throw new NotFoundException('Country Code not found');
     }
 
-    return countryCode;
+    return mapCountryCodeEntityToDto(countryCode);
   }
 
-  async update(id: string, updateCountryCodeDto: UpdateCountryCodeDto) {
+  async update(
+    headerApiKey: string,
+    id: string,
+    updateCountryCodeDto: UpdateCountryCodeDto,
+  ) {
     const countryCode = await this.findOne(id);
+
+    const savedApiKey = await this.apiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
 
     Object.assign(countryCode, {
       countryName: updateCountryCodeDto.countryName || countryCode.countryName,
       code: updateCountryCodeDto.countryCode || countryCode.code,
+      updatedBy: savedApiKey,
     });
 
-    return await this.countryCodeRepository.save(countryCode);
+    const updatedCountryCode =
+      await this.countryCodeRepository.save(countryCode);
+
+    return mapCountryCodeEntityToDto(updatedCountryCode);
   }
 
   async remove(id: string) {
-    const countryCode = await this.findOne(id);
+    const countryCode = await this.countryCodeRepository.findOneBy({ id });
 
-    return await this.countryCodeRepository.remove(countryCode);
+    if (!countryCode) {
+      throw new NotFoundException('Country Code not found');
+    }
+
+    const removedCountryCode =
+      await this.countryCodeRepository.remove(countryCode);
+
+    return mapCountryCodeEntityToDto(removedCountryCode);
   }
 }

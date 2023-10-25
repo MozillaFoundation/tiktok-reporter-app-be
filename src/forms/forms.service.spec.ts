@@ -9,26 +9,56 @@ import { TextField } from './types/fields/text.field';
 import { TextFieldDto } from './dtos/text-field.dto';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('FormsService', () => {
   let service: FormsService;
   let repository: Repository<Form>;
-  const REPOSITORY_TOKEN = getRepositoryToken(Form);
+  let apiKeyRepository: Repository<ApiKey>;
+  let configService: ConfigService;
 
+  const REPOSITORY_TOKEN = getRepositoryToken(Form);
+  const API_KEY_REPOSITORY_TOKEN = getRepositoryToken(ApiKey);
+
+  let apiKey: string;
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: `.env.${process.env.NODE_ENV}`,
+        }),
+      ],
       providers: [
         FormsService,
         {
           provide: REPOSITORY_TOKEN,
           useValue: { ...getFakeEntityRepository<Form>() },
         },
+        {
+          provide: API_KEY_REPOSITORY_TOKEN,
+          useValue: { ...getFakeEntityRepository<ApiKey>() },
+        },
       ],
     }).compile();
 
     service = module.get<FormsService>(FormsService);
     repository = module.get<Repository<Form>>(REPOSITORY_TOKEN);
+    initApiKey(module);
   });
+
+  function initApiKey(module: TestingModule) {
+    apiKeyRepository = module.get<Repository<ApiKey>>(API_KEY_REPOSITORY_TOKEN);
+    configService = module.get<ConfigService>(ConfigService);
+    apiKey = configService.get<string>('API_KEY');
+
+    const createdApiKey = apiKeyRepository.create({
+      key: apiKey,
+      appName: 'Dev Testing',
+    });
+    apiKeyRepository.save(createdApiKey);
+  }
 
   it('should be defined', () => {
     expect(service).toBeDefined();
@@ -39,7 +69,7 @@ describe('FormsService', () => {
   });
 
   it('create returns the newly created form', async () => {
-    const createdEntity = await service.create(defaultCreateFormDto);
+    const createdEntity = await service.create(apiKey, defaultCreateFormDto);
 
     const [firstDtoField] = defaultCreateFormDto.fields;
 
@@ -71,17 +101,17 @@ describe('FormsService', () => {
   });
 
   it('findAll returns the list of all forms including the newly created one', async () => {
-    const createdEntity = await service.create(defaultCreateFormDto);
+    const createdEntity = await service.create(apiKey, defaultCreateFormDto);
 
     const allEntities = await service.findAll();
 
     expect(allEntities).toBeDefined();
     expect(allEntities.length).toBeGreaterThan(0);
-    expect(allEntities).toContain(createdEntity);
+    expect(allEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
   it('findOne returns newly created form', async () => {
-    const createdEntity = await service.create(defaultCreateFormDto);
+    const createdEntity = await service.create(apiKey, defaultCreateFormDto);
 
     const foundEntity = await service.findOne(createdEntity.id);
 
@@ -96,7 +126,7 @@ describe('FormsService', () => {
   });
 
   it('remove removes the form', async () => {
-    const createdEntity = await service.create(defaultCreateFormDto);
+    const createdEntity = await service.create(apiKey, defaultCreateFormDto);
 
     const removedEntity = await service.remove(createdEntity.id);
 

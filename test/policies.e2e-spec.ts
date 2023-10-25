@@ -17,10 +17,12 @@ describe('Policies', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/policies')
       .send(defaultCreatePolicyDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/policies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.type).toEqual(defaultCreatePolicyDto.type);
@@ -40,10 +42,12 @@ describe('Policies', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/policies')
       .send(defaultCreatePolicyDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/policies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(getResponseBody.type).toEqual(defaultCreatePolicyDto.type);
@@ -55,6 +59,7 @@ describe('Policies', () => {
   it('findOne returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/policies/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(getResponseBody.message).toEqual(
@@ -67,6 +72,7 @@ describe('Policies', () => {
   it('findOne returns 404 Not Found when non existent id was provided', async () => {
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/policies/${DEFAULT_GUID}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(getResponseBody.message).toEqual('Policy was not found');
@@ -78,10 +84,13 @@ describe('Policies', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/policies')
       .send(defaultCreatePolicyDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/policies')
+      .send()
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.type).toEqual(defaultCreatePolicyDto.type);
@@ -105,6 +114,7 @@ describe('Policies', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/policies')
       .send(defaultCreatePolicyDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -115,6 +125,7 @@ describe('Policies', () => {
         subtitle: updatedSubtitle,
         text: updatedText,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.type).toEqual(defaultCreatePolicyDto.type);
@@ -138,6 +149,7 @@ describe('Policies', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/policies')
       .send(defaultCreatePolicyDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -145,6 +157,7 @@ describe('Policies', () => {
       .send({
         title: updatedTitle,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.type).toEqual(defaultCreatePolicyDto.type);
@@ -168,6 +181,7 @@ describe('Policies', () => {
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch(`/policies/${DEFAULT_GUID}`)
       .send(defaultCreatePolicyDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(updateResponseBody.message).toEqual('Policy was not found');
@@ -181,6 +195,7 @@ describe('Policies', () => {
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch('/policies/invalidformat')
       .send({ title: policyTitle })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.message).toEqual(
@@ -194,10 +209,12 @@ describe('Policies', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/policies')
       .send(defaultCreatePolicyDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/policies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.type).toEqual(defaultCreatePolicyDto.type);
@@ -218,6 +235,7 @@ describe('Policies', () => {
   it('delete returns 404 NotFound when no policy was found', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/policies/${DEFAULT_GUID}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(deleteResponseBody.message).toEqual('Policy was not found');
@@ -228,6 +246,7 @@ describe('Policies', () => {
   it('delete returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete('/policies/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(deleteResponseBody.message).toEqual(

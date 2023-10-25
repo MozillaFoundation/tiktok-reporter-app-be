@@ -9,19 +9,29 @@ import {
   ParseUUIDPipe,
   HttpStatus,
   UseInterceptors,
+  UseGuards,
+  Headers,
 } from '@nestjs/common';
 
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { CountryCodesService } from './country-codes.service';
 import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
 import { UpdateCountryCodeDto } from './dtos/update-country-code.dto';
 import { CountryCodeDto } from './dtos/country-code.dto';
 import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
 import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
+import { AuthGuard } from '@nestjs/passport';
+import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
 
 @UseInterceptors(SentryInterceptor)
-@Controller('country-codes')
+@UseGuards(AuthGuard('api-key'))
 @ApiTags('Country Codes')
+@Controller('country-codes')
+@ApiHeader({
+  name: 'X-API-KEY',
+  description: 'Mandatory API Key to use the regrets reporter API',
+  required: true,
+})
 export class CountryCodesController {
   constructor(private readonly countryCodesService: CountryCodesService) {}
 
@@ -33,8 +43,14 @@ export class CountryCodesController {
   })
   @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
-  create(@Body() createCountryCodeDto: CreateCountryCodeDto) {
-    return this.countryCodesService.create(createCountryCodeDto);
+  create(
+    @Headers() headers,
+    @Body() createCountryCodeDto: CreateCountryCodeDto,
+  ) {
+    return this.countryCodesService.create(
+      headers[API_KEY_HEADER_VALUE] as string,
+      createCountryCodeDto,
+    );
   }
 
   @Get()
@@ -66,10 +82,15 @@ export class CountryCodesController {
   @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   update(
+    @Headers() headers,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateCountryCodeDto: UpdateCountryCodeDto,
   ) {
-    return this.countryCodesService.update(id, updateCountryCodeDto);
+    return this.countryCodesService.update(
+      headers[API_KEY_HEADER_VALUE] as string,
+      id,
+      updateCountryCodeDto,
+    );
   }
 
   @Delete(':id')

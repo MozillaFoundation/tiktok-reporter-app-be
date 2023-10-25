@@ -9,19 +9,29 @@ import {
   ParseUUIDPipe,
   HttpStatus,
   UseInterceptors,
+  UseGuards,
+  Headers,
 } from '@nestjs/common';
 
 import { PoliciesService } from './policies.service';
 import { CreatePolicyDto } from './dtos/create-policy.dto';
 import { UpdatePolicyDto } from './dtos/update-policy.dto';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PolicyDto } from './dtos/policy.dto';
 import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
 import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
+import { AuthGuard } from '@nestjs/passport';
+import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
 
 @UseInterceptors(SentryInterceptor)
-@Controller('policies')
 @ApiTags('Policies')
+@UseGuards(AuthGuard('api-key'))
+@Controller('policies')
+@ApiHeader({
+  name: 'X-API-KEY',
+  description: 'Mandatory API Key to use the regrets reporter API',
+  required: true,
+})
 export class PoliciesController {
   constructor(private readonly policiesService: PoliciesService) {}
 
@@ -36,8 +46,11 @@ export class PoliciesController {
   })
   @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
-  create(@Body() createPolicyDto: CreatePolicyDto) {
-    return this.policiesService.create(createPolicyDto);
+  create(@Headers() headers, @Body() createPolicyDto: CreatePolicyDto) {
+    return this.policiesService.create(
+      headers[API_KEY_HEADER_VALUE] as string,
+      createPolicyDto,
+    );
   }
 
   @Get()
@@ -81,10 +94,15 @@ export class PoliciesController {
   @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   update(
+    @Headers() headers,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updatePolicyDto: UpdatePolicyDto,
   ) {
-    return this.policiesService.update(id, updatePolicyDto);
+    return this.policiesService.update(
+      headers[API_KEY_HEADER_VALUE] as string,
+      id,
+      updatePolicyDto,
+    );
   }
 
   @Delete(':id')

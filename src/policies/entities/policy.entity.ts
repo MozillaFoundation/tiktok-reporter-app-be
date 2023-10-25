@@ -3,12 +3,14 @@ import {
   CreateDateColumn,
   Entity,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { PolicyType } from 'src/types/policy.type';
 import { Study } from 'src/studies/entities/study.entity';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 
 @Entity()
 export class Policy {
@@ -35,6 +37,12 @@ export class Policy {
     onDelete: 'NO ACTION',
   })
   studies: Study[];
+
+  @ManyToOne(() => ApiKey)
+  createdBy: ApiKey;
+
+  @ManyToOne(() => ApiKey)
+  updatedBy: ApiKey;
 
   @CreateDateColumn()
   createdAt: Date;

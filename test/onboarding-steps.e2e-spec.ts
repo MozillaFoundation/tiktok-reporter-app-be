@@ -19,10 +19,12 @@ describe('Onboarding Steps', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboarding-steps')
       .send(defaultCreateOnboardingStepDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/onboarding-steps/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.id).toBeDefined();
@@ -67,10 +69,12 @@ describe('Onboarding Steps', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboarding-steps')
       .send(defaultCreateOnboardingStepDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/onboarding-steps/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(getResponseBody.id).toEqual(createResponseBody.id);
@@ -94,6 +98,7 @@ describe('Onboarding Steps', () => {
   it('findOne returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/onboarding-steps/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(getResponseBody.message).toEqual(
@@ -107,10 +112,12 @@ describe('Onboarding Steps', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboarding-steps')
       .send(defaultCreateOnboardingStepDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/onboarding-steps')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(getResponseBody).toEqual(
@@ -129,6 +136,7 @@ describe('Onboarding Steps', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboarding-steps')
       .send(defaultCreateOnboardingStepDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -141,6 +149,7 @@ describe('Onboarding Steps', () => {
         details: updatedDetails,
         order: updatedOrder,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.id).toBeDefined();
@@ -178,6 +187,7 @@ describe('Onboarding Steps', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboarding-steps')
       .send(defaultCreateOnboardingStepDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -185,6 +195,7 @@ describe('Onboarding Steps', () => {
       .send({
         title: updatedTitle,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(updateResponseBody.id).toEqual(createResponseBody.id);
@@ -211,6 +222,7 @@ describe('Onboarding Steps', () => {
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch(`/onboarding-steps/${DEFAULT_GUID}`)
       .send(defaultCreateOnboardingStepDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(updateResponseBody.message).toEqual('Onboarding step was not found');
@@ -224,6 +236,7 @@ describe('Onboarding Steps', () => {
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch('/onboarding-steps/invalidformat')
       .send({ title: onboardingStepTitle })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.message).toEqual(
@@ -237,10 +250,12 @@ describe('Onboarding Steps', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/onboarding-steps')
       .send(defaultCreateOnboardingStepDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/onboarding-steps/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(deleteResponseBody.title).toEqual(
@@ -266,6 +281,7 @@ describe('Onboarding Steps', () => {
   it('delete returns 404 NotFound when no onboarding was found', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/onboarding-steps/${DEFAULT_GUID}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(deleteResponseBody.message).toEqual('Onboarding step was not found');
@@ -276,6 +292,7 @@ describe('Onboarding Steps', () => {
   it('delete returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete('/onboarding-steps/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(deleteResponseBody.message).toEqual(

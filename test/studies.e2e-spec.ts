@@ -36,6 +36,7 @@ describe('Study', () => {
         countryCode: 'Test Create First Country Code',
         countryName: 'Test Create First Country Code Name',
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: secondCountryCodeBody } = await request(app.getHttpServer())
@@ -44,6 +45,7 @@ describe('Study', () => {
         countryCode: 'Test Create Second Country Code',
         countryName: 'Test Create Second Country Code Name',
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     firstCountryCode = firstCountryCodeBody;
@@ -59,7 +61,9 @@ describe('Study', () => {
         subtitle: 'Test Create First Policy SubTitle',
         text: 'Test Create First Policy Text',
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
+
     const { body: secondPolicyBody } = await request(app.getHttpServer())
       .post('/policies')
       .send({
@@ -68,6 +72,7 @@ describe('Study', () => {
         subtitle: 'Test Create Second Policy SubTitle',
         text: 'Test Create First Second Text',
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     firstPolicy = firstPolicyBody;
@@ -85,6 +90,7 @@ describe('Study', () => {
         details: 'Test First Onboarding Step Details',
         order: 1,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: secondOnboardingStep } = await request(app.getHttpServer())
@@ -97,6 +103,7 @@ describe('Study', () => {
         details: 'Test Second Onboarding Step Details',
         order: 2,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: firstOnboardingFormBody } = await request(app.getHttpServer())
@@ -115,6 +122,7 @@ describe('Study', () => {
           },
         ],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: firstOnboardingBody } = await request(app.getHttpServer())
@@ -124,6 +132,7 @@ describe('Study', () => {
         stepIds: [firstOnboardingStep.id],
         formId: firstOnboardingFormBody.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: secondOnboardingBody } = await request(app.getHttpServer())
@@ -133,6 +142,7 @@ describe('Study', () => {
         stepIds: [secondOnboardingStep.id],
         formId: firstOnboardingFormBody.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     firstOnboarding = firstOnboardingBody;
@@ -156,6 +166,7 @@ describe('Study', () => {
           },
         ],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
     firstStudyForm = firstStudyFormBody;
 
@@ -175,6 +186,7 @@ describe('Study', () => {
           },
         ],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
     secondStudyForm = secondStudyFormBody;
   };
@@ -194,10 +206,12 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.name).toEqual(studyName);
@@ -247,10 +261,12 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.name).toEqual(studyName);
@@ -295,10 +311,12 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.name).toEqual(studyName);
@@ -339,6 +357,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.error).toEqual('Bad Request');
@@ -360,6 +379,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.error).toEqual('Bad Request');
@@ -381,6 +401,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.error).toEqual('Bad Request');
@@ -402,6 +423,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.error).toEqual('Bad Request');
@@ -423,6 +445,7 @@ describe('Study', () => {
         onboardingId: 'Invalid Id Format',
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.error).toEqual('Bad Request');
@@ -444,6 +467,7 @@ describe('Study', () => {
         onboardingId: DEFAULT_GUID,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(createResponseBody.error).toEqual('Not Found');
@@ -465,6 +489,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: 'Invalid Id Format',
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.error).toEqual('Bad Request');
@@ -486,6 +511,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: DEFAULT_GUID,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(createResponseBody.error).toEqual('Not Found');
@@ -507,10 +533,12 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/studies/country-codes/${firstCountryCode.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(getResponseBody.at(0).name).toEqual(studyName);
@@ -540,10 +568,12 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/studies/country-codes/${firstCountryCode.code}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(getResponseBody.at(0).name).toEqual(studyName);
@@ -572,10 +602,12 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(getResponseBody.name).toEqual(studyName);
@@ -590,6 +622,7 @@ describe('Study', () => {
   it('findOne returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/studies/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(getResponseBody.message).toEqual(
@@ -602,6 +635,7 @@ describe('Study', () => {
   it('findOne returns 404 Not Found when non existent id was provided', async () => {
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/studies/${DEFAULT_GUID}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(getResponseBody.message).toEqual('Study not found');
@@ -624,10 +658,12 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/studies')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     const studyNames = getResponseBody.map((study) => study.name);
@@ -652,6 +688,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -665,6 +702,7 @@ describe('Study', () => {
         onboardingId: secondOnboarding.id,
         formId: secondStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.id).toEqual(updateResponseBody.id);
@@ -718,6 +756,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -735,6 +774,7 @@ describe('Study', () => {
         onboardingId: secondOnboarding.id,
         formId: secondStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.id).toEqual(updateResponseBody.id);
@@ -788,6 +828,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -801,6 +842,7 @@ describe('Study', () => {
         onboardingId: secondOnboarding.id,
         formId: secondStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.id).toEqual(updateResponseBody.id);
@@ -853,11 +895,13 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
       .patch(`/studies/${createResponseBody.id}`)
       .send({ name: updatedStudyName })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.id).toEqual(updateResponseBody.id);
@@ -904,6 +948,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(updateResponseBody.message).toEqual('Study not found');
@@ -924,6 +969,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.message).toEqual(
@@ -951,6 +997,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -962,6 +1009,7 @@ describe('Study', () => {
         countryCodeIds: ['Invalid id format'],
         policyIds: [firstPolicy.id],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.error).toEqual('Bad Request');
@@ -986,6 +1034,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -997,6 +1046,7 @@ describe('Study', () => {
         countryCodeIds: [firstCountryCode.id],
         policyIds: ['Invalid id format'],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.error).toEqual('Bad Request');
@@ -1021,6 +1071,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -1034,6 +1085,7 @@ describe('Study', () => {
         onboardingId: 'Invalid Id Format',
         formId: secondStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.error).toEqual('Bad Request');
@@ -1058,6 +1110,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -1071,6 +1124,7 @@ describe('Study', () => {
         onboardingId: DEFAULT_GUID,
         formId: secondStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(updateResponseBody.error).toEqual('Not Found');
@@ -1095,6 +1149,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -1108,6 +1163,7 @@ describe('Study', () => {
         onboardingId: secondOnboarding.id,
         formId: 'Invalid Id Format',
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(updateResponseBody.error).toEqual('Bad Request');
@@ -1132,6 +1188,7 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: updateResponseBody } = await request(app.getHttpServer())
@@ -1145,6 +1202,7 @@ describe('Study', () => {
         onboardingId: secondOnboarding.id,
         formId: DEFAULT_GUID,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(updateResponseBody.error).toEqual('Not Found');
@@ -1166,11 +1224,13 @@ describe('Study', () => {
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/studies/${createResponseBody.id}`)
       .send()
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.name).toEqual(studyName);
@@ -1180,6 +1240,8 @@ describe('Study', () => {
   it('delete returns 404 NotFound when no study was found', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/studies/${DEFAULT_GUID}`)
+      .send()
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(deleteResponseBody.message).toEqual('Study not found');
@@ -1190,6 +1252,8 @@ describe('Study', () => {
   it('delete returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete('/studies/invalidformat')
+      .send()
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(deleteResponseBody.message).toEqual(

@@ -3,15 +3,24 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CountryCodesController } from './country-codes.controller';
 import { CountryCodesService } from './country-codes.service';
 import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
-import { DEFAULT_GUID } from 'src/utils/constants';
+import { API_KEY_HEADER_VALUE, DEFAULT_GUID } from 'src/utils/constants';
 import { NotFoundException } from '@nestjs/common';
 import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('CountryCodesController', () => {
   let controller: CountryCodesController;
+  let configService: ConfigService;
+  let apiKey: string;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: `.env.${process.env.NODE_ENV}`,
+        }),
+      ],
       controllers: [CountryCodesController],
       providers: [
         { provide: CountryCodesService, useValue: fakeCountryCodesService },
@@ -19,6 +28,12 @@ describe('CountryCodesController', () => {
     }).compile();
 
     controller = module.get<CountryCodesController>(CountryCodesController);
+    configService = module.get<ConfigService>(ConfigService);
+    const countryCodesService =
+      module.get<CountryCodesService>(CountryCodesService);
+    await countryCodesService?.['initApiKey']();
+
+    apiKey = configService.get<string>('API_KEY');
   });
 
   it('should be defined', () => {
@@ -30,12 +45,15 @@ describe('CountryCodesController', () => {
     entityDto.countryCode = 'Test Country Code';
     entityDto.countryName = 'Test Country Name';
 
-    const newEntityCode = await controller.create(entityDto);
+    const newEntityCode = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
+      entityDto,
+    );
 
-    await expect(newEntityCode).toBeDefined();
-    await expect(newEntityCode.id).toBeDefined();
-    await expect(newEntityCode.code).toEqual(entityDto.countryCode);
-    await expect(newEntityCode.countryName).toEqual(entityDto.countryName);
+    expect(newEntityCode).toBeDefined();
+    expect(newEntityCode.id).toBeDefined();
+    expect(newEntityCode.code).toEqual(entityDto.countryCode);
+    expect(newEntityCode.countryName).toEqual(entityDto.countryName);
   });
 
   it('findAll returns the list of all country codes including the newly created one', async () => {
@@ -43,13 +61,17 @@ describe('CountryCodesController', () => {
     entityDto.countryCode = 'Test Find All Country Codes';
     entityDto.countryName = 'Test Find All Country Codes Name';
 
-    const newEntityCode = await controller.create(entityDto);
+    const createdEntity = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
+      entityDto,
+    );
 
     const allEntities = await controller.findAll();
 
-    await expect(allEntities).toBeDefined();
-    await expect(allEntities.length).toBeGreaterThan(0);
-    await expect(allEntities).toContain(newEntityCode);
+    expect(allEntities).toBeDefined();
+    expect(allEntities.length).toBeGreaterThan(0);
+
+    expect(allEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
   it('findOne returns newly created country code', async () => {
@@ -57,12 +79,15 @@ describe('CountryCodesController', () => {
     entityDto.countryCode = 'Test Find One Country Code';
     entityDto.countryName = 'Test Find One Country Code Name';
 
-    const newEntityCode = await controller.create(entityDto);
+    const newEntityCode = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
+      entityDto,
+    );
 
     const foundEntity = await controller.findOne(newEntityCode.id);
 
-    await expect(foundEntity).toBeDefined();
-    await expect(foundEntity).toEqual(newEntityCode);
+    expect(foundEntity).toBeDefined();
+    expect(foundEntity).toEqual(newEntityCode);
   });
 
   it('findOne throws error when no country code was found', async () => {
@@ -76,19 +101,25 @@ describe('CountryCodesController', () => {
     entityDto.countryCode = 'Test Update Country Code';
     entityDto.countryName = 'Test Update Country Code Name';
 
-    const newEntityCode = await controller.create(entityDto);
+    const newEntityCode = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
+      entityDto,
+    );
     const updatedCode = 'UPDATED Test Country Code';
     const updatedName = 'UPDATED Test Country Code Name';
 
-    const updatedEntity = await controller.update(newEntityCode.id, {
-      countryCode: updatedCode,
-      countryName: updatedName,
-    });
+    const updatedEntity = await controller.update(
+      { [API_KEY_HEADER_VALUE]: apiKey },
+      newEntityCode.id,
+      {
+        countryCode: updatedCode,
+        countryName: updatedName,
+      },
+    );
 
-    await expect(updatedEntity).toBeDefined();
-    await expect(updatedEntity.code).toEqual(updatedCode);
-    await expect(updatedEntity.countryName).toEqual(updatedName);
-    await expect(updatedEntity).toEqual(newEntityCode);
+    expect(updatedEntity).toBeDefined();
+    expect(updatedEntity.code).toEqual(updatedCode);
+    expect(updatedEntity.countryName).toEqual(updatedName);
   });
 
   it('update returns the updated country code with the partial changes updated', async () => {
@@ -96,22 +127,28 @@ describe('CountryCodesController', () => {
     entityDto.countryCode = 'Test Update Country Code';
     entityDto.countryName = 'Test Update Country Code Name';
 
-    const newEntityCode = await controller.create(entityDto);
+    const newEntityCode = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
+      entityDto,
+    );
     const updatedCode = 'UPDATED Test Country Code';
 
-    const updatedEntity = await controller.update(newEntityCode.id, {
-      countryCode: updatedCode,
-    });
+    const updatedEntity = await controller.update(
+      { [API_KEY_HEADER_VALUE]: apiKey },
+      newEntityCode.id,
+      {
+        countryCode: updatedCode,
+      },
+    );
 
-    await expect(updatedEntity).toBeDefined();
-    await expect(updatedEntity.code).toEqual(updatedCode);
-    await expect(updatedEntity.countryName).toEqual(entityDto.countryName);
-    await expect(updatedEntity).toEqual(newEntityCode);
+    expect(updatedEntity).toBeDefined();
+    expect(updatedEntity.code).toEqual(updatedCode);
+    expect(updatedEntity.countryName).toEqual(entityDto.countryName);
   });
 
   it('update throws error when no country code was found', async () => {
     await expect(
-      controller.update(DEFAULT_GUID, {
+      controller.update({ [API_KEY_HEADER_VALUE]: apiKey }, DEFAULT_GUID, {
         countryCode: 'Not Existing Country Code',
       }),
     ).rejects.toThrow(NotFoundException);
@@ -122,7 +159,10 @@ describe('CountryCodesController', () => {
     entityDto.countryCode = 'Test Delete Country Code';
     entityDto.countryName = 'Test Delete Country Code Name';
 
-    const createdEntity = await controller.create(entityDto);
+    const createdEntity = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
+      entityDto,
+    );
 
     const removedCountryCode = await controller.remove(createdEntity.id);
     await expect(controller.findOne(removedCountryCode.id)).rejects.toThrow(

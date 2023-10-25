@@ -14,10 +14,13 @@ import { mapFormFields } from 'src/forms/mappers/form-fields.mapper';
 import { TextFieldDto } from 'src/forms/dtos/text-field.dto';
 import { DropDownFieldDto } from 'src/forms/dtos/drop-down-field.dto';
 import { SliderFieldDto } from 'src/forms/dtos/slider-field.dto';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { randomUuidv4 } from 'src/utils/generate-uuid';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
+      ApiKey,
       CountryCode,
       Policy,
       Onboarding,
@@ -29,6 +32,8 @@ import { SliderFieldDto } from 'src/forms/dtos/slider-field.dto';
 })
 export class SeedersModule {
   constructor(
+    @InjectRepository(ApiKey)
+    private readonly apiKeyRepository: Repository<ApiKey>,
     @InjectRepository(CountryCode)
     private readonly countryCodeRepository: Repository<CountryCode>,
     @InjectRepository(Policy)
@@ -46,17 +51,71 @@ export class SeedersModule {
   async onModuleInit() {
     try {
       // TODO: Verify the validity of these country codes
-      await this.seedCountryCodes();
+      await this.seedApiKeys();
+
+      const seederKey = await this.apiKeyRepository.findOne({
+        where: {
+          appName: 'Seeder',
+        },
+      });
+
+      if (!seederKey) {
+        return;
+      }
+
+      await this.seedCountryCodes(seederKey);
       // TODO: This is only test data
-      await this.seedPolicies();
-      const onboarding = await this.seedOnboardings();
-      await this.seedStudies(onboarding);
+      await this.seedPolicies(seederKey);
+      const onboarding = await this.seedOnboardings(seederKey);
+      await this.seedStudies(seederKey, onboarding);
     } catch (error) {
       console.error('Something went wrong while seeding', error.message);
     }
   }
 
-  async seedCountryCodes() {
+  async seedApiKeys() {
+    const apiKeysCount = await this.apiKeyRepository.count();
+    if (apiKeysCount > 0) {
+      return;
+    }
+
+    const androidAppKey = randomUuidv4();
+    const iosAppKey = randomUuidv4();
+    const qaTestingAppKey = randomUuidv4();
+    const seederAppKey = randomUuidv4();
+
+    await this.apiKeyRepository.save({
+      key: androidAppKey,
+      appName: 'Android App',
+    });
+    await this.apiKeyRepository.save({
+      key: iosAppKey,
+      appName: 'iOS App',
+    });
+    await this.apiKeyRepository.save({
+      key: qaTestingAppKey,
+      appName: 'QA Testing',
+    });
+
+    await this.apiKeyRepository.save({
+      key: process.env.API_KEY,
+      appName: 'Dev Testing',
+    });
+
+    await this.apiKeyRepository.save({
+      key: seederAppKey,
+      appName: 'Seeder',
+    });
+
+    return {
+      androidAppKey,
+      iosAppKey,
+      qaTestingAppKey,
+      seederAppKey,
+    };
+  }
+
+  async seedCountryCodes(seederKey: ApiKey) {
     const countryCodeCount = await this.countryCodeRepository.count();
     if (countryCodeCount > 0) {
       return;
@@ -67,11 +126,12 @@ export class SeedersModule {
       await this.countryCodeRepository.save({
         countryName: availableCountryCode.countryName,
         code: availableCountryCode.countryCode,
+        createdBy: seederKey,
       });
     }
   }
 
-  async seedPolicies() {
+  async seedPolicies(seederKey: ApiKey) {
     const countryCodeCount = await this.policyRepository.count();
     if (countryCodeCount > 0) {
       return;
@@ -82,6 +142,7 @@ export class SeedersModule {
       title: ' Terms of Service Title',
       subtitle: ' Terms of Service Sub Title',
       text: policyText,
+      createdBy: seederKey,
     });
 
     this.policyRepository.save({
@@ -89,10 +150,11 @@ export class SeedersModule {
       title: ' Terms of Service Title',
       subtitle: ' Terms of Service Sub Title',
       text: policyText,
+      createdBy: seederKey,
     });
   }
 
-  async seedOnboardings() {
+  async seedOnboardings(seederKey: ApiKey) {
     const onboardingsCount = await this.onboardingRepository.count();
     if (onboardingsCount > 0) {
       return;
@@ -102,6 +164,7 @@ export class SeedersModule {
       name: 'TEST Onboarding step',
       steps: [],
       form: {},
+      createdBy: seederKey,
     });
 
     for (let i = 0; i < onboardingSteps.length; i++) {
@@ -113,6 +176,7 @@ export class SeedersModule {
         imageUrl: onboardingStep.imageUrl,
         details: onboardingStep.details,
         order: onboardingStep.order,
+        createdBy: seederKey,
       });
       const savedOnboardingStep = await this.onboardingStepRepository.save(
         createdOnboardingStep,
@@ -135,6 +199,7 @@ export class SeedersModule {
     const createdForm = await this.formRepository.create({
       name: 'OnboardingForm',
       fields: mappedFields,
+      createdBy: seederKey,
     });
 
     const savedForm = await this.formRepository.save(createdForm);
@@ -144,9 +209,9 @@ export class SeedersModule {
     return await this.onboardingRepository.save(newOnboarding);
   }
 
-  async seedStudies(onboarding: Onboarding) {
-    const countryCodeCount = await this.studyRepository.count();
-    if (countryCodeCount > 0) {
+  async seedStudies(seederKey: ApiKey, onboarding: Onboarding) {
+    const studyCount = await this.studyRepository.count();
+    if (studyCount > 0) {
       return;
     }
 
@@ -155,6 +220,7 @@ export class SeedersModule {
       title: 'Custom Terms of Service for this study',
       subtitle: ' Custom Terms of Service for this study',
       text: policyText,
+      createdBy: seederKey,
     });
     const countryCodes = await this.countryCodeRepository.find({
       where: { code: 'ro' },
@@ -210,6 +276,7 @@ export class SeedersModule {
     const createdForm = await this.formRepository.create({
       name: 'StudyForm',
       fields: mappedFields,
+      createdBy: seederKey,
     });
 
     const savedForm = await this.formRepository.save(createdForm);
@@ -222,6 +289,7 @@ export class SeedersModule {
       policies: [studyPolicy],
       onboarding,
       form: savedForm,
+      createdBy: seederKey,
     });
   }
 }

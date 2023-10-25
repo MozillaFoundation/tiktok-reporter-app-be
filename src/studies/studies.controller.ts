@@ -9,18 +9,28 @@ import {
   ParseUUIDPipe,
   HttpStatus,
   UseInterceptors,
+  UseGuards,
+  Headers,
 } from '@nestjs/common';
 import { StudiesService } from './studies.service';
 import { CreateStudyDto } from './dto/create-study.dto';
 import { UpdateStudyDto } from './dto/update-study.dto';
-import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiHeader, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
 import { StudyDto } from './dto/study.dto';
 import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
+import { AuthGuard } from '@nestjs/passport';
+import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
 
 @UseInterceptors(SentryInterceptor)
-@Controller('studies')
 @ApiTags('Studies')
+@UseGuards(AuthGuard('api-key'))
+@Controller('studies')
+@ApiHeader({
+  name: 'X-API-KEY',
+  description: 'Mandatory API Key to use the regrets reporter API',
+  required: true,
+})
 export class StudiesController {
   constructor(private readonly studiesService: StudiesService) {}
 
@@ -32,8 +42,11 @@ export class StudiesController {
   })
   @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.INTERNAL_SERVER_ERROR, 'Internal Server')
-  create(@Body() createStudyDto: CreateStudyDto) {
-    return this.studiesService.create(createStudyDto);
+  create(@Headers() headers, @Body() createStudyDto: CreateStudyDto) {
+    return this.studiesService.create(
+      headers[API_KEY_HEADER_VALUE] as string,
+      createStudyDto,
+    );
   }
 
   @Get()
@@ -74,10 +87,15 @@ export class StudiesController {
   @ApiErrorDecorator(HttpStatus.BAD_REQUEST, 'Bad Request')
   @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
   update(
+    @Headers() headers,
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateStudyDto: UpdateStudyDto,
   ) {
-    return this.studiesService.update(id, updateStudyDto);
+    return this.studiesService.update(
+      headers[API_KEY_HEADER_VALUE] as string,
+      id,
+      updateStudyDto,
+    );
   }
 
   @Delete(':id')

@@ -8,26 +8,57 @@ import { PolicyType } from 'src/types/policy.type';
 import { Repository } from 'typeorm';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('PoliciesService', () => {
   let service: PoliciesService;
   let repository: Repository<Policy>;
+  let apiKeyRepository: Repository<ApiKey>;
+  let configService: ConfigService;
+
   const REPOSITORY_TOKEN = getRepositoryToken(Policy);
+  const API_KEY_REPOSITORY_TOKEN = getRepositoryToken(ApiKey);
+
+  let apiKey: string;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: `.env.${process.env.NODE_ENV}`,
+        }),
+      ],
       providers: [
         PoliciesService,
         {
           provide: REPOSITORY_TOKEN,
           useValue: { ...getFakeEntityRepository<Policy>() },
         },
+        {
+          provide: API_KEY_REPOSITORY_TOKEN,
+          useValue: { ...getFakeEntityRepository<ApiKey>() },
+        },
       ],
     }).compile();
 
     service = module.get<PoliciesService>(PoliciesService);
     repository = module.get<Repository<Policy>>(REPOSITORY_TOKEN);
+    initApiKey(module);
   });
+
+  function initApiKey(module: TestingModule) {
+    apiKeyRepository = module.get<Repository<ApiKey>>(API_KEY_REPOSITORY_TOKEN);
+    configService = module.get<ConfigService>(ConfigService);
+    apiKey = configService.get<string>('API_KEY');
+
+    const createdApiKey = apiKeyRepository.create({
+      key: apiKey,
+      appName: 'Dev Testing',
+    });
+    apiKeyRepository.save(createdApiKey);
+  }
 
   it('should be defined', () => {
     expect(service).toBeDefined();
@@ -37,8 +68,12 @@ describe('PoliciesService', () => {
     expect(repository).toBeDefined();
   });
 
+  it('should have api key repository defined', () => {
+    expect(apiKeyRepository).toBeDefined();
+  });
+
   it('create returns the newly created policy', async () => {
-    const createdEntity = await service.create(defaultCreatePolicyDto);
+    const createdEntity = await service.create(apiKey, defaultCreatePolicyDto);
 
     expect(createdEntity).toBeDefined();
     expect(createdEntity.id).toBeDefined();
@@ -46,40 +81,42 @@ describe('PoliciesService', () => {
     expect(createdEntity.title).toEqual(defaultCreatePolicyDto.title);
     expect(createdEntity.subtitle).toEqual(defaultCreatePolicyDto.subtitle);
     expect(createdEntity.text).toEqual(defaultCreatePolicyDto.text);
+    expect(createdEntity['createdAt']).toBeDefined();
+    expect(createdEntity['updatedAt']).toBeDefined();
   });
 
   it('findAll returns the list of all policies including the newly created one', async () => {
-    const createdEntity = await service.create(defaultCreatePolicyDto);
+    const createdEntity = await service.create(apiKey, defaultCreatePolicyDto);
 
     const allEntities = await service.findAll();
 
     expect(allEntities).toBeDefined();
     expect(allEntities.length).toBeGreaterThan(0);
-    expect(allEntities).toContain(createdEntity);
+    expect(allEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
   it('findAppPolicies returns the list of all policies not related to a study', async () => {
-    const createdEntity = await service.create(defaultCreatePolicyDto);
+    const createdEntity = await service.create(apiKey, defaultCreatePolicyDto);
 
     const allEntities = await service.findAppPolicies();
 
     expect(allEntities).toBeDefined();
     expect(allEntities.length).toBeGreaterThan(0);
-    expect(allEntities).toContain(createdEntity);
+    expect(allEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
   it('findAllById returns the list of policies with ids in the provided search list ', async () => {
-    const createdEntity = await service.create(defaultCreatePolicyDto);
+    const createdEntity = await service.create(apiKey, defaultCreatePolicyDto);
 
     const foundEntities = await service.findAllById([createdEntity.id]);
 
     expect(foundEntities).toBeDefined();
     expect(foundEntities.length).toBeGreaterThan(0);
-    expect(foundEntities).toContain(createdEntity);
+    expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
   it('findOne returns newly created policy', async () => {
-    const createdEntity = await service.create(defaultCreatePolicyDto);
+    const createdEntity = await service.create(apiKey, defaultCreatePolicyDto);
 
     const foundEntity = await service.findOne(createdEntity.id);
 
@@ -94,13 +131,13 @@ describe('PoliciesService', () => {
   });
 
   it('update returns the updated policy with all changes updated', async () => {
-    const createdEntity = await service.create(defaultCreatePolicyDto);
+    const createdEntity = await service.create(apiKey, defaultCreatePolicyDto);
     const updatedType = PolicyType.PrivacyPolicy;
     const updatedTitle = 'UPDATED Title';
     const updatedSubtitle = 'UPDATED Subtitle';
     const updatedText = 'UPDATED Text';
 
-    const updatedEntity = await service.update(createdEntity.id, {
+    const updatedEntity = await service.update(apiKey, createdEntity.id, {
       type: updatedType,
       title: updatedTitle,
       subtitle: updatedSubtitle,
@@ -112,14 +149,13 @@ describe('PoliciesService', () => {
     expect(updatedEntity.title).toEqual(updatedTitle);
     expect(updatedEntity.subtitle).toEqual(updatedSubtitle);
     expect(updatedEntity.text).toEqual(updatedText);
-    expect(updatedEntity).toEqual(createdEntity);
   });
 
   it('update returns the updated policy with the partial changes updated', async () => {
-    const createdEntity = await service.create(defaultCreatePolicyDto);
+    const createdEntity = await service.create(apiKey, defaultCreatePolicyDto);
     const updatedTitle = 'UPDATED Title';
 
-    const updatedEntity = await service.update(createdEntity.id, {
+    const updatedEntity = await service.update(apiKey, createdEntity.id, {
       title: updatedTitle,
     });
 
@@ -128,20 +164,18 @@ describe('PoliciesService', () => {
     expect(updatedEntity.type).toEqual(defaultCreatePolicyDto.type);
     expect(updatedEntity.subtitle).toEqual(defaultCreatePolicyDto.subtitle);
     expect(updatedEntity.text).toEqual(defaultCreatePolicyDto.text);
-
-    expect(updatedEntity).toEqual(createdEntity);
   });
 
   it('update throws error when no policy was found', async () => {
     await expect(
-      service.update(DEFAULT_GUID, {
+      service.update(apiKey, DEFAULT_GUID, {
         title: 'Updated Title',
       }),
     ).rejects.toThrow(NotFoundException);
   });
 
   it('remove removes the policy', async () => {
-    const createdEntity = await service.create(defaultCreatePolicyDto);
+    const createdEntity = await service.create(apiKey, defaultCreatePolicyDto);
 
     const removedEntity = await service.remove(createdEntity.id);
 

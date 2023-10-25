@@ -10,14 +10,18 @@ import { CreateFormDto } from './dtos/create-form.dto';
 
 import { mapFormFields } from './mappers/form-fields.mapper';
 import { isFilledArray } from 'src/utils/isFilledArray';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { mapFormEntityToDto, mapFormsToDtos } from './mappers/mapEntitiesToDto';
 
 @Injectable()
 export class FormsService {
   constructor(
     @InjectRepository(Form)
     private readonly formRepository: Repository<Form>,
+    @InjectRepository(ApiKey)
+    private readonly apiKeyRepository: Repository<ApiKey>,
   ) {}
-  async create(createFormDto: CreateFormDto) {
+  async create(headerApiKey: string, createFormDto: CreateFormDto) {
     const mappedFields = mapFormFields(createFormDto.fields);
 
     if (!isFilledArray(mappedFields)) {
@@ -26,16 +30,25 @@ export class FormsService {
       );
     }
 
+    const savedApiKey = await this.apiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
+
     const createdForm = this.formRepository.create({
       name: createFormDto.name,
       fields: mappedFields,
+      createdBy: savedApiKey,
     });
 
-    return await this.formRepository.save(createdForm);
+    const savedForm = await this.formRepository.save(createdForm);
+
+    return mapFormEntityToDto(savedForm);
   }
 
   async findAll() {
-    return await this.formRepository.find();
+    const allForms = await this.formRepository.find();
+
+    return mapFormsToDtos(allForms);
   }
 
   async findOne(id: string) {
@@ -45,12 +58,17 @@ export class FormsService {
       throw new NotFoundException('Form was not found');
     }
 
-    return form;
+    return mapFormEntityToDto(form);
   }
 
   async remove(id: string) {
-    const form = await this.findOne(id);
+    const form = await this.formRepository.findOneBy({ id });
 
-    return await this.formRepository.remove(form);
+    if (!form) {
+      throw new NotFoundException('Form was not found');
+    }
+
+    const removedForm = await this.formRepository.remove(form);
+    return mapFormEntityToDto(removedForm);
   }
 }

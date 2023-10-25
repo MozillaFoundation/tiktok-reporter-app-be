@@ -11,6 +11,7 @@ import { SliderFieldDto } from 'src/forms/dtos/slider-field.dto';
 import { TextFieldDto } from 'src/forms/dtos/text-field.dto';
 
 export const DEFAULT_GUID = '00000000-0000-0000-0000-000000000000';
+export const API_KEY_HEADER_VALUE = 'x-api-key';
 
 export const defaultCreateStudyDto: CreateStudyDto = {
   name: 'Test Create Study',

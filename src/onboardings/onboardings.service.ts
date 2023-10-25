@@ -11,6 +11,11 @@ import { OnboardingStepsService } from 'src/onboardingSteps/onboarding-steps.ser
 import { UpdateOnboardingDto } from './dtos/update-onboarding.dto';
 import { removeDuplicateObjects } from 'src/utils/remove-duplicates';
 import { FormsService } from 'src/forms/forms.service';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import {
+  mapOnboardingEntityToDto,
+  mapOnboardingsToDtos,
+} from './mappers/mapEntitiesToDto';
 
 @Injectable()
 export class OnboardingsService {
@@ -19,9 +24,11 @@ export class OnboardingsService {
     private readonly formsService: FormsService,
     @InjectRepository(Onboarding)
     private readonly onboardingRepository: Repository<Onboarding>,
+    @InjectRepository(ApiKey)
+    private readonly apiKeyRepository: Repository<ApiKey>,
   ) {}
 
-  async create(createOnboardingDto: CreateOnboardingDto) {
+  async create(headerApiKey: string, createOnboardingDto: CreateOnboardingDto) {
     const onboardingSteps = await this.onboardingStepsService.findAllById(
       createOnboardingDto.stepIds,
     );
@@ -34,28 +41,39 @@ export class OnboardingsService {
 
     const form = await this.formsService.findOne(createOnboardingDto.formId);
 
+    const savedApiKey = await this.apiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
+
     const cratedOnboarding = this.onboardingRepository.create({
       name: createOnboardingDto.name,
       steps: onboardingSteps,
       form,
+      createdBy: savedApiKey,
     });
 
-    return await this.onboardingRepository.save(cratedOnboarding);
+    const savedOnboarding =
+      await this.onboardingRepository.save(cratedOnboarding);
+
+    return mapOnboardingEntityToDto(savedOnboarding);
   }
 
   async findAll() {
-    return await this.onboardingRepository.find({
+    const allOnboardings = await this.onboardingRepository.find({
       relations: {
         steps: true,
         form: true,
       },
     });
+    return mapOnboardingsToDtos(allOnboardings);
   }
 
   async findAllById(onboardingIds: string[]) {
-    return await this.onboardingRepository.findBy({
+    const allOnboardingsById = await this.onboardingRepository.findBy({
       id: In(onboardingIds),
     });
+
+    return mapOnboardingsToDtos(allOnboardingsById);
   }
 
   async findOne(id: string) {
@@ -68,14 +86,22 @@ export class OnboardingsService {
       throw new NotFoundException('Onboarding was not found');
     }
 
-    return onboarding;
+    return mapOnboardingEntityToDto(onboarding);
   }
 
-  async update(id: string, updateOnboardingDto: UpdateOnboardingDto) {
+  async update(
+    headerApiKey: string,
+    id: string,
+    updateOnboardingDto: UpdateOnboardingDto,
+  ) {
     const onboarding = await this.findOne(id);
+    const savedApiKey = await this.apiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
 
     Object.assign(onboarding, {
       name: updateOnboardingDto.name || onboarding.name,
+      updatedBy: savedApiKey,
     });
 
     if (updateOnboardingDto.stepIds) {
@@ -107,12 +133,21 @@ export class OnboardingsService {
       });
     }
 
-    return await this.onboardingRepository.save(onboarding);
+    const updatedEntity = await this.onboardingRepository.save(onboarding);
+
+    return mapOnboardingEntityToDto(updatedEntity);
   }
 
   async remove(id: string) {
-    const onboarding = await this.findOne(id);
+    const onboarding = await this.onboardingRepository.findOne({
+      where: { id },
+    });
 
-    return await this.onboardingRepository.remove(onboarding);
+    if (!onboarding) {
+      throw new NotFoundException('Onboarding was not found');
+    }
+
+    const removedEntity = await this.onboardingRepository.remove(onboarding);
+    return mapOnboardingEntityToDto(removedEntity);
   }
 }

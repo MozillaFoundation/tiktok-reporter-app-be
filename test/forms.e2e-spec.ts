@@ -17,10 +17,12 @@ describe('Forms', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/forms')
       .send(defaultCreateFormDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/forms/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(createResponseBody.id).toBeDefined();
@@ -38,6 +40,7 @@ describe('Forms', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/forms')
       .send({ ...defaultCreateFormDto, name: '' })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.message).toEqual(['name should not be empty']);
@@ -49,6 +52,7 @@ describe('Forms', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/forms')
       .send({ ...defaultCreateFormDto, fields: [] })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.message).toEqual([
@@ -75,6 +79,7 @@ describe('Forms', () => {
           },
         ],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.message).toEqual([
@@ -102,6 +107,7 @@ describe('Forms', () => {
           },
         ],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.message).toEqual([
@@ -130,10 +136,11 @@ describe('Forms', () => {
           },
         ],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.message).toEqual([
-      'Is Required must be a valid boolean;Label must be a valid string;Description must be a valid string;PlaceHolder must be a valid string;Options cannot be empty;Selected must be a valid string value;Has Other Option must be a valid boolean value',
+      'Is Required must be a valid boolean;Label must be a valid string;Description must be a valid string;PlaceHolder must be a valid string;Options cannot be empty;Selected must be a valid string;Has Other Option must be a valid boolean',
     ]);
     expect(createResponseBody.error).toEqual('Bad Request');
     expect(createResponseBody.statusCode).toEqual(400);
@@ -158,6 +165,7 @@ describe('Forms', () => {
           },
         ],
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(createResponseBody.message).toEqual([
@@ -171,10 +179,12 @@ describe('Forms', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/forms')
       .send(defaultCreateFormDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/forms/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(getResponseBody.id).toBeDefined();
@@ -186,6 +196,7 @@ describe('Forms', () => {
   it('findOne returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/forms/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(getResponseBody.message).toEqual(
@@ -198,6 +209,7 @@ describe('Forms', () => {
   it('findOne returns 404 Not Found when non existent id was provided', async () => {
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/forms/${DEFAULT_GUID}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(getResponseBody.message).toEqual('Form was not found');
@@ -209,10 +221,12 @@ describe('Forms', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/forms')
       .send(defaultCreateFormDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get('/forms')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(getResponseBody).toEqual(
@@ -224,10 +238,12 @@ describe('Forms', () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/forms')
       .send(defaultCreateFormDto)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/forms/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
     expect(deleteResponseBody.name).toEqual(defaultCreateFormDto.name);
@@ -238,6 +254,7 @@ describe('Forms', () => {
   it('delete returns 400 Bad Request when invalid id format was provided', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete('/forms/invalidformat')
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(400);
 
     expect(deleteResponseBody.message).toEqual(
@@ -250,6 +267,7 @@ describe('Forms', () => {
   it('delete returns 404 NotFound when no form was found', async () => {
     const { body: deleteResponseBody } = await request(app.getHttpServer())
       .delete(`/forms/${DEFAULT_GUID}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(404);
 
     expect(deleteResponseBody.message).toEqual('Form was not found');

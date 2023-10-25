@@ -13,6 +13,7 @@ import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { Policy } from 'src/policies/entities/policy.entity';
 import { Form } from 'src/forms/entities/form.entity';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 
 @Entity()
 export class Study {
@@ -54,14 +55,11 @@ export class Study {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  // Form:
-  /* studies/id/form
-  Form: 
-    id
-    Type: Recording, Reporting
-    Title
-    fields:{order}
-  */
+  @ManyToOne(() => ApiKey)
+  createdBy: ApiKey;
+
+  @ManyToOne(() => ApiKey)
+  updatedBy: ApiKey;
 
   // @AfterInsert()
   // logAfterInsert() {

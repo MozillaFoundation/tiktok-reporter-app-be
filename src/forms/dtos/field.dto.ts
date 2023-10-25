@@ -1,9 +1,17 @@
-import { IsBoolean, IsEnum, IsString } from 'class-validator';
+import { IsBoolean, IsEnum, IsString, IsUUID } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 import { FieldType } from 'src/forms/types/fields/field.type';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 
 export class FieldDto {
+  @ApiProperty({
+    description: 'The id of the field',
+    type: UUID,
+  })
+  @IsUUID()
+  id: string;
+
   @ApiProperty({
     description: 'The Field Type',
     enum: FieldType,

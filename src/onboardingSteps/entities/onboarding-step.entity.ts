@@ -3,11 +3,13 @@ import {
   CreateDateColumn,
   Entity,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 
 @Entity()
 export class OnboardingStep {
@@ -42,4 +44,10 @@ export class OnboardingStep {
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @ManyToOne(() => ApiKey)
+  createdBy: ApiKey;
+
+  @ManyToOne(() => ApiKey)
+  updatedBy: ApiKey;
 }

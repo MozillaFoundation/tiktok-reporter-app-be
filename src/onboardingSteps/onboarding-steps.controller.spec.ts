@@ -1,4 +1,5 @@
 import {
+  API_KEY_HEADER_VALUE,
   DEFAULT_GUID,
   defaultCreateOnboardingStepDto,
 } from 'src/utils/constants';
@@ -8,12 +9,21 @@ import { NotFoundException } from '@nestjs/common';
 import { OnboardingStepsController } from './onboarding-steps.controller';
 import { OnboardingStepsService } from './onboarding-steps.service';
 import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('OnboardingStepsController', () => {
   let controller: OnboardingStepsController;
+  let configService: ConfigService;
+  let apiKey: string;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({
+          isGlobal: true,
+          envFilePath: `.env.${process.env.NODE_ENV}`,
+        }),
+      ],
       controllers: [OnboardingStepsController],
       providers: [
         {
@@ -26,6 +36,13 @@ describe('OnboardingStepsController', () => {
     controller = module.get<OnboardingStepsController>(
       OnboardingStepsController,
     );
+    configService = module.get<ConfigService>(ConfigService);
+    const onboardingStepsService = module.get<OnboardingStepsService>(
+      OnboardingStepsService,
+    );
+    await onboardingStepsService?.['initApiKey']();
+
+    apiKey = configService.get<string>('API_KEY');
   });
 
   it('should be defined', () => {
@@ -34,6 +51,7 @@ describe('OnboardingStepsController', () => {
 
   it('create returns the newly created onboarding steps', async () => {
     const createdEntity = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
       defaultCreateOnboardingStepDto,
     );
 
@@ -57,6 +75,7 @@ describe('OnboardingStepsController', () => {
 
   it('findAll returns the list of all onboarding steps including the newly created one', async () => {
     const createdEntity = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
       defaultCreateOnboardingStepDto,
     );
 
@@ -64,11 +83,12 @@ describe('OnboardingStepsController', () => {
 
     expect(allEntities).toBeDefined();
     expect(allEntities.length).toBeGreaterThan(0);
-    expect(allEntities).toContain(createdEntity);
+    expect(allEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
   it('findOne returns newly created onboarding step', async () => {
     const createdEntity = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
       defaultCreateOnboardingStepDto,
     );
 
@@ -86,6 +106,7 @@ describe('OnboardingStepsController', () => {
 
   it('update returns the updated onboarding steps with all changes updated', async () => {
     const createdEntity = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
       defaultCreateOnboardingStepDto,
     );
 
@@ -96,14 +117,18 @@ describe('OnboardingStepsController', () => {
     const updatedDetails = 'UPDATED Test Onboarding Step Details';
     const updatedOrder = 2;
 
-    const updatedEntity = await controller.update(createdEntity.id, {
-      title: updatedTitle,
-      subtitle: updatedSubtitle,
-      description: updatedDescription,
-      imageUrl: updatedImageUrl,
-      details: updatedDetails,
-      order: updatedOrder,
-    });
+    const updatedEntity = await controller.update(
+      { [API_KEY_HEADER_VALUE]: apiKey },
+      createdEntity.id,
+      {
+        title: updatedTitle,
+        subtitle: updatedSubtitle,
+        description: updatedDescription,
+        imageUrl: updatedImageUrl,
+        details: updatedDetails,
+        order: updatedOrder,
+      },
+    );
 
     expect(updatedEntity).toBeDefined();
     expect(updatedEntity.title).toEqual(updatedTitle);
@@ -112,18 +137,22 @@ describe('OnboardingStepsController', () => {
     expect(updatedEntity.imageUrl).toEqual(updatedImageUrl);
     expect(updatedEntity.details).toEqual(updatedDetails);
     expect(updatedEntity.order).toEqual(updatedOrder);
-    expect(updatedEntity).toEqual(createdEntity);
   });
 
   it('update returns the updated onboarding step with the partial changes updated', async () => {
     const createdEntity = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
       defaultCreateOnboardingStepDto,
     );
     const updatedTitle = 'UPDATED Title';
 
-    const updatedEntity = await controller.update(createdEntity.id, {
-      title: updatedTitle,
-    });
+    const updatedEntity = await controller.update(
+      { [API_KEY_HEADER_VALUE]: apiKey },
+      createdEntity.id,
+      {
+        title: updatedTitle,
+      },
+    );
 
     expect(updatedEntity).toBeDefined();
     expect(updatedEntity.title).toEqual(updatedTitle);
@@ -141,13 +170,11 @@ describe('OnboardingStepsController', () => {
       defaultCreateOnboardingStepDto.details,
     );
     expect(updatedEntity.order).toEqual(defaultCreateOnboardingStepDto.order);
-
-    expect(updatedEntity).toEqual(createdEntity);
   });
 
   it('update throws error when no onboarding step was found', async () => {
     await expect(
-      controller.update(DEFAULT_GUID, {
+      controller.update({ [API_KEY_HEADER_VALUE]: apiKey }, DEFAULT_GUID, {
         title: 'UPDATED Title',
       }),
     ).rejects.toThrow(NotFoundException);
@@ -155,6 +182,7 @@ describe('OnboardingStepsController', () => {
 
   it('remove removes the onboarding step', async () => {
     const createdEntity = await controller.create(
+      { [API_KEY_HEADER_VALUE]: apiKey },
       defaultCreateOnboardingStepDto,
     );
 

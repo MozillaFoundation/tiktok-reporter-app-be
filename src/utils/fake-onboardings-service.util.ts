@@ -9,11 +9,20 @@ import { fakeOnboardingStepsService } from './fake-onboarding-steps-service.util
 import { getFakeEntityRepository } from './fake-repository.util';
 import { removeDuplicateObjects } from './remove-duplicates';
 import { fakeFormsService } from './fake-forms-service.util';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import {
+  mapOnboardingEntityToDto,
+  mapOnboardingsToDtos,
+} from 'src/onboardings/mappers/mapEntitiesToDto';
 
 const fakeOnboardingRepository = getFakeEntityRepository<Onboarding>();
+const fakeApiKeyRepository = getFakeEntityRepository<ApiKey>();
 
 export const fakeOnboardingsService: Partial<OnboardingsService> = {
-  create: async (createOnboardingDto: CreateOnboardingDto) => {
+  create: async (
+    headerApiKey: string,
+    createOnboardingDto: CreateOnboardingDto,
+  ) => {
     const onboardingSteps = await fakeOnboardingStepsService.findAllById(
       createOnboardingDto.stepIds,
     );
@@ -26,44 +35,60 @@ export const fakeOnboardingsService: Partial<OnboardingsService> = {
 
     const form = await fakeFormsService.findOne(createOnboardingDto.formId);
 
+    const savedApiKey = await fakeApiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
+
     const newOnboarding = {
       name: createOnboardingDto.name,
       steps: onboardingSteps,
       form,
+      createdBy: savedApiKey,
     } as Onboarding;
 
-    const createdOnboarding = fakeOnboardingRepository.create(newOnboarding);
+    const createdOnboarding =
+      await fakeOnboardingRepository.create(newOnboarding);
 
-    const savedOnboarding = fakeOnboardingRepository.save(createdOnboarding);
+    const savedOnboarding =
+      await fakeOnboardingRepository.save(createdOnboarding);
 
-    return await savedOnboarding;
+    return mapOnboardingEntityToDto(savedOnboarding);
   },
   findAll: async () => {
-    return await fakeOnboardingRepository.find();
+    const allOnboardings = await fakeOnboardingRepository.find();
+
+    return mapOnboardingsToDtos(allOnboardings);
   },
   findOne: async (id: string) => {
-    if (!id) {
-      return null;
-    }
-
     const foundOnboarding = await fakeOnboardingRepository.findOneBy({ id });
 
     if (!foundOnboarding) {
       throw new NotFoundException('Onboarding was not found');
     }
 
-    return foundOnboarding;
+    return mapOnboardingEntityToDto(foundOnboarding);
   },
   findAllById: async (policyIds: string[]) => {
-    return await fakeOnboardingRepository.findBy({
+    const allOnboardingsById = await fakeOnboardingRepository.findBy({
       id: In(policyIds),
     });
+
+    return mapOnboardingsToDtos(allOnboardingsById);
   },
-  update: async (id: string, updateOnboardingDto: UpdateOnboardingDto) => {
+  update: async (
+    headerApiKey: string,
+    id: string,
+    updateOnboardingDto: UpdateOnboardingDto,
+  ) => {
     const foundOnboarding = await fakeOnboardingsService.findOne(id);
+
+    const savedApiKey = await fakeApiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
 
     Object.assign(foundOnboarding, {
       name: updateOnboardingDto.name || foundOnboarding.name,
+      updatedBy: savedApiKey,
     });
 
     if (updateOnboardingDto.stepIds) {
@@ -95,11 +120,30 @@ export const fakeOnboardingsService: Partial<OnboardingsService> = {
       });
     }
 
-    return await fakeOnboardingRepository.save(foundOnboarding);
+    const updatedEntity = await fakeOnboardingRepository.save(foundOnboarding);
+
+    return mapOnboardingEntityToDto(updatedEntity);
   },
   remove: async (id: string) => {
-    const foundOnboarding = await fakeOnboardingsService.findOne(id);
+    const foundOnboarding = await fakeOnboardingRepository.findOneBy({ id });
 
-    return await fakeOnboardingRepository.remove(foundOnboarding);
+    if (!foundOnboarding) {
+      throw new NotFoundException('Onboarding was not found');
+    }
+
+    const removedEntity =
+      await fakeOnboardingRepository.remove(foundOnboarding);
+
+    return mapOnboardingEntityToDto(removedEntity);
   },
 };
+
+Object.assign(fakeOnboardingsService, {
+  initApiKey: async () => {
+    const createdApiKey = await fakeApiKeyRepository.create({
+      key: process.env.API_KEY,
+      appName: 'Dev Testing',
+    });
+    await fakeApiKeyRepository.save(createdApiKey);
+  },
+});

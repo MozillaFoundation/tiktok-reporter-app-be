@@ -20,6 +20,7 @@ describe('AppController (e2e)', () => {
     return request(app.getHttpServer())
       .get('/')
       .expect(200)
+      .set({ 'X-API-KEY': process.env.API_KEY })
       .expect('Hello World!');
   });
 });

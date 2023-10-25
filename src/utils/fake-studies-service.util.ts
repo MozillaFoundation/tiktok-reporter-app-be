@@ -11,11 +11,17 @@ import { fakePoliciesService } from './fake-policies-service.util';
 import { getFakeEntityRepository } from './fake-repository.util';
 import { removeDuplicateObjects } from './remove-duplicates';
 import { fakeFormsService } from './fake-forms-service.util';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import {
+  mapStudiesToDtos,
+  mapStudyEntityToDto,
+} from 'src/studies/mappers/mapEntitiesToDto';
 
 const fakeStudyRepository = getFakeEntityRepository<Study>();
+const fakeApiKeyRepository = getFakeEntityRepository<ApiKey>();
 
 export const fakeStudiesService: Partial<StudiesService> = {
-  create: async (createStudyDto: CreateStudyDto) => {
+  create: async (headerApiKey: string, createStudyDto: CreateStudyDto) => {
     const countryCodes = await fakeCountryCodesService.findAllById(
       createStudyDto.countryCodeIds,
     );
@@ -38,6 +44,10 @@ export const fakeStudiesService: Partial<StudiesService> = {
 
     const form = await fakeFormsService.findOne(createStudyDto.formId);
 
+    const savedApiKey = await fakeApiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
+
     const newStudy = {
       name: createStudyDto.name,
       description: createStudyDto.description,
@@ -46,16 +56,18 @@ export const fakeStudiesService: Partial<StudiesService> = {
       policies,
       onboarding,
       form,
+      createdBy: savedApiKey,
     } as Study;
 
-    const createdStudy = fakeStudyRepository.create(newStudy);
-    const savedStudy = fakeStudyRepository.save(createdStudy);
+    const createdStudy = await fakeStudyRepository.create(newStudy);
+    const savedStudy = await fakeStudyRepository.save(createdStudy);
 
-    return await savedStudy;
+    return mapStudyEntityToDto(savedStudy);
   },
   findAll: async () => {
-    const studies = await fakeStudyRepository.find();
-    return studies;
+    const allStudies = await fakeStudyRepository.find();
+
+    return mapStudiesToDtos(allStudies);
   },
   findByCountryCode: async (countryCode: string) => {
     const condition = isUUID(countryCode)
@@ -73,12 +85,14 @@ export const fakeStudiesService: Partial<StudiesService> = {
       return await fakeStudiesService.findAll();
     }
 
-    return await fakeStudyRepository.find({
+    const foundStudies = await fakeStudyRepository.find({
       where: condition,
       relations: {
         countryCodes: true,
       },
     });
+
+    return mapStudiesToDtos(foundStudies);
   },
   findOne: async (id: string) => {
     const foundStudy = await fakeStudyRepository.findOneBy({ id });
@@ -87,17 +101,24 @@ export const fakeStudiesService: Partial<StudiesService> = {
       throw new NotFoundException('Study not found');
     }
 
-    return foundStudy;
+    return mapStudyEntityToDto(foundStudy);
   },
-  update: async (id: string, updateStudyDto: UpdateStudyDto) => {
+  update: async (
+    headerApiKey: string,
+    id: string,
+    updateStudyDto: UpdateStudyDto,
+  ) => {
     const foundStudy = await fakeStudiesService.findOne(id);
-
+    const savedApiKey = await fakeApiKeyRepository.findOne({
+      where: { key: headerApiKey },
+    });
     Object.assign(foundStudy, {
       name: updateStudyDto.name || foundStudy.name,
       description: updateStudyDto.description || foundStudy.description,
       isActive: isDefined(updateStudyDto?.isActive)
         ? updateStudyDto?.isActive
         : foundStudy.isActive,
+      updatedBy: savedApiKey,
     });
 
     if (updateStudyDto.countryCodeIds) {
@@ -156,11 +177,28 @@ export const fakeStudiesService: Partial<StudiesService> = {
       });
     }
 
-    return await fakeStudyRepository.save(foundStudy);
+    const updatedStudy = await fakeStudyRepository.save(foundStudy);
+
+    return mapStudyEntityToDto(updatedStudy);
   },
   remove: async (id: string) => {
-    const foundStudy = await fakeStudiesService.findOne(id);
+    const foundStudy = await fakeStudyRepository.findOneBy({ id });
 
-    return await fakeStudyRepository.remove(foundStudy);
+    if (!foundStudy) {
+      throw new NotFoundException('Study not found');
+    }
+    const removedStudy = await fakeStudyRepository.remove(foundStudy);
+
+    return mapStudyEntityToDto(removedStudy);
   },
 };
+
+Object.assign(fakeStudiesService, {
+  initApiKey: async () => {
+    const createdApiKey = await fakeApiKeyRepository.create({
+      key: process.env.API_KEY,
+      appName: 'Dev Testing',
+    });
+    await fakeApiKeyRepository.save(createdApiKey);
+  },
+});
