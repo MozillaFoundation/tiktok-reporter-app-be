@@ -64,6 +64,16 @@ describe('Policies', () => {
     expect(getResponseBody.statusCode).toEqual(400);
   });
 
+  it('findOne returns 404 Not Found when non existent id was provided', async () => {
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/policies/${DEFAULT_GUID}`)
+      .expect(404);
+
+    expect(getResponseBody.message).toEqual('Policy was not found');
+    expect(getResponseBody.error).toEqual('Not Found');
+    expect(getResponseBody.statusCode).toEqual(404);
+  });
+
   it('handles a findAll policies request', async () => {
     const { body: createResponseBody } = await request(app.getHttpServer())
       .post('/policies')

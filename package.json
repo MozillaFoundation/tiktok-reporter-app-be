@@ -85,13 +85,15 @@
       ".module.ts",
       ".entity.ts",
       ".dto.ts",
-      ".util.ts"
+      ".util.ts",
+      ".field.ts"
     ],
     "coveragePathIgnorePatterns": [
       ".module.ts",
       ".entity.ts",
       ".dto.ts",
-      ".util.ts"
+      ".util.ts",
+      ".field.ts"
     ]
   }
 }

@@ -2,7 +2,6 @@ import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
   isBoolean,
-  isEmpty,
   isString,
 } from 'class-validator';
 
@@ -13,8 +12,9 @@ import { Injectable } from '@nestjs/common';
 import { SliderFieldDto } from '../dtos/slider-field.dto';
 import { TextFieldDto } from 'src/forms/dtos/text-field.dto';
 import { ValidationResult } from '../types/validation-result';
+import { isFilledArray } from 'src/utils/isFilledArray';
 import { validateDropDownField } from './drop-down-field.validator';
-import { validateSliderField } from './slider-field.validator copy';
+import { validateSliderField } from './slider-field.validator';
 import { validateTextField } from './text-field.validator';
 
 @ValidatorConstraint({ name: 'FormField' })
@@ -27,7 +27,7 @@ export class FormFieldValidator implements ValidatorConstraintInterface {
       this.messages = [];
       let isValid = true;
 
-      if (isEmpty(fieldDtos)) {
+      if (!isFilledArray(fieldDtos)) {
         this.messages.push('The fields property cannot be empty');
         return false;
       }
@@ -41,6 +41,11 @@ export class FormFieldValidator implements ValidatorConstraintInterface {
         if (!isString(fieldDto.label)) {
           isValid = false;
           this.messages.push('Label must be a valid string');
+        }
+
+        if (!isString(fieldDto.description)) {
+          isValid = false;
+          this.messages.push('Description must be a valid string');
         }
 
         const validationResult = this.validateField(fieldDto);

@@ -7,6 +7,7 @@ import {
 } from 'typeorm';
 import { arrayNotEmpty, isArray, isEmpty } from 'class-validator';
 
+import { isFilledArray } from './isFilledArray';
 import { randomUuidv4 } from './generate-uuid';
 
 export function getFakeEntityRepository<TEntity>(): Partial<
@@ -26,7 +27,7 @@ export function getFakeEntityRepository<TEntity>(): Partial<
       filteredEntities = entities.filter((entity) => {
         if (
           condition?.[firstConditionKey].type === 'isNull' &&
-          isEmpty(entity?.['first'])
+          isEmpty(entity?.[first])
         ) {
           return true;
         }
@@ -44,7 +45,8 @@ export function getFakeEntityRepository<TEntity>(): Partial<
 
       if (firstWhereCondition[firstWhereKey].type === 'isNull') {
         filteredEntities = entities.filter(
-          (entity) => isEmpty(entity[key]) || !arrayNotEmpty(entity[key]),
+          (entity) =>
+            !isFilledArray(entity[key]) || !arrayNotEmpty(entity[key]),
         );
         continue;
       }

@@ -9,7 +9,7 @@ import { Form } from './entities/form.entity';
 import { CreateFormDto } from './dtos/create-form.dto';
 
 import { mapFormFields } from './mappers/form-fields.mapper';
-import { isEmpty } from 'class-validator';
+import { isFilledArray } from 'src/utils/isFilledArray';
 
 @Injectable()
 export class FormsService {
@@ -20,7 +20,7 @@ export class FormsService {
   async create(createFormDto: CreateFormDto) {
     const mappedFields = mapFormFields(createFormDto.fields);
 
-    if (isEmpty(mappedFields)) {
+    if (!isFilledArray(mappedFields)) {
       throw new BadRequestException(
         'The form must include at least one field.',
       );

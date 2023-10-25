@@ -10,6 +10,7 @@ export class CreateFormDto {
     type: String,
   })
   @IsString()
+  @IsNotEmpty()
   name: string;
 
   @ApiProperty({
@@ -17,7 +18,6 @@ export class CreateFormDto {
     type: [FieldDto],
   })
   @IsArray()
-  @IsNotEmpty()
   @AreFieldsValid()
   fields: FieldDto[];
 }

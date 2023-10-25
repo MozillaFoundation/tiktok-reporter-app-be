@@ -1,10 +1,11 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { getFakeEntityRepository } from './fake-repository.util';
-import { FormsService } from 'src/forms/forms.service';
+
 import { CreateFormDto } from 'src/forms/dtos/create-form.dto';
 import { Form } from 'src/forms/entities/form.entity';
+import { FormsService } from 'src/forms/forms.service';
+import { getFakeEntityRepository } from './fake-repository.util';
+import { isFilledArray } from './isFilledArray';
 import { mapFormFields } from 'src/forms/mappers/form-fields.mapper';
-import { isEmpty } from 'class-validator';
 
 const fakeFormRepository = getFakeEntityRepository<Form>();
 
@@ -12,7 +13,7 @@ export const fakeFormsService: Partial<FormsService> = {
   create: async (createFormDto: CreateFormDto) => {
     const mappedFields = mapFormFields(createFormDto.fields);
 
-    if (isEmpty(mappedFields)) {
+    if (!isFilledArray(mappedFields)) {
       throw new BadRequestException(
         'The form must include at least one field.',
       );
