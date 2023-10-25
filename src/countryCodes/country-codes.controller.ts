@@ -8,6 +8,7 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpStatus,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -16,7 +17,9 @@ import { CreateCountryCodeDto } from './dtos/create-country-code.dto';
 import { UpdateCountryCodeDto } from './dtos/update-country-code.dto';
 import { CountryCodeDto } from './dtos/country-code.dto';
 import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
+import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
 
+@UseInterceptors(SentryInterceptor)
 @Controller('country-codes')
 @ApiTags('Country Codes')
 export class CountryCodesController {

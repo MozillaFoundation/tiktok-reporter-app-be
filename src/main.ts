@@ -3,6 +3,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import * as Sentry from '@sentry/node';
 
 const port = process.env.PORT || 8080;
 
@@ -19,6 +20,10 @@ async function bootstrap() {
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, document);
+
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN_URL || 'SENTRY_DSN_URL',
+  });
 
   await app.listen(port);
 }

@@ -8,13 +8,16 @@ import {
   Param,
   ParseUUIDPipe,
   Post,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { FormDto } from './dtos/form.dto';
 import { FormsService } from './forms.service';
 import { CreateFormDto } from './dtos/create-form.dto';
 import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
+import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
 
+@UseInterceptors(SentryInterceptor)
 @Controller('forms')
 @ApiTags('Forms')
 export class FormsController {

@@ -8,6 +8,7 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpStatus,
+  UseInterceptors,
 } from '@nestjs/common';
 import { StudiesService } from './studies.service';
 import { CreateStudyDto } from './dto/create-study.dto';
@@ -15,7 +16,9 @@ import { UpdateStudyDto } from './dto/update-study.dto';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
 import { StudyDto } from './dto/study.dto';
+import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
 
+@UseInterceptors(SentryInterceptor)
 @Controller('studies')
 @ApiTags('Studies')
 export class StudiesController {

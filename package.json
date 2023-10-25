@@ -27,6 +27,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.13",
     "@nestjs/typeorm": "^10.0.0",
+    "@sentry/node": "^7.75.0",
     "@types/cookie-session": "^2.0.45",
     "@willsoto/nestjs-prometheus": "^6.0.0",
     "class-transformer": "^0.5.1",

@@ -8,6 +8,7 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpStatus,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -16,7 +17,9 @@ import { CreateOnboardingStepDto } from './dtos/create-onboarding-step.dto';
 import { UpdateOnboardingStepDto } from './dtos/update-onboarding-step.dto';
 import { OnboardingStepDto } from './dtos/onboarding-step.dto';
 import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
+import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
 
+@UseInterceptors(SentryInterceptor)
 @Controller('onboarding-steps')
 @ApiTags('Onboarding Steps')
 export class OnboardingStepsController {

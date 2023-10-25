@@ -8,6 +8,7 @@ import {
   Delete,
   ParseUUIDPipe,
   HttpStatus,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { PoliciesService } from './policies.service';
@@ -16,7 +17,9 @@ import { UpdatePolicyDto } from './dtos/update-policy.dto';
 import { ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PolicyDto } from './dtos/policy.dto';
 import { ApiErrorDecorator } from 'src/common/decorator/error/error.decorator';
+import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
 
+@UseInterceptors(SentryInterceptor)
 @Controller('policies')
 @ApiTags('Policies')
 export class PoliciesController {

@@ -14,6 +14,7 @@ import { SeedersModule } from './seeders/seeders.module';
 import { StudiesModule } from './studies/studies.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { LoggingInterceptor } from './interceptors/logging.interceptor';
+import { SentryInterceptor } from './interceptors/sentry.interceptor';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { LoggingInterceptor } from './interceptors/logging.interceptor';
   controllers: [AppController],
   providers: [
     AppService,
+    SentryInterceptor,
     {
       provide: APP_INTERCEPTOR,
       useClass: LoggingInterceptor,
