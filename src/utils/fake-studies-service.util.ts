@@ -1,21 +1,21 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { isDefined, isUUID } from 'class-validator';
+import {
+  mapStudiesToDtos,
+  mapStudyEntityToDto,
+} from 'src/studies/mappers/mapEntitiesToDto';
 
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 import { CreateStudyDto } from 'src/studies/dto/create-study.dto';
 import { StudiesService } from 'src/studies/studies.service';
 import { Study } from 'src/studies/entities/study.entity';
 import { UpdateStudyDto } from 'src/studies/dto/update-study.dto';
 import { fakeCountryCodesService } from './fake-country-codes-service.util';
+import { fakeFormsService } from './fake-forms-service.util';
 import { fakeOnboardingsService } from './fake-onboardings-service.util';
 import { fakePoliciesService } from './fake-policies-service.util';
 import { getFakeEntityRepository } from './fake-repository.util';
 import { removeDuplicateObjects } from './remove-duplicates';
-import { fakeFormsService } from './fake-forms-service.util';
-import { ApiKey } from 'src/auth/entities/api-key.entity';
-import {
-  mapStudiesToDtos,
-  mapStudyEntityToDto,
-} from 'src/studies/mappers/mapEntitiesToDto';
 
 const fakeStudyRepository = getFakeEntityRepository<Study>();
 const fakeApiKeyRepository = getFakeEntityRepository<ApiKey>();
@@ -69,7 +69,7 @@ export const fakeStudiesService: Partial<StudiesService> = {
 
     return mapStudiesToDtos(allStudies);
   },
-  findByCountryCode: async (countryCode: string) => {
+  findByIpAddress: async (countryCode: string) => {
     const condition = isUUID(countryCode)
       ? { countryCodes: { id: countryCode } }
       : { countryCodes: { code: countryCode } };

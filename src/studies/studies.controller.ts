@@ -21,6 +21,7 @@ import { StudyDto } from './dto/study.dto';
 import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
 import { AuthGuard } from '@nestjs/passport';
 import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
+import { RealIP } from 'nestjs-real-ip';
 
 @UseInterceptors(SentryInterceptor)
 @ApiTags('Studies')
@@ -58,13 +59,13 @@ export class StudiesController {
     return this.studiesService.findAll();
   }
 
-  @Get('country-codes/:countryCode')
+  @Get('by-country-code')
   @ApiResponse({
     status: 200,
     type: [StudyDto],
   })
-  findByCountryCode(@Param('countryCode') countryCode: string) {
-    return this.studiesService.findByCountryCode(countryCode);
+  findByIpAddress(@RealIP() ipAddress: string) {
+    return this.studiesService.findByIpAddress(ipAddress);
   }
 
   @Get(':id')

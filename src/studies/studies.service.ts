@@ -9,7 +9,7 @@ import { Study } from './entities/study.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
-import { isDefined, isUUID } from 'class-validator';
+import { isDefined } from 'class-validator';
 import { removeDuplicateObjects } from 'src/utils/remove-duplicates';
 import { PoliciesService } from 'src/policies/policies.service';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
@@ -19,10 +19,12 @@ import {
   mapStudiesToDtos,
   mapStudyEntityToDto,
 } from './mappers/mapEntitiesToDto';
+import { GeolocationService } from 'src/geolocation/geo-location.service';
 
 @Injectable()
 export class StudiesService {
   constructor(
+    private readonly geolocationService: GeolocationService,
     private readonly countryCodeService: CountryCodesService,
     private readonly policiesService: PoliciesService,
     private readonly onboardingsService: OnboardingsService,
@@ -89,21 +91,12 @@ export class StudiesService {
     return mapStudiesToDtos(allStudies);
   }
 
-  async findByCountryCode(countryCode: string) {
-    const condition = isUUID(countryCode)
-      ? { countryCodes: { id: countryCode } }
-      : { countryCodes: { code: countryCode } };
-
-    const areStudiesAvailable = await this.studyRepository.exist({
-      where: condition,
-    });
-
-    if (!areStudiesAvailable) {
-      return await this.findAll();
-    }
+  async findByIpAddress(ipAddress: string) {
+    const userCountryCode =
+      await this.geolocationService.getCountryCodeByIpAddress(ipAddress);
 
     const foundStudies = await this.studyRepository.find({
-      where: condition,
+      where: { countryCodes: { code: userCountryCode } },
       relations: {
         countryCodes: true,
         policies: true,

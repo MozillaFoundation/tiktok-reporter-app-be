@@ -1,4 +1,3 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common';
 import {
   API_KEY_HEADER_VALUE,
   DEFAULT_GUID,
@@ -9,10 +8,16 @@ import {
   defaultCreatePolicyDto,
   defaultCreateStudyDto,
 } from 'src/utils/constants';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { CountryCodeDto } from 'src/countryCodes/dtos/country-code.dto';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
+import { FormDto } from 'src/forms/dtos/form.dto';
+import { OnboardingDto } from 'src/onboardings/dtos/onboarding.dto';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
+import { PolicyDto } from 'src/policies/dtos/policy.dto';
 import { PolicyType } from 'src/types/policy.type';
 import { StudiesController } from './studies.controller';
 import { StudiesService } from './studies.service';
@@ -22,11 +27,6 @@ import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-serv
 import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
 import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
 import { fakeStudiesService } from 'src/utils/fake-studies-service.util';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { CountryCodeDto } from 'src/countryCodes/dtos/country-code.dto';
-import { PolicyDto } from 'src/policies/dtos/policy.dto';
-import { OnboardingDto } from 'src/onboardings/dtos/onboarding.dto';
-import { FormDto } from 'src/forms/dtos/form.dto';
 
 describe('StudiesController', () => {
   let controller: StudiesController;
@@ -263,7 +263,7 @@ describe('StudiesController', () => {
     );
   });
 
-  it('findByCountryCode returns newly created study when querying by id', async () => {
+  it('findByIpAddress returns newly created study when querying by id', async () => {
     const createdEntity = await controller.create(
       { [API_KEY_HEADER_VALUE]: apiKey },
       {
@@ -275,15 +275,13 @@ describe('StudiesController', () => {
       },
     );
 
-    const foundEntities = await controller.findByCountryCode(
-      firstCountryCode.id,
-    );
+    const foundEntities = await controller.findByIpAddress(firstCountryCode.id);
 
     expect(foundEntities).toBeDefined();
     expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
-  it('findByCountryCode returns newly created study when querying by country code value', async () => {
+  it('findByIpAddress returns newly created study when querying by country code value', async () => {
     const createdEntity = await controller.create(
       { [API_KEY_HEADER_VALUE]: apiKey },
       {
@@ -295,7 +293,7 @@ describe('StudiesController', () => {
       },
     );
 
-    const foundEntities = await controller.findByCountryCode(
+    const foundEntities = await controller.findByIpAddress(
       firstCountryCode.code,
     );
 
@@ -303,7 +301,7 @@ describe('StudiesController', () => {
     expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
-  it('findByCountryCode returns all studies when no study can be found', async () => {
+  it('findByIpAddress returns all studies when no study can be found', async () => {
     const newCreatedStudy = await controller.create(
       { [API_KEY_HEADER_VALUE]: apiKey },
       {
@@ -315,7 +313,7 @@ describe('StudiesController', () => {
       },
     );
 
-    const foundEntities = await controller.findByCountryCode(
+    const foundEntities = await controller.findByIpAddress(
       'Non existent country code',
     );
     expect(foundEntities).toBeDefined();

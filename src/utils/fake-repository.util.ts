@@ -43,7 +43,10 @@ export function getFakeEntityRepository<TEntity>(): Partial<
       const [firstWhereKey] = Object.keys(options.where[key]);
       const firstWhereCondition = options.where[key];
 
-      if (firstWhereCondition[firstWhereKey].type === 'isNull') {
+      if (
+        firstWhereCondition[firstWhereKey] !== null &&
+        firstWhereCondition[firstWhereKey].type === 'isNull'
+      ) {
         filteredEntities = entities.filter(
           (entity) =>
             !isFilledArray(entity[key]) || !arrayNotEmpty(entity[key]),
@@ -54,6 +57,9 @@ export function getFakeEntityRepository<TEntity>(): Partial<
       filteredEntities = entities.filter((entity) => {
         if (isArray(entity[key])) {
           return entity[key].find((foundEntity) => {
+            if (!options.where[key]?.[firstWhereKey]) {
+              return true;
+            }
             return (
               foundEntity?.[firstWhereKey] ===
               options.where[key]?.[firstWhereKey]

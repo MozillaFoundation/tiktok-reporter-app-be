@@ -1,5 +1,5 @@
 import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
-import { Module } from '@nestjs/common';
+import { Logger, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -31,6 +31,8 @@ import { randomUuidv4 } from 'src/utils/generate-uuid';
   ],
 })
 export class SeedersModule {
+  private readonly logger = new Logger(SeedersModule.name);
+
   constructor(
     @InjectRepository(ApiKey)
     private readonly apiKeyRepository: Repository<ApiKey>,
@@ -69,7 +71,7 @@ export class SeedersModule {
       const onboarding = await this.seedOnboardings(seederKey);
       await this.seedStudies(seederKey, onboarding);
     } catch (error) {
-      console.error('Something went wrong while seeding', error.message);
+      this.logger.error('Something went wrong while seeding', error.message);
     }
   }
 

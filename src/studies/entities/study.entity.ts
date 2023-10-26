@@ -9,11 +9,11 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
+import { Form } from 'src/forms/entities/form.entity';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { Policy } from 'src/policies/entities/policy.entity';
-import { Form } from 'src/forms/entities/form.entity';
-import { ApiKey } from 'src/auth/entities/api-key.entity';
 
 @Entity()
 export class Study {
@@ -60,19 +60,4 @@ export class Study {
 
   @ManyToOne(() => ApiKey)
   updatedBy: ApiKey;
-
-  // @AfterInsert()
-  // logAfterInsert() {
-  //   console.log(`New study with id ${this.id} has been inserted.`);
-  // }
-
-  // @AfterUpdate()
-  // logAfterUpdate() {
-  //   console.log(`New study with id ${this.id} has been updated.`);
-  // }
-
-  // @AfterRemove()
-  // logAfterRemove() {
-  //   console.log(`New study with id ${this.id} has been removed.`);
-  // }
 }

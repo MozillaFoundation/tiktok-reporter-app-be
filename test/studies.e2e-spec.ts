@@ -518,11 +518,11 @@ describe('Study', () => {
     expect(createResponseBody.statusCode).toEqual(404);
   });
 
-  it('handles a findByCountryCode study request returns study by country code id', async () => {
+  it('handles a findByIpAddress study request returns all studies when ip address is reserved', async () => {
     const studyName = 'Test Create Second Study';
     const studyDescription = 'Test Create Second Study DESCRIPTION';
 
-    await request(app.getHttpServer())
+    const { body: createdResponseBody } = await request(app.getHttpServer())
       .post('/studies')
       .send({
         name: studyName,
@@ -537,54 +537,23 @@ describe('Study', () => {
       .expect(201);
 
     const { body: getResponseBody } = await request(app.getHttpServer())
-      .get(`/studies/country-codes/${firstCountryCode.id}`)
+      .get(`/studies/by-country-code`)
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
-    expect(getResponseBody.at(0).name).toEqual(studyName);
-    expect(getResponseBody.at(0).description).toEqual(studyDescription);
-    expect(getResponseBody.at(0).isActive).toEqual(true);
-    expect(getResponseBody.at(0).isActive).toEqual(true);
-    expect(getResponseBody.at(0).countryCodes.at(0).id).toEqual(
+    const foundCreatedStudy = getResponseBody.find(
+      (study) => study.id === createdResponseBody.id,
+    );
+
+    expect(foundCreatedStudy.name).toEqual(studyName);
+    expect(foundCreatedStudy.description).toEqual(studyDescription);
+    expect(foundCreatedStudy.isActive).toEqual(true);
+    expect(foundCreatedStudy.countryCodes.at(0).id).toEqual(
       firstCountryCode.id,
     );
-    expect(getResponseBody.at(0).policies.at(0).id).toEqual(firstPolicy.id);
-    expect(getResponseBody.at(0).onboarding.id).toEqual(firstOnboarding.id);
-    expect(getResponseBody.at(0).form.id).toEqual(firstStudyForm.id);
-  });
-
-  it('handles a findByCountryCode study request returns study by country code value', async () => {
-    const studyName = 'Test Create Second Study';
-    const studyDescription = 'Test Create Second Study DESCRIPTION';
-
-    await request(app.getHttpServer())
-      .post('/studies')
-      .send({
-        name: studyName,
-        description: studyDescription,
-        isActive: true,
-        countryCodeIds: [firstCountryCode.id],
-        policyIds: [firstPolicy.id],
-        onboardingId: firstOnboarding.id,
-        formId: firstStudyForm.id,
-      })
-      .set({ 'X-API-KEY': process.env.API_KEY })
-      .expect(201);
-
-    const { body: getResponseBody } = await request(app.getHttpServer())
-      .get(`/studies/country-codes/${firstCountryCode.code}`)
-      .set({ 'X-API-KEY': process.env.API_KEY })
-      .expect(200);
-
-    expect(getResponseBody.at(0).name).toEqual(studyName);
-    expect(getResponseBody.at(0).description).toEqual(studyDescription);
-    expect(getResponseBody.at(0).isActive).toEqual(true);
-    expect(getResponseBody.at(0).countryCodes.at(0).id).toEqual(
-      firstCountryCode.id,
-    );
-    expect(getResponseBody.at(0).policies.at(0).id).toEqual(firstPolicy.id);
-    expect(getResponseBody.at(0).onboarding.id).toEqual(firstOnboarding.id);
-    expect(getResponseBody.at(0).form.id).toEqual(firstStudyForm.id);
+    expect(foundCreatedStudy.policies.at(0).id).toEqual(firstPolicy.id);
+    expect(foundCreatedStudy.onboarding.id).toEqual(firstOnboarding.id);
+    expect(foundCreatedStudy.form.id).toEqual(firstStudyForm.id);
   });
 
   it('handles a findOne study request', async () => {

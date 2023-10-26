@@ -1,6 +1,8 @@
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import {
   DEFAULT_GUID,
+  DEFAULT_IP_ADDRESS_FOR_TESTING,
   defaultCreateCountryCodeDto,
   defaultCreateFormDto,
   defaultCreateOnboardingDto,
@@ -10,27 +12,28 @@ import {
 } from 'src/utils/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { CountryCodeDto } from 'src/countryCodes/dtos/country-code.dto';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
+import { FormDto } from 'src/forms/dtos/form.dto';
 import { FormsService } from 'src/forms/forms.service';
+import { GeolocationService } from 'src/geolocation/geo-location.service';
+import { OnboardingDto } from 'src/onboardings/dtos/onboarding.dto';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { PoliciesService } from 'src/policies/policies.service';
+import { PolicyDto } from 'src/policies/dtos/policy.dto';
 import { PolicyType } from 'src/types/policy.type';
 import { Repository } from 'typeorm';
 import { StudiesService } from './studies.service';
 import { Study } from './entities/study.entity';
 import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
 import { fakeFormsService } from 'src/utils/fake-forms-service.util';
+import { fakeGeolocationService } from 'src/utils/fake-geo-location-service.util';
 import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
 import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
 import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ApiKey } from 'src/auth/entities/api-key.entity';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { PolicyDto } from 'src/policies/dtos/policy.dto';
-import { OnboardingDto } from 'src/onboardings/dtos/onboarding.dto';
-import { FormDto } from 'src/forms/dtos/form.dto';
-import { CountryCodeDto } from 'src/countryCodes/dtos/country-code.dto';
 
 describe('StudiesService', () => {
   let service: StudiesService;
@@ -125,6 +128,7 @@ describe('StudiesService', () => {
         { provide: PoliciesService, useValue: fakePoliciesService },
         { provide: OnboardingsService, useValue: fakeOnboardingsService },
         { provide: FormsService, useValue: fakeFormsService },
+        { provide: GeolocationService, useValue: fakeGeolocationService },
         {
           provide: REPOSITORY_TOKEN,
           useValue: getFakeEntityRepository<Study>(),
@@ -306,7 +310,7 @@ describe('StudiesService', () => {
     );
   });
 
-  it('findByCountryCode returns newly created study when querying by id', async () => {
+  it('findByIpAddress returns newly created study when querying by id', async () => {
     const createdEntity = await service.create(apiKey, {
       ...defaultCreateStudyDto,
       countryCodeIds: [firstCountryCode.id],
@@ -315,30 +319,32 @@ describe('StudiesService', () => {
       formId: firstStudyForm.id,
     });
 
-    const foundEntities = await service.findByCountryCode(firstCountryCode.id);
-
-    expect(foundEntities).toBeDefined();
-    expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
-  });
-
-  it('findByCountryCode returns newly created study when querying by country code value', async () => {
-    const createdEntity = await service.create(apiKey, {
-      ...defaultCreateStudyDto,
-      countryCodeIds: [firstCountryCode.id],
-      policyIds: [firstPolicy.id],
-      onboardingId: firstOnboarding.id,
-      formId: firstStudyForm.id,
-    });
-
-    const foundEntities = await service.findByCountryCode(
-      firstCountryCode.code,
+    const foundEntities = await service.findByIpAddress(
+      DEFAULT_IP_ADDRESS_FOR_TESTING,
     );
 
     expect(foundEntities).toBeDefined();
     expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
-  it('findByCountryCode returns all studies when no study can be found', async () => {
+  it('findByIpAddress returns newly created study when querying by country code value', async () => {
+    const createdEntity = await service.create(apiKey, {
+      ...defaultCreateStudyDto,
+      countryCodeIds: [firstCountryCode.id],
+      policyIds: [firstPolicy.id],
+      onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
+    });
+
+    const foundEntities = await service.findByIpAddress(
+      DEFAULT_IP_ADDRESS_FOR_TESTING,
+    );
+
+    expect(foundEntities).toBeDefined();
+    expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
+  });
+
+  it('findByIpAddress returns all studies when no study can be found', async () => {
     const newCreatedStudy = await service.create(apiKey, {
       ...defaultCreateStudyDto,
       countryCodeIds: [firstCountryCode.id],
@@ -347,8 +353,8 @@ describe('StudiesService', () => {
       formId: firstStudyForm.id,
     });
 
-    const foundEntities = await service.findByCountryCode(
-      'Non existent country code',
+    const foundEntities = await service.findByIpAddress(
+      'Non existent ip address',
     );
 
     expect(foundEntities).toBeDefined();

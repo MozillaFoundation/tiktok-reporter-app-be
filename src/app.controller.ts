@@ -49,8 +49,6 @@ export class AppController {
       async () => this.db.pingCheck('typeorm'),
       async () =>
         this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.5 }),
-      async () => this.memory.checkHeap('memory_heap', 750 * 1024 * 1024),
-      async () => this.memory.checkRSS('memory_rss', 750 * 1024 * 1024),
     ]);
   }
 

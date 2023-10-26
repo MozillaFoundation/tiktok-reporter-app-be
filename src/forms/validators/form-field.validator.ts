@@ -1,3 +1,4 @@
+import { Injectable, Logger } from '@nestjs/common';
 import {
   ValidatorConstraint,
   ValidatorConstraintInterface,
@@ -8,7 +9,6 @@ import {
 import { DropDownFieldDto } from '../dtos/drop-down-field.dto';
 import { FieldDto } from 'src/forms/dtos/field.dto';
 import { FieldType } from 'src/forms/types/fields/field.type';
-import { Injectable } from '@nestjs/common';
 import { SliderFieldDto } from '../dtos/slider-field.dto';
 import { TextFieldDto } from 'src/forms/dtos/text-field.dto';
 import { ValidationResult } from '../types/validation-result';
@@ -21,6 +21,7 @@ import { validateTextField } from './text-field.validator';
 @Injectable()
 export class FormFieldValidator implements ValidatorConstraintInterface {
   private messages: Array<string>;
+  private readonly logger = new Logger(FormFieldValidator.name);
 
   validate(fieldDtos: Array<FieldDto>): boolean {
     try {
@@ -56,7 +57,7 @@ export class FormFieldValidator implements ValidatorConstraintInterface {
       return isValid;
     } catch (e) {
       this.messages.push('Something went wrong while validating the fields');
-      console.log('Something went wrong while validating the fields', e);
+      this.logger.error('Something went wrong while validating the fields', e);
       return false;
     }
   }
