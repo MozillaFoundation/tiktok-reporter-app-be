@@ -16,11 +16,19 @@ describe('AppController (e2e)', () => {
     await app.init();
   });
 
-  it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .set({ 'X-API-KEY': process.env.API_KEY })
-      .expect('Hello World!');
+  it('default call returns 200', () => {
+    return request(app.getHttpServer()).get('/').expect(200);
+  });
+
+  it('returns 200 for load balancer heartbeat', () => {
+    return request(app.getHttpServer()).get('/__lbheartbeat__').expect(200);
+  });
+
+  it('returns 200 for version', () => {
+    return request(app.getHttpServer()).get('/__version__').expect(200);
+  });
+
+  it('returns 200 for heartbeat', () => {
+    return request(app.getHttpServer()).get('/__heartbeat__').expect(200);
   });
 });

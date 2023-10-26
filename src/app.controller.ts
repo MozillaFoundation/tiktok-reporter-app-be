@@ -1,23 +1,62 @@
-import { Controller, Get, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  HttpCode,
+  UseInterceptors,
+} from '@nestjs/common';
+import {
+  DiskHealthIndicator,
+  HealthCheckService,
+  HttpHealthIndicator,
+  MemoryHealthIndicator,
+  TypeOrmHealthIndicator,
+} from '@nestjs/terminus';
 
-import { AppService } from './app.service';
+import { HealthCheck } from '@nestjs/terminus';
 import { SentryInterceptor } from './interceptors/sentry.interceptor';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiHeader } from '@nestjs/swagger';
+import { readFileSync } from 'fs';
 
 @UseInterceptors(SentryInterceptor)
-@UseGuards(AuthGuard('api-key'))
 @Controller()
-@ApiHeader({
-  name: 'X-API-KEY',
-  description: 'Mandatory API Key to use the regrets reporter API',
-  required: true,
-})
 export class AppController {
-  constructor(private readonly appService: AppService) {}
+  constructor(
+    private http: HttpHealthIndicator,
+    private health: HealthCheckService,
+    private readonly disk: DiskHealthIndicator,
+    private db: TypeOrmHealthIndicator,
+    private memory: MemoryHealthIndicator,
+  ) {}
 
   @Get()
-  getHello(): string {
-    return `${this.appService.getHello()}`;
+  @HttpCode(200)
+  getBasicApp() {
+    // This handler will return a 200 status response, this is for basic app check
+  }
+
+  @Get('__version__')
+  @Header('Content-Type', 'application/json')
+  getVersion(): string {
+    const data = readFileSync('./version.json');
+    return data.toString();
+  }
+
+  @Get('__heartbeat__')
+  @HealthCheck()
+  getHealthCheck() {
+    return this.health.check([
+      async () => this.http.pingCheck('basic app check', process.env.APP_URL),
+      async () => this.db.pingCheck('typeorm'),
+      async () =>
+        this.disk.checkStorage('storage', { path: '/', thresholdPercent: 0.5 }),
+      async () => this.memory.checkHeap('memory_heap', 750 * 1024 * 1024),
+      async () => this.memory.checkRSS('memory_rss', 750 * 1024 * 1024),
+    ]);
+  }
+
+  @Get('__lbheartbeat__')
+  @HttpCode(200)
+  getLoadBalancerHeaCheck() {
+    // This handler will return a 200 status response, this is for load balancer checks
   }
 }

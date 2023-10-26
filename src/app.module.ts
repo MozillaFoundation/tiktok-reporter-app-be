@@ -1,21 +1,22 @@
+import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { Module, ValidationPipe } from '@nestjs/common';
 
-import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { ConfigModule } from '@nestjs/config';
 import { CountryCodesModule } from './countryCodes/country-codes.module';
 import { DataBaseModule } from './database/database.module';
 import { FormsModule } from './forms/forms.module';
+import { HttpModule } from '@nestjs/axios';
+import { LoggingInterceptor } from './interceptors/logging.interceptor';
 import { OnboardingStepsModule } from './onboardingSteps/onboarding-steps.module';
 import { OnboardingsModule } from './onboardings/onboardings.module';
 import { PoliciesModule } from './policies/policies.module';
-import { SeedersModule } from './seeders/seeders.module';
-import { StudiesModule } from './studies/studies.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
-import { LoggingInterceptor } from './interceptors/logging.interceptor';
+import { SeedersModule } from './seeders/seeders.module';
 import { SentryInterceptor } from './interceptors/sentry.interceptor';
-import { AuthModule } from './auth/auth.module';
+import { StudiesModule } from './studies/studies.module';
+import { TerminusModule } from '@nestjs/terminus';
 
 @Module({
   imports: [
@@ -33,10 +34,11 @@ import { AuthModule } from './auth/auth.module';
     OnboardingsModule,
     FormsModule,
     SeedersModule,
+    TerminusModule,
+    HttpModule,
   ],
   controllers: [AppController],
   providers: [
-    AppService,
     SentryInterceptor,
     {
       provide: APP_INTERCEPTOR,
