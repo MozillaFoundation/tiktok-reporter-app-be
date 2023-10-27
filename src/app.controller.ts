@@ -37,7 +37,7 @@ export class AppController {
   @Get('__version__')
   @Header('Content-Type', 'application/json')
   getVersion(): string {
-    const data = readFileSync('./version.json');
+    const data = readFileSync('./src/version.json');
     return data.toString();
   }
 
