@@ -44,6 +44,7 @@ export class GeolocationService {
 
       return userCountry.country.isoCode.toLowerCase();
     } catch (error) {
+      // In e2e tests this error is fine
       this.logger.error(
         'Something went wrong while retrieving country code',
         error,

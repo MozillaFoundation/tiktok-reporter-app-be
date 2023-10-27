@@ -52,7 +52,6 @@ export class SeedersModule {
 
   async onModuleInit() {
     try {
-      // TODO: Verify the validity of these country codes
       await this.seedApiKeys();
 
       const seederKey = await this.apiKeyRepository.findOne({
@@ -64,13 +63,16 @@ export class SeedersModule {
       if (!seederKey) {
         return;
       }
-
+      // TODO: Verify the validity of these country codes
       await this.seedCountryCodes(seederKey);
 
       if (process.env.NODE_ENV === 'production') {
         return;
       }
-      // TODO: This is only test data
+
+      this.logger.warn(
+        ' Seeding test data, should only be done in development or testing NOT in production',
+      );
       await this.seedPolicies(seederKey);
       const onboarding = await this.seedOnboardings(seederKey);
       await this.seedStudies(seederKey, onboarding);
