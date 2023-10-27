@@ -17,7 +17,11 @@
     "test:watch": "cross-env NODE_ENV=test jest --watch --maxWorkers=1",
     "test:cov": "cross-env NODE_ENV=test jest --coverage",
     "test:debug": "cross-env NODE_ENV=test node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json --maxWorkers=1 --detectOpenHandles"
+    "test:e2e": "cross-env NODE_ENV=test jest --config ./test/jest-e2e.json --maxWorkers=1 --detectOpenHandles",
+    "typeorm": "npm run build && npx typeorm -d dist/database/data-source.js",
+    "migration:run": "npm run typeorm -- migration:run",
+    "migration:generate": "npm run typeorm -- migration:generate",
+    "migration:revert": "npm run typeorm -- migration:revert"
   },
   "dependencies": {
     "@maxmind/geoip2-node": "^4.2.0",
@@ -40,6 +44,7 @@
     "class-validator": "^0.14.0",
     "cookie-session": "^2.0.0",
     "cross-env": "^7.0.3",
+    "dotenv": "^16.3.1",
     "nestjs-real-ip": "^3.0.1",
     "passport": "^0.6.0",
     "passport-headerapikey": "^1.2.2",

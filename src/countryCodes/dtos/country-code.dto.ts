@@ -2,12 +2,11 @@ import { IsArray, IsString, IsUUID } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 import { StudyDto } from 'src/studies/dto/study.dto';
-import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 
 export class CountryCodeDto {
   @ApiProperty({
     description: 'The id of the country code',
-    type: UUID,
+    type: String,
   })
   @IsUUID()
   id: string;

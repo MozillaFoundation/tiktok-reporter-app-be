@@ -1,9 +1,12 @@
+import 'dotenv/config';
+
+import * as Sentry from '@sentry/node';
+
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
-import * as Sentry from '@sentry/node';
 
 const port = process.env.PORT || 8080;
 
