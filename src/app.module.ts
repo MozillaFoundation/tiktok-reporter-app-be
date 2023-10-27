@@ -52,4 +52,10 @@ import { TerminusModule } from '@nestjs/terminus';
     },
   ],
 })
-export class AppModule {}
+export class AppModule {
+  async onModuleInit() {
+    console.log('****************************************************');
+    console.log('******* I am starting the db: ', process.env.NODE_ENV);
+    console.log('****************************************************');
+  }
+}

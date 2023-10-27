@@ -57,6 +57,9 @@ FROM node:18-alpine As production
 COPY --chown=node:node --from=build /app/node_modules ./node_modules
 COPY --chown=node:node --from=build /app/dist ./dist
 
+ENV PORT=8080
+ENV NODE_ENV production
+
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
 
