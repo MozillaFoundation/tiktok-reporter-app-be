@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+
 import {
   Controller,
   Get,
@@ -15,7 +17,6 @@ import {
 
 import { HealthCheck } from '@nestjs/terminus';
 import { SentryInterceptor } from './interceptors/sentry.interceptor';
-import { readFileSync } from 'fs';
 
 @UseInterceptors(SentryInterceptor)
 @Controller()
@@ -37,8 +38,9 @@ export class AppController {
   @Get('__version__')
   @Header('Content-Type', 'application/json')
   getVersion(): string {
-    const data = readFileSync('./src/version.json');
-    return data.toString();
+    const jsonData = fs.readFileSync('./dist/version.json', 'utf8');
+
+    return jsonData;
   }
 
   @Get('__heartbeat__')

@@ -1,6 +1,7 @@
 # env files
-.env.development
 .env.test
+.env.development
+.env.production
 
 # db file
 db.test.sqlite
