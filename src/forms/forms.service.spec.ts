@@ -1,6 +1,8 @@
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DEFAULT_GUID, defaultCreateFormDto } from 'src/utils/constants';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 import { Form } from './entities/form.entity';
 import { FormsService } from './forms.service';
 import { NotFoundException } from '@nestjs/common';
@@ -9,8 +11,6 @@ import { TextField } from './types/fields/text.field';
 import { TextFieldDto } from './dtos/text-field.dto';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ApiKey } from 'src/auth/entities/api-key.entity';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('FormsService', () => {
   let service: FormsService;
