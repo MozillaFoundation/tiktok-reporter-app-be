@@ -39,8 +39,6 @@ COPY --chown=node:node . .
 
 # Run the build command which creates the production bundle
 RUN npm run build
-# This should be enough but just in case build is removed from typeorm command we run build before
-RUN npm run migration:run
 
 # Set NODE_ENV environment variable
 ENV NODE_ENV production
