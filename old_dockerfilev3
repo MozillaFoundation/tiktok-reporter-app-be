@@ -1,0 +1,28 @@
+FROM node:18-alpine
+
+# add a non-privileged user for running the application
+RUN addgroup -g 10001 app && \
+    adduser -u 10001 -G app -s /bin/sh -D app
+
+WORKDIR /app
+
+# Install node requirements and clean up unneeded cache data
+COPY --chown=app:app package.json package.json
+COPY --chown=app:app package-lock.json package-lock.json
+COPY --chown=app:app version.json version.json
+
+RUN npm install && \
+    npm cache clean --force
+
+# Finally copy in the app's source file
+COPY --chown=app:app . /app
+
+# Creates a "dist" folder with the production build
+RUN npm run build
+
+ENV PORT=8080
+ENV NODE_ENV production
+
+USER app
+ENTRYPOINT ["npm"]
+CMD [ "npm run start:prod" ]
