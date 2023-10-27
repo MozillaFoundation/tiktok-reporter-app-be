@@ -66,6 +66,10 @@ export class SeedersModule {
       }
 
       await this.seedCountryCodes(seederKey);
+
+      if (process.env.NODE_ENV === 'production') {
+        return;
+      }
       // TODO: This is only test data
       await this.seedPolicies(seederKey);
       const onboarding = await this.seedOnboardings(seederKey);
