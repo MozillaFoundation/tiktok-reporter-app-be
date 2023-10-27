@@ -60,6 +60,10 @@ USER app
 
 FROM node:18-alpine As production
 
+# add a non-privileged user for running the application
+RUN addgroup -g 10001 app && \
+    adduser -u 10001 -G app -s /usr/sbin/nologin -D -h /app app -s /bin/sh 
+
 # Copy the bundled code from the build stage to the production image
 COPY --chown=app:app --from=build /app/node_modules ./node_modules
 COPY --chown=app:app --from=build /app/dist ./dist
