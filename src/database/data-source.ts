@@ -26,7 +26,7 @@ export const getDataSourceOptions = (
     username: config?.get<string>('PG_USERNAME') || process.env.PG_USERNAME,
     password: config?.get<string>('PG_PASSWORD') || process.env.PG_PASSWORD,
     // autoLoadEntities: true,
-    //TODO: Change to false when moving to production
+    // This will be false when going to production
     synchronize: shouldSync,
     logging:
       config?.get<boolean>('PG_LOGGING') || Boolean(process.env.PG_LOGGING),
