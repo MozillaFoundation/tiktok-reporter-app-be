@@ -65,7 +65,7 @@ ENV PORT=8080
 ENV NODE_ENV production
 
 USER app
-# ENTRYPOINT ["node"]
+ENTRYPOINT ["node"]
 # Start the server using the production build
-CMD [ "node", "dist/main.js" ]
+CMD [ "dist/main.js" ]
 
