@@ -53,6 +53,10 @@ USER node
 
 FROM node:18-alpine As production
 
+# add a non-privileged user for running the application
+RUN addgroup -g 10001 app && \
+    adduser -u 10001 -G app -s /usr/sbin/nologin -D -h /app app -s /bin/sh 
+
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /app/node_modules ./node_modules
 COPY --chown=node:node --from=build /app/dist ./dist
@@ -60,6 +64,8 @@ COPY --chown=node:node --from=build /app/dist ./dist
 ENV PORT=8080
 ENV NODE_ENV production
 
+USER app
+ENTRYPOINT ["node"]
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
 
