@@ -25,20 +25,20 @@ import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
 
 @UseInterceptors(SentryInterceptor)
 @ApiTags('Onboarding Steps')
-@UseGuards(AuthGuard('api-key'))
 @Controller('onboarding-steps')
-@ApiHeader({
-  name: 'X-API-KEY',
-  description: 'Mandatory API Key to use the regrets reporter API',
-  required: true,
-})
 export class OnboardingStepsController {
   constructor(
     private readonly onboardingStepsService: OnboardingStepsService,
   ) {}
 
   @Post()
+  @UseGuards(AuthGuard('api-key'))
   @ApiBody({ type: CreateOnboardingStepDto })
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     type: OnboardingStepDto,
     status: 201,
@@ -75,7 +75,13 @@ export class OnboardingStepsController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('api-key'))
   @ApiBody({ type: UpdateOnboardingStepDto })
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     type: OnboardingStepDto,
     status: 201,
@@ -96,6 +102,12 @@ export class OnboardingStepsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('api-key'))
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     status: 200,
     type: OnboardingStepDto,

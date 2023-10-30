@@ -23,18 +23,18 @@ import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
 
 @UseInterceptors(SentryInterceptor)
 @ApiTags('Forms')
-@UseGuards(AuthGuard('api-key'))
 @Controller('forms')
-@ApiHeader({
-  name: 'X-API-KEY',
-  description: 'Mandatory API Key to use the regrets reporter API',
-  required: true,
-})
 export class FormsController {
   constructor(private readonly formsService: FormsService) {}
 
   @Post()
+  @UseGuards(AuthGuard('api-key'))
   @ApiBody({ type: CreateFormDto })
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     type: FormDto,
     status: 201,
@@ -68,6 +68,12 @@ export class FormsController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('api-key'))
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     status: 200,
     type: FormDto,

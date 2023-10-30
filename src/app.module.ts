@@ -3,7 +3,6 @@ import { Module, ValidationPipe } from '@nestjs/common';
 
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
-import { ConfigModule } from '@nestjs/config';
 import { CountryCodesModule } from './countryCodes/country-codes.module';
 import { DataBaseModule } from './database/database.module';
 import { FormsModule } from './forms/forms.module';
@@ -21,10 +20,6 @@ import { TerminusModule } from '@nestjs/terminus';
 @Module({
   imports: [
     PrometheusModule.register(),
-    ConfigModule.forRoot({
-      isGlobal: true,
-      envFilePath: `.env.${process.env.NODE_ENV}`,
-    }),
     DataBaseModule,
     AuthModule,
     StudiesModule,

@@ -25,20 +25,20 @@ import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
 
 @UseInterceptors(SentryInterceptor)
 @ApiTags('Policies')
-@UseGuards(AuthGuard('api-key'))
 @Controller('policies')
-@ApiHeader({
-  name: 'X-API-KEY',
-  description: 'Mandatory API Key to use the regrets reporter API',
-  required: true,
-})
 export class PoliciesController {
   constructor(private readonly policiesService: PoliciesService) {}
 
   @Post()
+  @UseGuards(AuthGuard('api-key'))
   @ApiBody({
     type: CreatePolicyDto,
     description: 'Crates a new policy',
+  })
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
   })
   @ApiResponse({
     type: PolicyDto,
@@ -82,9 +82,15 @@ export class PoliciesController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('api-key'))
   @ApiBody({
     type: UpdatePolicyDto,
     description: 'Updates a policy',
+  })
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
   })
   @ApiResponse({
     type: PolicyDto,
@@ -106,6 +112,12 @@ export class PoliciesController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('api-key'))
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     status: 200,
     type: PolicyDto,

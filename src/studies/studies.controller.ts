@@ -25,18 +25,18 @@ import { RealIP } from 'nestjs-real-ip';
 
 @UseInterceptors(SentryInterceptor)
 @ApiTags('Studies')
-@UseGuards(AuthGuard('api-key'))
 @Controller('studies')
-@ApiHeader({
-  name: 'X-API-KEY',
-  description: 'Mandatory API Key to use the regrets reporter API',
-  required: true,
-})
 export class StudiesController {
   constructor(private readonly studiesService: StudiesService) {}
 
   @Post()
+  @UseGuards(AuthGuard('api-key'))
   @ApiBody({ type: CreateStudyDto })
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     status: 201,
     type: StudyDto,
@@ -79,7 +79,13 @@ export class StudiesController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('api-key'))
   @ApiBody({ type: UpdateStudyDto })
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     status: 201,
     type: StudyDto,
@@ -100,6 +106,12 @@ export class StudiesController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('api-key'))
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     status: 200,
     type: StudyDto,

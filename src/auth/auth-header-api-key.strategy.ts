@@ -1,6 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
-import { ConfigService } from '@nestjs/config';
 import Strategy from 'passport-headerapikey';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ApiKey } from './entities/api-key.entity';
@@ -12,7 +11,6 @@ export class HeaderApiKeyStrategy extends PassportStrategy(
   'api-key',
 ) {
   constructor(
-    private readonly configService: ConfigService,
     @InjectRepository(ApiKey)
     private readonly apiKeyRepository: Repository<ApiKey>,
   ) {

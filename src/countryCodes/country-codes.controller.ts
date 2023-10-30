@@ -24,19 +24,19 @@ import { AuthGuard } from '@nestjs/passport';
 import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
 
 @UseInterceptors(SentryInterceptor)
-@UseGuards(AuthGuard('api-key'))
 @ApiTags('Country Codes')
 @Controller('country-codes')
-@ApiHeader({
-  name: 'X-API-KEY',
-  description: 'Mandatory API Key to use the regrets reporter API',
-  required: true,
-})
 export class CountryCodesController {
   constructor(private readonly countryCodesService: CountryCodesService) {}
 
   @Post()
+  @UseGuards(AuthGuard('api-key'))
   @ApiBody({ type: CreateCountryCodeDto })
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     status: 201,
     type: CountryCodeDto,
@@ -73,7 +73,13 @@ export class CountryCodesController {
   }
 
   @Patch(':id')
+  @UseGuards(AuthGuard('api-key'))
   @ApiBody({ type: UpdateCountryCodeDto })
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     status: 201,
     type: CountryCodeDto,
@@ -94,6 +100,12 @@ export class CountryCodesController {
   }
 
   @Delete(':id')
+  @UseGuards(AuthGuard('api-key'))
+  @ApiHeader({
+    name: 'X-API-KEY',
+    description: 'Mandatory API Key to use the regrets reporter API',
+    required: true,
+  })
   @ApiResponse({
     status: 200,
     type: CountryCodeDto,

@@ -1,40 +1,33 @@
-// When running migrations uncomment
-// import 'dotenv/config';
+import 'dotenv/config';
 
 import { DataSource, DataSourceOptions } from 'typeorm';
 
-import { ConfigService } from '@nestjs/config';
-
-export const getDataSourceOptions = (
-  config?: ConfigService,
-): DataSourceOptions => {
+export const getDataSourceOptions = (): DataSourceOptions => {
   const isProduction = process.env.NODE_ENV === 'production';
   const shouldSync = isProduction
     ? false
-    : config?.get<boolean>('PG_SYNCHRONIZE') ||
-      Boolean(process.env.PG_SYNCHRONIZE);
+    : process.env.PG_SYNCHRONIZE === 'true';
+  const shouldLog = process.env.PG_LOGGING === 'true';
 
   return {
     type: 'postgres',
-    host: config?.get<string>('PG_HOST') || process.env.PG_HOST,
-    port: config?.get<number>('PG_PORT') || Number(process.env.PG_PORT),
-    database: config?.get<string>('PG_DATABASE') || process.env.PG_DATABASE,
-    username: config?.get<string>('PG_USERNAME') || process.env.PG_USERNAME,
-    password: config?.get<string>('PG_PASSWORD') || process.env.PG_PASSWORD,
-    // autoLoadEntities: true,
+    host: process.env.PG_HOST,
+    port: Number(process.env.PG_PORT),
+    database: process.env.PG_DATABASE,
+    username: process.env.PG_USERNAME,
+    password: process.env.PG_PASSWORD,
     // This will be false when going to production
     synchronize: shouldSync,
-    logging:
-      config?.get<boolean>('PG_LOGGING') || Boolean(process.env.PG_LOGGING),
-    // For deployment and migrations
+    logging: shouldLog,
+    // FOR development and deployment
     entities: ['dist/**/*.entity{.ts,.js}'],
-    // For testing
-    // entities: ['src/**/*.entity{.ts,.js}'],
+    // FOR end to end testing
+    //entities: ['src/**/*.entity{.ts,.js}'],
     // Generating a migration: npm run migration:generate -n src/database/migrations/[NameOfMigration]
-    // For deployment
+    // FOR development and deployment
     migrations: ['dist/database/migrations/*{.ts,.js}'],
-    // For testing
-    // migrations: ['src/database/migrations/*{.ts,.js}'],
+    // FOR end to end testing
+    //migrations: ['src/database/migrations/*{.ts,.js}'],
     migrationsTableName: 'migrations_typeorm',
     migrationsRun: true,
   };
