@@ -3,7 +3,7 @@ import * as request from 'supertest';
 import { DEFAULT_GUID, defaultCreatePolicyDto } from '../src/utils/constants';
 
 import { INestApplication } from '@nestjs/common';
-import { PolicyType } from 'src/types/policy.type';
+import { PolicyType } from 'src/policies/entities/policy.entity';
 import { RegretsReporterTestSetup } from './regretsReporterTestSetup';
 
 describe('Policies', () => {

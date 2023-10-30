@@ -1,7 +1,7 @@
 import { IsEnum, IsString } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
-import { PolicyType } from 'src/types/policy.type';
+import { PolicyType } from '../entities/policy.entity';
 
 export class CreatePolicyDto {
   @ApiProperty({

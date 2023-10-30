@@ -8,9 +8,14 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { PolicyType } from 'src/types/policy.type';
-import { Study } from 'src/studies/entities/study.entity';
 import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { Study } from 'src/studies/entities/study.entity';
+
+// This cannot be moved to a separate file because of typeorm migrations constraint for enums
+export enum PolicyType {
+  TermsOfService = 'TermsOfService',
+  PrivacyPolicy = 'PrivacyPolicy',
+}
 
 @Entity()
 export class Policy {

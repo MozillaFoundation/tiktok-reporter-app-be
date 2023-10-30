@@ -10,10 +10,10 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
+import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { Form } from 'src/forms/entities/form.entity';
 import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { Study } from 'src/studies/entities/study.entity';
-import { Form } from 'src/forms/entities/form.entity';
-import { ApiKey } from 'src/auth/entities/api-key.entity';
 
 @Entity()
 export class Onboarding {
@@ -28,7 +28,7 @@ export class Onboarding {
     (onboardingStep) => onboardingStep.onboardings,
     {
       cascade: true,
-      onDelete: 'NO ACTION',
+      onDelete: 'SET NULL',
     },
   )
   @JoinTable()

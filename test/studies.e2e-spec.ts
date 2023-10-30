@@ -1,13 +1,13 @@
 import * as request from 'supertest';
 
+import { Policy, PolicyType } from 'src/policies/entities/policy.entity';
+
 import { CountryCode } from 'src/countryCodes/entities/country-code.entity';
 import { DEFAULT_GUID } from '../src/utils/constants';
 import { FieldType } from 'src/forms/types/fields/field.type';
 import { Form } from 'src/forms/entities/form.entity';
 import { INestApplication } from '@nestjs/common';
 import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
-import { Policy } from 'src/policies/entities/policy.entity';
-import { PolicyType } from 'src/types/policy.type';
 import { RegretsReporterTestSetup } from './regretsReporterTestSetup';
 
 describe('Study', () => {
@@ -1230,5 +1230,139 @@ describe('Study', () => {
     );
     expect(deleteResponseBody.error).toEqual('Bad Request');
     expect(deleteResponseBody.statusCode).toEqual(400);
+  });
+
+  it('get returns the study with no country code when deleting the country code associated to the study', async () => {
+    const studyName = 'Test Create Fifth Study';
+    const studyDescription = 'Test Create Fifth Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
+      })
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(201);
+
+    expect(createResponseBody.countryCodes).not.toBeNull();
+    expect(createResponseBody.countryCodes.length).toBeGreaterThan(0);
+
+    await request(app.getHttpServer())
+      .delete(`/country-codes/${firstCountryCode.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    expect(getResponseBody.countryCodes.length).toEqual(0);
+  });
+
+  it('get returns the study with no policy when deleting the policy associated to the study', async () => {
+    const studyName = 'Test Create Fifth Study';
+    const studyDescription = 'Test Create Fifth Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
+      })
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(201);
+
+    expect(createResponseBody.policies).not.toBeNull();
+    expect(createResponseBody.policies.length).toBeGreaterThan(0);
+
+    await request(app.getHttpServer())
+      .delete(`/policies/${firstPolicy.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    expect(getResponseBody.policies.length).toEqual(0);
+  });
+
+  it('get returns the study with no form when deleting the form associated to the study', async () => {
+    const studyName = 'Test Create Fifth Study';
+    const studyDescription = 'Test Create Fifth Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
+      })
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(201);
+
+    expect(createResponseBody.form).not.toBeNull();
+
+    await request(app.getHttpServer())
+      .delete(`/forms/${firstStudyForm.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    expect(getResponseBody.form).toBeNull();
+  });
+
+  it('get returns the study with no onboarding when deleting the onboarding associated to the study', async () => {
+    const studyName = 'Test Create Fifth Study';
+    const studyDescription = 'Test Create Fifth Study DESCRIPTION';
+
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/studies')
+      .send({
+        name: studyName,
+        description: studyDescription,
+        isActive: true,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
+      })
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(201);
+
+    expect(createResponseBody.onboarding).not.toBeNull();
+
+    await request(app.getHttpServer())
+      .delete(`/onboardings/${firstOnboarding.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    expect(getResponseBody.onboarding).toBeNull();
   });
 });

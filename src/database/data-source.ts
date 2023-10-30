@@ -1,4 +1,5 @@
-import 'dotenv/config';
+// When running migrations uncomment
+// import 'dotenv/config';
 
 import { DataSource, DataSourceOptions } from 'typeorm';
 
@@ -13,11 +14,6 @@ export const getDataSourceOptions = (
     : config?.get<boolean>('PG_SYNCHRONIZE') ||
       Boolean(process.env.PG_SYNCHRONIZE);
 
-  console.log('*************************************************');
-  console.log('process.env.NODE_ENV', process.env.NODE_ENV);
-  console.log('process.env.PG_DATABASE', process.env.PG_DATABASE);
-  console.log('shouldSync', shouldSync);
-  console.log('*************************************************');
   return {
     type: 'postgres',
     host: config?.get<string>('PG_HOST') || process.env.PG_HOST,
@@ -30,9 +26,15 @@ export const getDataSourceOptions = (
     synchronize: shouldSync,
     logging:
       config?.get<boolean>('PG_LOGGING') || Boolean(process.env.PG_LOGGING),
+    // For deployment and migrations
     entities: ['dist/**/*.entity{.ts,.js}'],
-    // generating a migration: npm run migration:generate -n src/database/migrations/[NameOfMigration]
+    // For testing
+    // entities: ['src/**/*.entity{.ts,.js}'],
+    // Generating a migration: npm run migration:generate -n src/database/migrations/[NameOfMigration]
+    // For deployment
     migrations: ['dist/database/migrations/*{.ts,.js}'],
+    // For testing
+    // migrations: ['src/database/migrations/*{.ts,.js}'],
     migrationsTableName: 'migrations_typeorm',
     migrationsRun: true,
   };

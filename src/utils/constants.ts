@@ -6,7 +6,7 @@ import { CreatePolicyDto } from 'src/policies/dtos/create-policy.dto';
 import { CreateStudyDto } from 'src/studies/dto/create-study.dto';
 import { DropDownFieldDto } from 'src/forms/dtos/drop-down-field.dto';
 import { FieldType } from 'src/forms/types/fields/field.type';
-import { PolicyType } from 'src/types/policy.type';
+import { PolicyType } from 'src/policies/entities/policy.entity';
 import { SliderFieldDto } from 'src/forms/dtos/slider-field.dto';
 import { TextFieldDto } from 'src/forms/dtos/text-field.dto';
 

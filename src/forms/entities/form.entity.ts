@@ -8,12 +8,12 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { DropDownField } from 'src/forms/types/fields/drop-down.field';
-import { SliderField } from 'src/forms/types/fields/slider.field';
-import { TextField } from 'src/forms/types/fields/text.field';
-import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
-import { Study } from 'src/studies/entities/study.entity';
 import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { DropDownField } from 'src/forms/types/fields/drop-down.field';
+import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
+import { SliderField } from 'src/forms/types/fields/slider.field';
+import { Study } from 'src/studies/entities/study.entity';
+import { TextField } from 'src/forms/types/fields/text.field';
 
 @Entity()
 export class Form {

@@ -1,15 +1,14 @@
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DEFAULT_GUID, defaultCreatePolicyDto } from 'src/utils/constants';
+import { Policy, PolicyType } from './entities/policy.entity';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 import { NotFoundException } from '@nestjs/common';
 import { PoliciesService } from './policies.service';
-import { Policy } from './entities/policy.entity';
-import { PolicyType } from 'src/types/policy.type';
 import { Repository } from 'typeorm';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { ApiKey } from 'src/auth/entities/api-key.entity';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('PoliciesService', () => {
   let service: PoliciesService;

@@ -3,14 +3,14 @@ import {
   DEFAULT_GUID,
   defaultCreatePolicyDto,
 } from 'src/utils/constants';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 
 import { NotFoundException } from '@nestjs/common';
 import { PoliciesController } from './policies.controller';
 import { PoliciesService } from './policies.service';
-import { PolicyType } from 'src/types/policy.type';
+import { PolicyType } from './entities/policy.entity';
 import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
-import { ConfigModule, ConfigService } from '@nestjs/config';
 
 describe('PoliciesController', () => {
   let controller: PoliciesController;

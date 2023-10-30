@@ -31,22 +31,28 @@ export class Study {
 
   @ManyToMany(() => CountryCode, (countryCode) => countryCode.studies, {
     cascade: true,
-    onDelete: 'NO ACTION',
+    onDelete: 'SET NULL',
   })
   @JoinTable()
   countryCodes: CountryCode[];
 
   @ManyToMany(() => Policy, (policy) => policy.studies, {
     cascade: true,
-    onDelete: 'NO ACTION',
+    onDelete: 'SET NULL',
   })
   @JoinTable()
   policies: Policy[];
 
-  @ManyToOne(() => Onboarding, (onboarding) => onboarding.studies)
+  @ManyToOne(() => Onboarding, (onboarding) => onboarding.studies, {
+    cascade: true,
+    onDelete: 'SET NULL',
+  })
   onboarding: Onboarding;
 
-  @ManyToOne(() => Form, (form) => form.studies)
+  @ManyToOne(() => Form, (form) => form.studies, {
+    cascade: true,
+    onDelete: 'SET NULL',
+  })
   form: Form;
 
   @CreateDateColumn()

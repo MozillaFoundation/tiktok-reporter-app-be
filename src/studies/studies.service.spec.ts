@@ -22,7 +22,7 @@ import { OnboardingDto } from 'src/onboardings/dtos/onboarding.dto';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { PoliciesService } from 'src/policies/policies.service';
 import { PolicyDto } from 'src/policies/dtos/policy.dto';
-import { PolicyType } from 'src/types/policy.type';
+import { PolicyType } from 'src/policies/entities/policy.entity';
 import { Repository } from 'typeorm';
 import { StudiesService } from './studies.service';
 import { Study } from './entities/study.entity';

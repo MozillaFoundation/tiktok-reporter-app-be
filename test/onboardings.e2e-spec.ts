@@ -365,4 +365,31 @@ describe('Onboardings', () => {
     expect(deleteResponseBody.error).toEqual('Bad Request');
     expect(deleteResponseBody.statusCode).toEqual(400);
   });
+
+  it('delete returns the onboarding without the onboarding steps when deleting onboarding steps associated to the onboarding', async () => {
+    const { body: createResponseBody } = await request(app.getHttpServer())
+      .post('/onboardings')
+      .send({
+        name: 'Test Onboarding Name',
+        stepIds: [firstOnboardingStep.id],
+        formId: firstOnboardingForm.id,
+      })
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(201);
+
+    expect(createResponseBody.steps).not.toBeNull();
+    expect(createResponseBody.steps.length).toBeGreaterThan(0);
+
+    await request(app.getHttpServer())
+      .delete(`/onboarding-steps/${firstOnboardingStep.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/onboardings/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    expect(getResponseBody.steps.length).toEqual(0);
+  });
 });

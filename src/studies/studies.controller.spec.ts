@@ -18,7 +18,7 @@ import { FormDto } from 'src/forms/dtos/form.dto';
 import { OnboardingDto } from 'src/onboardings/dtos/onboarding.dto';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { PolicyDto } from 'src/policies/dtos/policy.dto';
-import { PolicyType } from 'src/types/policy.type';
+import { PolicyType } from 'src/policies/entities/policy.entity';
 import { StudiesController } from './studies.controller';
 import { StudiesService } from './studies.service';
 import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
