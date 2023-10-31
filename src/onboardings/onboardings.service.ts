@@ -59,12 +59,7 @@ export class OnboardingsService {
   }
 
   async findAll() {
-    const allOnboardings = await this.onboardingRepository.find({
-      relations: {
-        steps: true,
-        form: true,
-      },
-    });
+    const allOnboardings = await this.onboardingRepository.find();
     return mapOnboardingsToDtos(allOnboardings);
   }
 

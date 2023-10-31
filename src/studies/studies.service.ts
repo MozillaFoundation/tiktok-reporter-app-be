@@ -79,14 +79,7 @@ export class StudiesService {
   }
 
   async findAll() {
-    const allStudies = await this.studyRepository.find({
-      relations: {
-        countryCodes: true,
-        policies: true,
-        onboarding: true,
-        form: true,
-      },
-    });
+    const allStudies = await this.studyRepository.find();
 
     return mapStudiesToDtos(allStudies);
   }
@@ -100,7 +93,9 @@ export class StudiesService {
       relations: {
         countryCodes: true,
         policies: true,
-        onboarding: true,
+        onboarding: {
+          steps: true,
+        },
         form: true,
       },
     });
@@ -114,7 +109,9 @@ export class StudiesService {
       relations: {
         countryCodes: true,
         policies: true,
-        onboarding: true,
+        onboarding: {
+          steps: true,
+        },
         form: true,
       },
     });

@@ -176,9 +176,8 @@ describe('Onboardings', () => {
       .expect(200);
 
     expect(getResponseBody.length).toEqual(2);
-    expect(getResponseBody).toEqual(
-      expect.arrayContaining([createResponseBody]),
-    );
+    const onboardingIds = getResponseBody.map((onboarding) => onboarding.id);
+    expect(onboardingIds).toContain(createResponseBody.id);
   });
 
   it('update returns the updated onboarding with all changes updated', async () => {
