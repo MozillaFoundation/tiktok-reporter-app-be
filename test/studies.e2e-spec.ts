@@ -687,7 +687,7 @@ describe('Study', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/studies/${createResponseBody.id}`)
       .send({
         name: updatedStudyName,
@@ -702,7 +702,12 @@ describe('Study', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    expect(createResponseBody.id).toEqual(getResponseBody.id);
 
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
@@ -719,22 +724,26 @@ describe('Study', () => {
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
     expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
-    expect(updateResponseBody.name).toEqual(updatedStudyName);
-    expect(updateResponseBody.description).toEqual(updateStudyDescription);
-    expect(updateResponseBody.isActive).toEqual(false);
-    expect(updateResponseBody.supportsRecording).toEqual(false);
-    expect(updateResponseBody.countryCodes.length).toEqual(2);
-    expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
+    expect(getResponseBody.name).toEqual(updatedStudyName);
+    expect(getResponseBody.description).toEqual(updateStudyDescription);
+    expect(getResponseBody.isActive).toEqual(false);
+    expect(getResponseBody.supportsRecording).toEqual(false);
+    expect(getResponseBody.countryCodes.length).toEqual(2);
+    expect(getResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
       secondCountryCode.id,
     ]);
-    expect(updateResponseBody.policies.length).toEqual(2);
-    expect(updateResponseBody.policies.map((policy) => policy.id)).toEqual([
+    expect(getResponseBody.policies.length).toEqual(2);
+    expect(getResponseBody.policies.map((policy) => policy.id)).toEqual([
       firstPolicy.id,
       secondPolicy.id,
     ]);
-    expect(updateResponseBody.onboarding.id).toEqual(secondOnboarding.id);
-    expect(updateResponseBody.form.id).toEqual(secondStudyForm.id);
+    expect(getResponseBody.onboarding.id).toEqual(secondOnboarding.id);
+    expect(getResponseBody.onboarding.steps.length).toEqual(1);
+    expect(getResponseBody.onboarding.steps.at(0).id).toEqual(
+      secondOnboarding.steps.at(0).id,
+    );
+    expect(getResponseBody.form.id).toEqual(secondStudyForm.id);
   });
 
   it('update returns the updated study with all new and old values', async () => {
@@ -830,7 +839,7 @@ describe('Study', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/studies/${createResponseBody.id}`)
       .send({
         name: updatedStudyName,
@@ -849,7 +858,12 @@ describe('Study', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    expect(createResponseBody.id).toEqual(getResponseBody.id);
 
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
@@ -866,22 +880,22 @@ describe('Study', () => {
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
     expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
-    expect(updateResponseBody.name).toEqual(updatedStudyName);
-    expect(updateResponseBody.description).toEqual(updateStudyDescription);
-    expect(updateResponseBody.isActive).toEqual(false);
-    expect(updateResponseBody.supportsRecording).toEqual(false);
-    expect(updateResponseBody.countryCodes.length).toEqual(2);
-    expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
+    expect(getResponseBody.name).toEqual(updatedStudyName);
+    expect(getResponseBody.description).toEqual(updateStudyDescription);
+    expect(getResponseBody.isActive).toEqual(false);
+    expect(getResponseBody.supportsRecording).toEqual(false);
+    expect(getResponseBody.countryCodes.length).toEqual(2);
+    expect(getResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
       secondCountryCode.id,
     ]);
-    expect(updateResponseBody.policies.length).toEqual(2);
-    expect(updateResponseBody.policies.map((policy) => policy.id)).toEqual([
+    expect(getResponseBody.policies.length).toEqual(2);
+    expect(getResponseBody.policies.map((policy) => policy.id)).toEqual([
       firstPolicy.id,
       secondPolicy.id,
     ]);
-    expect(updateResponseBody.onboarding.id).toEqual(secondOnboarding.id);
-    expect(updateResponseBody.form.id).toEqual(secondStudyForm.id);
+    expect(getResponseBody.onboarding.id).toEqual(secondOnboarding.id);
+    expect(getResponseBody.form.id).toEqual(secondStudyForm.id);
   });
 
   it('update returns the updated study with all changes updated and no duplicate policies', async () => {
@@ -906,7 +920,7 @@ describe('Study', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/studies/${createResponseBody.id}`)
       .send({
         name: updatedStudyName,
@@ -921,7 +935,12 @@ describe('Study', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    expect(createResponseBody.id).toEqual(getResponseBody.id);
 
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
@@ -938,22 +957,22 @@ describe('Study', () => {
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
     expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
-    expect(updateResponseBody.name).toEqual(updatedStudyName);
-    expect(updateResponseBody.description).toEqual(updateStudyDescription);
-    expect(updateResponseBody.isActive).toEqual(false);
-    expect(updateResponseBody.supportsRecording).toEqual(false);
-    expect(updateResponseBody.countryCodes.length).toEqual(2);
-    expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
+    expect(getResponseBody.name).toEqual(updatedStudyName);
+    expect(getResponseBody.description).toEqual(updateStudyDescription);
+    expect(getResponseBody.isActive).toEqual(false);
+    expect(getResponseBody.supportsRecording).toEqual(false);
+    expect(getResponseBody.countryCodes.length).toEqual(2);
+    expect(getResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
       secondCountryCode.id,
     ]);
-    expect(updateResponseBody.policies.length).toEqual(2);
-    expect(updateResponseBody.policies.map((policy) => policy.id)).toEqual([
+    expect(getResponseBody.policies.length).toEqual(2);
+    expect(getResponseBody.policies.map((policy) => policy.id)).toEqual([
       firstPolicy.id,
       secondPolicy.id,
     ]);
-    expect(updateResponseBody.onboarding.id).toEqual(secondOnboarding.id);
-    expect(updateResponseBody.form.id).toEqual(secondStudyForm.id);
+    expect(getResponseBody.onboarding.id).toEqual(secondOnboarding.id);
+    expect(getResponseBody.form.id).toEqual(secondStudyForm.id);
   });
 
   it('update returns the updated study with the partial changes updated', async () => {
@@ -977,13 +996,18 @@ describe('Study', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/studies/${createResponseBody.id}`)
       .send({ name: updatedStudyName })
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/studies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    expect(createResponseBody.id).toEqual(getResponseBody.id);
 
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
@@ -1000,20 +1024,20 @@ describe('Study', () => {
     expect(createResponseBody.onboarding.id).toEqual(firstOnboarding.id);
     expect(createResponseBody.form.id).toEqual(firstStudyForm.id);
 
-    expect(updateResponseBody.name).toEqual(updatedStudyName);
-    expect(updateResponseBody.description).toEqual(studyDescription);
-    expect(updateResponseBody.isActive).toEqual(true);
-    expect(updateResponseBody.supportsRecording).toEqual(true);
-    expect(updateResponseBody.countryCodes.length).toEqual(1);
-    expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
+    expect(getResponseBody.name).toEqual(updatedStudyName);
+    expect(getResponseBody.description).toEqual(studyDescription);
+    expect(getResponseBody.isActive).toEqual(true);
+    expect(getResponseBody.supportsRecording).toEqual(true);
+    expect(getResponseBody.countryCodes.length).toEqual(1);
+    expect(getResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
     ]);
-    expect(updateResponseBody.policies.length).toEqual(1);
-    expect(updateResponseBody.policies.map((policy) => policy.id)).toEqual([
+    expect(getResponseBody.policies.length).toEqual(1);
+    expect(getResponseBody.policies.map((policy) => policy.id)).toEqual([
       firstPolicy.id,
     ]);
-    expect(updateResponseBody.onboarding.id).toEqual(firstOnboarding.id);
-    expect(updateResponseBody.form.id).toEqual(firstStudyForm.id);
+    expect(getResponseBody.onboarding.id).toEqual(firstOnboarding.id);
+    expect(getResponseBody.form.id).toEqual(firstStudyForm.id);
   });
 
   it('update return 404 NotFound when no study was found', async () => {

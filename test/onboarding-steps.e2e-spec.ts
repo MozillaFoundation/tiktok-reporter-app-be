@@ -139,7 +139,7 @@ describe('Onboarding Steps', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/onboarding-steps/${createResponseBody.id}`)
       .send({
         title: updatedTitle,
@@ -149,6 +149,11 @@ describe('Onboarding Steps', () => {
         details: updatedDetails,
         order: updatedOrder,
       })
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/onboarding-steps/${createResponseBody.id}`)
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
@@ -172,13 +177,13 @@ describe('Onboarding Steps', () => {
       defaultCreateOnboardingStepDto.order,
     );
 
-    expect(updateResponseBody.id).toEqual(createResponseBody.id);
-    expect(updateResponseBody.title).toEqual(updatedTitle);
-    expect(updateResponseBody.subtitle).toEqual(updatedSubtitle);
-    expect(updateResponseBody.description).toEqual(updatedDescription);
-    expect(updateResponseBody.imageUrl).toEqual(updatedImageUrl);
-    expect(updateResponseBody.details).toEqual(updatedDetails);
-    expect(updateResponseBody.order).toEqual(updatedOrder);
+    expect(getResponseBody.id).toEqual(createResponseBody.id);
+    expect(getResponseBody.title).toEqual(updatedTitle);
+    expect(getResponseBody.subtitle).toEqual(updatedSubtitle);
+    expect(getResponseBody.description).toEqual(updatedDescription);
+    expect(getResponseBody.imageUrl).toEqual(updatedImageUrl);
+    expect(getResponseBody.details).toEqual(updatedDetails);
+    expect(getResponseBody.order).toEqual(updatedOrder);
   });
 
   it('update returns the updated onboarding step with the partial changes updated', async () => {
@@ -190,7 +195,7 @@ describe('Onboarding Steps', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/onboarding-steps/${createResponseBody.id}`)
       .send({
         title: updatedTitle,
@@ -198,24 +203,27 @@ describe('Onboarding Steps', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
-    expect(updateResponseBody.id).toEqual(createResponseBody.id);
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/onboarding-steps/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
 
-    expect(updateResponseBody.title).toEqual(updatedTitle);
-    expect(updateResponseBody.subtitle).toEqual(
+    expect(getResponseBody.id).toEqual(createResponseBody.id);
+
+    expect(getResponseBody.title).toEqual(updatedTitle);
+    expect(getResponseBody.subtitle).toEqual(
       defaultCreateOnboardingStepDto.subtitle,
     );
-    expect(updateResponseBody.description).toEqual(
+    expect(getResponseBody.description).toEqual(
       defaultCreateOnboardingStepDto.description,
     );
-    expect(updateResponseBody.imageUrl).toEqual(
+    expect(getResponseBody.imageUrl).toEqual(
       defaultCreateOnboardingStepDto.imageUrl,
     );
-    expect(updateResponseBody.details).toEqual(
+    expect(getResponseBody.details).toEqual(
       defaultCreateOnboardingStepDto.details,
     );
-    expect(updateResponseBody.order).toEqual(
-      defaultCreateOnboardingStepDto.order,
-    );
+    expect(getResponseBody.order).toEqual(defaultCreateOnboardingStepDto.order);
   });
 
   it('update returns 404 NotFound when no onboarding was found', async () => {

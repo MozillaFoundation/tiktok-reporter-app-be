@@ -107,7 +107,7 @@ describe('Country Code', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/country-codes/${createResponseBody.id}`)
       .send({
         countryCode: updatedCountryCode,
@@ -116,13 +116,18 @@ describe('Country Code', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/country-codes/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
     expect(createResponseBody.code).toEqual(countryCode);
     expect(createResponseBody.countryName).toEqual(countryName);
 
-    expect(updateResponseBody.code).toEqual(updatedCountryCode);
-    expect(updateResponseBody.countryName).toEqual(updatedCountryName);
+    expect(getResponseBody.code).toEqual(updatedCountryCode);
+    expect(getResponseBody.countryName).toEqual(updatedCountryName);
 
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+    expect(createResponseBody.id).toEqual(getResponseBody.id);
   });
 
   it('update returns the updated country code with the partial changes updated', async () => {
@@ -137,7 +142,7 @@ describe('Country Code', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/country-codes/${createResponseBody.id}`)
       .send({
         countryCode: updatedCountryCode,
@@ -145,13 +150,18 @@ describe('Country Code', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/country-codes/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
     expect(createResponseBody.code).toEqual(countryCode);
     expect(createResponseBody.countryName).toEqual(countryName);
 
-    expect(updateResponseBody.code).toEqual(updatedCountryCode);
-    expect(updateResponseBody.countryName).toEqual(countryName);
+    expect(getResponseBody.code).toEqual(updatedCountryCode);
+    expect(getResponseBody.countryName).toEqual(countryName);
 
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+    expect(createResponseBody.id).toEqual(getResponseBody.id);
   });
 
   it('update returns 404 NotFound when no country code was found', async () => {

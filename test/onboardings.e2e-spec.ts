@@ -136,6 +136,7 @@ describe('Onboardings', () => {
       })
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
+
     const { body: getResponseBody } = await request(app.getHttpServer())
       .get(`/onboardings/${createResponseBody.id}`)
       .set({ 'X-API-KEY': process.env.API_KEY })
@@ -193,7 +194,7 @@ describe('Onboardings', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/onboardings/${createResponseBody.id}`)
       .send({
         name: updatedName,
@@ -203,11 +204,16 @@ describe('Onboardings', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/onboardings/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
     expect(createResponseBody.steps.length).toEqual(1);
 
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
-    expect(updateResponseBody.name).toEqual(updatedName);
-    expect(updateResponseBody.steps.length).toEqual(2);
+    expect(createResponseBody.id).toEqual(getResponseBody.id);
+    expect(getResponseBody.name).toEqual(updatedName);
+    expect(getResponseBody.steps.length).toEqual(2);
   });
 
   it('update returns the updated onboarding with the partial changes updated', async () => {
@@ -223,7 +229,7 @@ describe('Onboardings', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/onboardings/${createResponseBody.id}`)
       .send({
         name: updatedName,
@@ -231,11 +237,16 @@ describe('Onboardings', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/onboardings/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
 
-    expect(updateResponseBody.name).toEqual(updatedName);
-    expect(updateResponseBody.steps.length).toEqual(1);
-    expect(updateResponseBody.steps.at(0).id).toEqual(firstOnboardingStep.id);
+    expect(createResponseBody.id).toEqual(getResponseBody.id);
+
+    expect(getResponseBody.name).toEqual(updatedName);
+    expect(getResponseBody.steps.length).toEqual(1);
+    expect(getResponseBody.steps.at(0).id).toEqual(firstOnboardingStep.id);
   });
 
   it('update returns 404 NotFound when no onboarding was found', async () => {

@@ -117,7 +117,7 @@ describe('Policies', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/policies/${createResponseBody.id}`)
       .send({
         type: updatedType,
@@ -128,6 +128,11 @@ describe('Policies', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
 
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/policies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
     expect(createResponseBody.type).toEqual(defaultCreatePolicyDto.type);
     expect(createResponseBody.title).toEqual(defaultCreatePolicyDto.title);
     expect(createResponseBody.subtitle).toEqual(
@@ -135,12 +140,12 @@ describe('Policies', () => {
     );
     expect(createResponseBody.text).toEqual(defaultCreatePolicyDto.text);
 
-    expect(updateResponseBody.type).toEqual(updatedType);
-    expect(updateResponseBody.title).toEqual(updatedTitle);
-    expect(updateResponseBody.subtitle).toEqual(updatedSubtitle);
-    expect(updateResponseBody.text).toEqual(updatedText);
+    expect(getResponseBody.type).toEqual(updatedType);
+    expect(getResponseBody.title).toEqual(updatedTitle);
+    expect(getResponseBody.subtitle).toEqual(updatedSubtitle);
+    expect(getResponseBody.text).toEqual(updatedText);
 
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+    expect(createResponseBody.id).toEqual(getResponseBody.id);
   });
 
   it('update returns the updated policy with the partial changes updated', async () => {
@@ -152,13 +157,20 @@ describe('Policies', () => {
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(201);
 
-    const { body: updateResponseBody } = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .patch(`/policies/${createResponseBody.id}`)
       .send({
         title: updatedTitle,
       })
       .set({ 'X-API-KEY': process.env.API_KEY })
       .expect(200);
+
+    const { body: getResponseBody } = await request(app.getHttpServer())
+      .get(`/policies/${createResponseBody.id}`)
+      .set({ 'X-API-KEY': process.env.API_KEY })
+      .expect(200);
+
+    expect(createResponseBody.id).toEqual(getResponseBody.id);
 
     expect(createResponseBody.type).toEqual(defaultCreatePolicyDto.type);
     expect(createResponseBody.title).toEqual(defaultCreatePolicyDto.title);
@@ -167,14 +179,10 @@ describe('Policies', () => {
     );
     expect(createResponseBody.text).toEqual(defaultCreatePolicyDto.text);
 
-    expect(updateResponseBody.type).toEqual(defaultCreatePolicyDto.type);
-    expect(updateResponseBody.title).toEqual(updatedTitle);
-    expect(updateResponseBody.subtitle).toEqual(
-      defaultCreatePolicyDto.subtitle,
-    );
-    expect(updateResponseBody.text).toEqual(defaultCreatePolicyDto.text);
-
-    expect(createResponseBody.id).toEqual(updateResponseBody.id);
+    expect(getResponseBody.type).toEqual(defaultCreatePolicyDto.type);
+    expect(getResponseBody.title).toEqual(updatedTitle);
+    expect(getResponseBody.subtitle).toEqual(defaultCreatePolicyDto.subtitle);
+    expect(getResponseBody.text).toEqual(defaultCreatePolicyDto.text);
   });
 
   it('update returns 404 NotFound when no policy was found', async () => {
