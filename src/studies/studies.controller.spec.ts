@@ -148,6 +148,10 @@ describe('StudiesController', () => {
       defaultCreateStudyDto.description,
     );
     expect(createdEntity.isActive).toEqual(defaultCreateStudyDto.isActive);
+    expect(createdEntity.supportsRecording).toEqual(
+      defaultCreateStudyDto.supportsRecording,
+    );
+
     expect(createdEntity.countryCodes.length).toEqual(1);
     expect(createdEntity.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -341,6 +345,7 @@ describe('StudiesController', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: false,
+        supportsRecording: false,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,
@@ -351,6 +356,7 @@ describe('StudiesController', () => {
     expect(updatedEntity.name).toEqual(updatedStudyName);
     expect(updatedEntity.description).toEqual(updateStudyDescription);
     expect(updatedEntity.isActive).toEqual(false);
+    expect(updatedEntity.supportsRecording).toEqual(false);
     expect(updatedEntity.countryCodes.length).toEqual(2);
     expect(updatedEntity.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -390,6 +396,7 @@ describe('StudiesController', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: false,
+        supportsRecording: false,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,
@@ -400,6 +407,7 @@ describe('StudiesController', () => {
     expect(updatedEntity.name).toEqual(updatedStudyName);
     expect(updatedEntity.description).toEqual(updateStudyDescription);
     expect(updatedEntity.isActive).toEqual(false);
+    expect(updatedEntity.supportsRecording).toEqual(false);
     expect(updatedEntity.countryCodes.length).toEqual(2);
     expect(updatedEntity.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -432,6 +440,9 @@ describe('StudiesController', () => {
       defaultCreateStudyDto.description,
     );
     expect(createdEntity.isActive).toEqual(defaultCreateStudyDto.isActive);
+    expect(createdEntity.supportsRecording).toEqual(
+      defaultCreateStudyDto.supportsRecording,
+    );
     expect(createdEntity.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
     ]);
@@ -455,6 +466,7 @@ describe('StudiesController', () => {
     expect(updatedEntity.name).toEqual(updatedName);
     expect(updatedEntity.description).toEqual(updatedDescription);
     expect(updatedEntity.isActive).toEqual(true);
+    expect(updatedEntity.supportsRecording).toEqual(true);
     expect(updatedEntity.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
     ]);
@@ -490,6 +502,7 @@ describe('StudiesController', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: false,
+        supportsRecording: false,
         countryCodeIds: [DEFAULT_GUID],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,
@@ -517,6 +530,7 @@ describe('StudiesController', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: false,
+        supportsRecording: false,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [DEFAULT_GUID],
         onboardingId: secondOnboarding.id,
@@ -544,6 +558,7 @@ describe('StudiesController', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: false,
+        supportsRecording: false,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id],
         onboardingId: DEFAULT_GUID,
@@ -571,6 +586,7 @@ describe('StudiesController', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: false,
+        supportsRecording: false,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,

@@ -29,6 +29,9 @@ export class Study {
   @Column()
   isActive: boolean;
 
+  @Column()
+  supportsRecording: boolean;
+
   @ManyToMany(() => CountryCode, (countryCode) => countryCode.studies, {
     cascade: false,
     onDelete: 'SET NULL',

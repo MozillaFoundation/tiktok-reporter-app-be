@@ -2,10 +2,10 @@ import { IsArray, IsBoolean, IsString, IsUUID } from 'class-validator';
 
 import { ApiProperty } from '@nestjs/swagger';
 import { CountryCodeDto } from 'src/countryCodes/dtos/country-code.dto';
+import { FormDto } from 'src/forms/dtos/form.dto';
 import { OnboardingDto } from 'src/onboardings/dtos/onboarding.dto';
 import { PolicyDto } from 'src/policies/dtos/policy.dto';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
-import { FormDto } from 'src/forms/dtos/form.dto';
 
 export class StudyDto {
   @ApiProperty({
@@ -35,6 +35,13 @@ export class StudyDto {
   })
   @IsBoolean()
   isActive: boolean;
+
+  @ApiProperty({
+    description: 'The support recording property of the study',
+    type: Boolean,
+  })
+  @IsBoolean()
+  supportsRecording;
 
   @ApiProperty({
     description: 'The country Codes for this study',

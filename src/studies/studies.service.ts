@@ -66,6 +66,7 @@ export class StudiesService {
       name: createStudyDto.name,
       description: createStudyDto.description,
       isActive: createStudyDto.isActive,
+      supportsRecording: createStudyDto.supportsRecording,
       countryCodes,
       policies,
       onboarding,
@@ -150,6 +151,9 @@ export class StudiesService {
       isActive: isDefined(updateStudyDto?.isActive)
         ? updateStudyDto.isActive
         : study.isActive,
+      supportsRecording: isDefined(updateStudyDto?.supportsRecording)
+        ? updateStudyDto.supportsRecording
+        : study.supportsRecording,
       updatedBy: savedApiKey,
     });
 

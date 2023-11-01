@@ -25,6 +25,13 @@ export class CreateStudyDto {
   isActive: boolean;
 
   @ApiProperty({
+    description: 'The supports recording property of the study',
+    type: Boolean,
+  })
+  @IsBoolean()
+  supportsRecording;
+
+  @ApiProperty({
     description: 'The ids of the country code associated to this study',
     type: [String],
   })

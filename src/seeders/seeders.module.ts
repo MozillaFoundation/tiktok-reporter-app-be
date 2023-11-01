@@ -292,6 +292,7 @@ export class SeedersModule {
       name: 'Custom Study for testing only',
       description: 'Custom Study for testing only',
       isActive: true,
+      supportsRecording: true,
       countryCodes,
       policies: [studyPolicy],
       onboarding,

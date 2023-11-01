@@ -19,6 +19,7 @@ export const defaultCreateStudyDto: CreateStudyDto = {
   name: 'Test Create Study',
   description: 'The Description of the new Created Study',
   isActive: true,
+  supportsRecording: true,
   countryCodeIds: [],
   policyIds: [],
   onboardingId: '1',

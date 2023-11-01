@@ -52,6 +52,7 @@ export const fakeStudiesService: Partial<StudiesService> = {
       name: createStudyDto.name,
       description: createStudyDto.description,
       isActive: createStudyDto.isActive,
+      supportsRecording: createStudyDto.supportsRecording,
       countryCodes,
       policies,
       onboarding,
@@ -118,6 +119,9 @@ export const fakeStudiesService: Partial<StudiesService> = {
       isActive: isDefined(updateStudyDto?.isActive)
         ? updateStudyDto?.isActive
         : foundStudy.isActive,
+      supportsRecording: isDefined(updateStudyDto?.supportsRecording)
+        ? updateStudyDto?.supportsRecording
+        : foundStudy.supportsRecording,
       updatedBy: savedApiKey,
     });
 

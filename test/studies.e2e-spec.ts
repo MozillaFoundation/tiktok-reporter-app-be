@@ -201,6 +201,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -217,6 +218,7 @@ describe('Study', () => {
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
     expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.supportsRecording).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
     expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -231,6 +233,7 @@ describe('Study', () => {
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
     expect(getResponseBody.isActive).toEqual(true);
+    expect(getResponseBody.supportsRecording).toEqual(true);
     expect(getResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
     ]);
@@ -251,6 +254,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [
           firstCountryCode.id,
           firstCountryCode.id,
@@ -272,6 +276,7 @@ describe('Study', () => {
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
     expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.supportsRecording).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
     expect(createResponseBody.countryCodes.at(0).id).toEqual(
       firstCountryCode.id,
@@ -283,6 +288,7 @@ describe('Study', () => {
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
     expect(getResponseBody.isActive).toEqual(true);
+    expect(getResponseBody.supportsRecording).toEqual(true);
     expect(getResponseBody.countryCodes.length).toEqual(1);
     expect(getResponseBody.countryCodes.at(0).id).toEqual(firstCountryCode.id);
     expect(getResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
@@ -300,6 +306,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [
           firstPolicy.id,
@@ -322,6 +329,7 @@ describe('Study', () => {
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
     expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.supportsRecording).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
     expect(createResponseBody.countryCodes.at(0).id).toEqual(
       firstCountryCode.id,
@@ -334,6 +342,7 @@ describe('Study', () => {
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
     expect(getResponseBody.isActive).toEqual(true);
+    expect(getResponseBody.supportsRecording).toEqual(true);
     expect(getResponseBody.countryCodes.length).toEqual(1);
     expect(getResponseBody.countryCodes.at(0).id).toEqual(firstCountryCode.id);
     expect(getResponseBody.policies.length).toEqual(1);
@@ -352,6 +361,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: ['Invalid id format'],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -374,6 +384,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [DEFAULT_GUID],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -396,6 +407,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: ['Invalid id format'],
         onboardingId: firstOnboarding.id,
@@ -418,6 +430,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [DEFAULT_GUID],
         onboardingId: firstOnboarding.id,
@@ -440,6 +453,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: 'Invalid Id Format',
@@ -462,6 +476,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: DEFAULT_GUID,
@@ -484,6 +499,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -506,6 +522,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -528,6 +545,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -548,6 +566,7 @@ describe('Study', () => {
     expect(foundCreatedStudy.name).toEqual(studyName);
     expect(foundCreatedStudy.description).toEqual(studyDescription);
     expect(foundCreatedStudy.isActive).toEqual(true);
+    expect(foundCreatedStudy.supportsRecording).toEqual(true);
     expect(foundCreatedStudy.countryCodes.at(0).id).toEqual(
       firstCountryCode.id,
     );
@@ -566,6 +585,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -582,6 +602,7 @@ describe('Study', () => {
     expect(getResponseBody.name).toEqual(studyName);
     expect(getResponseBody.description).toEqual(studyDescription);
     expect(getResponseBody.isActive).toEqual(true);
+    expect(getResponseBody.supportsRecording).toEqual(true);
     expect(getResponseBody.countryCodes.at(0).id).toEqual(firstCountryCode.id);
     expect(getResponseBody.policies.at(0).id).toEqual(firstPolicy.id);
     expect(getResponseBody.onboarding.id).toEqual(firstOnboarding.id);
@@ -626,6 +647,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -656,6 +678,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -670,6 +693,7 @@ describe('Study', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: false,
+        supportsRecording: false,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,
@@ -683,6 +707,7 @@ describe('Study', () => {
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
     expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.supportsRecording).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
     expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -697,6 +722,7 @@ describe('Study', () => {
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(updateStudyDescription);
     expect(updateResponseBody.isActive).toEqual(false);
+    expect(updateResponseBody.supportsRecording).toEqual(false);
     expect(updateResponseBody.countryCodes.length).toEqual(2);
     expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -724,6 +750,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -752,6 +779,7 @@ describe('Study', () => {
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
     expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.supportsRecording).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
     expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -766,6 +794,7 @@ describe('Study', () => {
     expect(getResponseBody.name).toEqual(updatedStudyName);
     expect(getResponseBody.description).toEqual(updateStudyDescription);
     expect(getResponseBody.isActive).toEqual(true);
+    expect(getResponseBody.supportsRecording).toEqual(true);
     expect(getResponseBody.countryCodes.length).toEqual(2);
     expect(getResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -792,6 +821,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -806,6 +836,7 @@ describe('Study', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: false,
+        supportsRecording: false,
         countryCodeIds: [
           secondCountryCode.id,
           secondCountryCode.id,
@@ -823,6 +854,7 @@ describe('Study', () => {
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
     expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.supportsRecording).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
     expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -837,6 +869,7 @@ describe('Study', () => {
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(updateStudyDescription);
     expect(updateResponseBody.isActive).toEqual(false);
+    expect(updateResponseBody.supportsRecording).toEqual(false);
     expect(updateResponseBody.countryCodes.length).toEqual(2);
     expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -864,6 +897,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -878,6 +912,7 @@ describe('Study', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: false,
+        supportsRecording: false,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id, secondPolicy.id, secondPolicy.id],
         onboardingId: secondOnboarding.id,
@@ -891,6 +926,7 @@ describe('Study', () => {
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
     expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.supportsRecording).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
     expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -905,6 +941,7 @@ describe('Study', () => {
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(updateStudyDescription);
     expect(updateResponseBody.isActive).toEqual(false);
+    expect(updateResponseBody.supportsRecording).toEqual(false);
     expect(updateResponseBody.countryCodes.length).toEqual(2);
     expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -931,6 +968,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -950,6 +988,7 @@ describe('Study', () => {
     expect(createResponseBody.name).toEqual(studyName);
     expect(createResponseBody.description).toEqual(studyDescription);
     expect(createResponseBody.isActive).toEqual(true);
+    expect(createResponseBody.supportsRecording).toEqual(true);
     expect(createResponseBody.countryCodes.length).toEqual(1);
     expect(createResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -964,6 +1003,7 @@ describe('Study', () => {
     expect(updateResponseBody.name).toEqual(updatedStudyName);
     expect(updateResponseBody.description).toEqual(studyDescription);
     expect(updateResponseBody.isActive).toEqual(true);
+    expect(updateResponseBody.supportsRecording).toEqual(true);
     expect(updateResponseBody.countryCodes.length).toEqual(1);
     expect(updateResponseBody.countryCodes.map((cc) => cc.id)).toEqual([
       firstCountryCode.id,
@@ -986,6 +1026,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
       })
@@ -1007,6 +1048,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
       })
@@ -1033,6 +1075,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -1070,6 +1113,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -1084,6 +1128,7 @@ describe('Study', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: ['Invalid id format'],
       })
@@ -1107,6 +1152,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -1121,6 +1167,7 @@ describe('Study', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: 'Invalid Id Format',
@@ -1146,6 +1193,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -1160,6 +1208,7 @@ describe('Study', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: DEFAULT_GUID,
@@ -1185,6 +1234,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -1199,6 +1249,7 @@ describe('Study', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,
@@ -1224,6 +1275,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -1238,6 +1290,7 @@ describe('Study', () => {
         name: updatedStudyName,
         description: updateStudyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [secondCountryCode.id],
         policyIds: [secondPolicy.id],
         onboardingId: secondOnboarding.id,
@@ -1260,6 +1313,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -1314,6 +1368,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -1348,6 +1403,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -1382,6 +1438,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
@@ -1415,6 +1472,7 @@ describe('Study', () => {
         name: studyName,
         description: studyDescription,
         isActive: true,
+        supportsRecording: true,
         countryCodeIds: [firstCountryCode.id],
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
