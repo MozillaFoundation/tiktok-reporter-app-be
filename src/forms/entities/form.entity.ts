@@ -26,10 +26,18 @@ export class Form {
   @Column('jsonb', { nullable: false, default: {} })
   fields: Array<TextField | DropDownField | SliderField>;
 
-  @OneToMany(() => Onboarding, (onboarding) => onboarding.form)
+  @OneToMany(() => Onboarding, (onboarding) => onboarding.form, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   onboardings: Onboarding[];
 
-  @OneToMany(() => Study, (study) => study.form)
+  @OneToMany(() => Study, (study) => study.form, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   studies: Study[];
 
   @CreateDateColumn()
@@ -38,9 +46,17 @@ export class Form {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => ApiKey)
+  @ManyToOne(() => ApiKey, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   createdBy: ApiKey;
 
-  @ManyToOne(() => ApiKey)
+  @ManyToOne(() => ApiKey, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   updatedBy: ApiKey;
 }

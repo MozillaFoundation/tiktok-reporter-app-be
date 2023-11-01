@@ -235,6 +235,7 @@ describe('Onboardings', () => {
 
     expect(updateResponseBody.name).toEqual(updatedName);
     expect(updateResponseBody.steps.length).toEqual(1);
+    expect(updateResponseBody.steps.at(0).id).toEqual(firstOnboardingStep.id);
   });
 
   it('update returns 404 NotFound when no onboarding was found', async () => {

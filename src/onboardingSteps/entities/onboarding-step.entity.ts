@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { Onboarding } from 'src/onboardings/entities/onboarding.entity';
 
 @Entity()
 export class OnboardingStep {
@@ -35,7 +35,9 @@ export class OnboardingStep {
   order: number;
 
   @ManyToMany(() => Onboarding, (onboarding) => onboarding.steps, {
-    onDelete: 'NO ACTION',
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
   })
   onboardings: Onboarding[];
 
@@ -45,9 +47,17 @@ export class OnboardingStep {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => ApiKey)
+  @ManyToOne(() => ApiKey, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   createdBy: ApiKey;
 
-  @ManyToOne(() => ApiKey)
+  @ManyToOne(() => ApiKey, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   updatedBy: ApiKey;
 }

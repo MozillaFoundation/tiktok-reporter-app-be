@@ -27,17 +27,26 @@ export class Onboarding {
     () => OnboardingStep,
     (onboardingStep) => onboardingStep.onboardings,
     {
-      cascade: true,
+      cascade: false,
       onDelete: 'SET NULL',
+      onUpdate: 'NO ACTION',
     },
   )
   @JoinTable()
   steps: OnboardingStep[];
 
-  @OneToMany(() => Study, (study) => study.onboarding)
+  @OneToMany(() => Study, (study) => study.onboarding, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   studies: Study[];
 
-  @ManyToOne(() => Form, (form) => form.onboardings)
+  @ManyToOne(() => Form, (form) => form.onboardings, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   form: Form;
 
   @CreateDateColumn()
@@ -46,9 +55,17 @@ export class Onboarding {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => ApiKey)
+  @ManyToOne(() => ApiKey, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   createdBy: ApiKey;
 
-  @ManyToOne(() => ApiKey)
+  @ManyToOne(() => ApiKey, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   updatedBy: ApiKey;
 }

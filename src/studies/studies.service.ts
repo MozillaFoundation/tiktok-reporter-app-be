@@ -95,6 +95,7 @@ export class StudiesService {
         policies: true,
         onboarding: {
           steps: true,
+          form: true,
         },
         form: true,
       },
@@ -106,11 +107,20 @@ export class StudiesService {
   async findOne(id: string) {
     const study = await this.studyRepository.findOne({
       where: { id },
+      relationLoadStrategy: 'query',
+      select: {
+        countryCodes: true,
+        policies: true,
+        onboarding: {
+          steps: true,
+        },
+      },
       relations: {
         countryCodes: true,
         policies: true,
         onboarding: {
           steps: true,
+          form: true,
         },
         form: true,
       },
@@ -129,6 +139,7 @@ export class StudiesService {
     updateStudyDto: UpdateStudyDto,
   ) {
     const study = await this.findOne(id);
+
     const savedApiKey = await this.apiKeyRepository.findOne({
       where: { key: headerApiKey },
     });
@@ -152,13 +163,10 @@ export class StudiesService {
           'No Country Codes with the given id exist',
         );
       }
-
-      Object.assign(study, {
-        countryCodes: removeDuplicateObjects(
-          [...study.countryCodes, ...countryCodes],
-          'id',
-        ),
-      });
+      study.countryCodes = removeDuplicateObjects(
+        [...study.countryCodes, ...countryCodes],
+        'id',
+      );
     }
 
     if (updateStudyDto.policyIds) {
@@ -169,31 +177,20 @@ export class StudiesService {
       if (!policies.length) {
         throw new BadRequestException('No Policies with the given id exist');
       }
-
-      Object.assign(study, {
-        policies: removeDuplicateObjects(
-          [...study.policies, ...policies],
-          'id',
-        ),
-      });
+      study.policies = removeDuplicateObjects(
+        [...study.policies, ...policies],
+        'id',
+      );
     }
 
     if (updateStudyDto.onboardingId) {
-      const onboarding = await this.onboardingsService.findOne(
+      study.onboarding = await this.onboardingsService.findOne(
         updateStudyDto.onboardingId,
       );
-
-      Object.assign(study, {
-        onboarding,
-      });
     }
 
     if (updateStudyDto.formId) {
-      const form = await this.formsService.findOne(updateStudyDto.formId);
-
-      Object.assign(study, {
-        form,
-      });
+      study.form = await this.formsService.findOne(updateStudyDto.formId);
     }
 
     const updatedStudy = await this.studyRepository.save(study);

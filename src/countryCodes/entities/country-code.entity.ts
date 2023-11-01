@@ -8,8 +8,8 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-import { Study } from 'src/studies/entities/study.entity';
 import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { Study } from 'src/studies/entities/study.entity';
 
 @Entity()
 export class CountryCode {
@@ -23,7 +23,9 @@ export class CountryCode {
   code: string;
 
   @ManyToMany(() => Study, (study) => study.countryCodes, {
-    onDelete: 'NO ACTION',
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
   })
   studies: Study[];
 
@@ -33,9 +35,17 @@ export class CountryCode {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => ApiKey)
+  @ManyToOne(() => ApiKey, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   createdBy: ApiKey;
 
-  @ManyToOne(() => ApiKey)
+  @ManyToOne(() => ApiKey, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   updatedBy: ApiKey;
 }

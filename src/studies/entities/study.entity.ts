@@ -30,28 +30,32 @@ export class Study {
   isActive: boolean;
 
   @ManyToMany(() => CountryCode, (countryCode) => countryCode.studies, {
-    cascade: true,
+    cascade: false,
     onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
   })
   @JoinTable()
   countryCodes: CountryCode[];
 
   @ManyToMany(() => Policy, (policy) => policy.studies, {
-    cascade: true,
+    cascade: false,
     onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
   })
   @JoinTable()
   policies: Policy[];
 
   @ManyToOne(() => Onboarding, (onboarding) => onboarding.studies, {
-    cascade: true,
+    cascade: false,
     onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
   })
   onboarding: Onboarding;
 
   @ManyToOne(() => Form, (form) => form.studies, {
-    cascade: true,
+    cascade: false,
     onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
   })
   form: Form;
 
@@ -61,9 +65,17 @@ export class Study {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @ManyToOne(() => ApiKey)
+  @ManyToOne(() => ApiKey, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   createdBy: ApiKey;
 
-  @ManyToOne(() => ApiKey)
+  @ManyToOne(() => ApiKey, {
+    cascade: false,
+    onDelete: 'SET NULL',
+    onUpdate: 'NO ACTION',
+  })
   updatedBy: ApiKey;
 }
