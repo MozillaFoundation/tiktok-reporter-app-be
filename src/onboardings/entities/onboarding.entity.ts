@@ -29,7 +29,6 @@ export class Onboarding {
     {
       cascade: false,
       onDelete: 'SET NULL',
-      onUpdate: 'NO ACTION',
     },
   )
   @JoinTable()
@@ -38,14 +37,12 @@ export class Onboarding {
   @OneToMany(() => Study, (study) => study.onboarding, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   studies: Study[];
 
   @ManyToOne(() => Form, (form) => form.onboardings, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   form: Form;
 
@@ -58,14 +55,12 @@ export class Onboarding {
   @ManyToOne(() => ApiKey, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   createdBy: ApiKey;
 
   @ManyToOne(() => ApiKey, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   updatedBy: ApiKey;
 }

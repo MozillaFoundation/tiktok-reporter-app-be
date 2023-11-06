@@ -37,7 +37,6 @@ export class OnboardingStep {
   @ManyToMany(() => Onboarding, (onboarding) => onboarding.steps, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   onboardings: Onboarding[];
 
@@ -50,14 +49,12 @@ export class OnboardingStep {
   @ManyToOne(() => ApiKey, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   createdBy: ApiKey;
 
   @ManyToOne(() => ApiKey, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   updatedBy: ApiKey;
 }

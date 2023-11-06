@@ -41,21 +41,18 @@ export class Policy {
   @ManyToMany(() => Study, (study) => study.policies, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   studies: Study[];
 
   @ManyToOne(() => ApiKey, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   createdBy: ApiKey;
 
   @ManyToOne(() => ApiKey, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   updatedBy: ApiKey;
 

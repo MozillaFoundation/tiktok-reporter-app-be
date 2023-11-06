@@ -25,7 +25,6 @@ export class CountryCode {
   @ManyToMany(() => Study, (study) => study.countryCodes, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   studies: Study[];
 
@@ -38,14 +37,12 @@ export class CountryCode {
   @ManyToOne(() => ApiKey, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   createdBy: ApiKey;
 
   @ManyToOne(() => ApiKey, {
     cascade: false,
     onDelete: 'SET NULL',
-    onUpdate: 'NO ACTION',
   })
   updatedBy: ApiKey;
 }
