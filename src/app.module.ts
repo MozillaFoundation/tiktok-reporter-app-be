@@ -14,6 +14,7 @@ import { PoliciesModule } from './policies/policies.module';
 import { PrometheusModule } from '@willsoto/nestjs-prometheus';
 import { SeedersModule } from './seeders/seeders.module';
 import { SentryInterceptor } from './interceptors/sentry.interceptor';
+import { StorageModule } from './storage/storage.module';
 import { StudiesModule } from './studies/studies.module';
 import { TerminusModule } from '@nestjs/terminus';
 
@@ -22,6 +23,7 @@ import { TerminusModule } from '@nestjs/terminus';
     PrometheusModule.register(),
     DataBaseModule,
     AuthModule,
+    StorageModule,
     StudiesModule,
     CountryCodesModule,
     PoliciesModule,
@@ -31,6 +33,7 @@ import { TerminusModule } from '@nestjs/terminus';
     SeedersModule,
     TerminusModule,
     HttpModule,
+    StorageModule,
   ],
   controllers: [AppController],
   providers: [
