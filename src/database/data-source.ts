@@ -20,14 +20,14 @@ export const getDataSourceOptions = (): DataSourceOptions => {
     synchronize: shouldSync,
     logging: shouldLog,
     // FOR development and deployment
-    // entities: ['dist/**/*.entity{.ts,.js}'],
+    entities: ['dist/**/*.entity{.ts,.js}'],
     // FOR end to end testing
-    entities: ['src/**/*.entity{.ts,.js}'],
+    //entities: ['src/**/*.entity{.ts,.js}'],
     // Generating a migration: npm run migration:generate -n src/database/migrations/[NameOfMigration]
     // FOR development and deployment
-    //migrations: ['dist/database/migrations/*{.ts,.js}'],
+    migrations: ['dist/database/migrations/*{.ts,.js}'],
     // FOR end to end testing
-    migrations: ['src/database/migrations/*{.ts,.js}'],
+    //migrations: ['src/database/migrations/*{.ts,.js}'],
     migrationsTableName: 'migrations_typeorm',
     migrationsRun: true,
   };
