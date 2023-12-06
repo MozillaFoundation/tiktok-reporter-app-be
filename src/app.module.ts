@@ -1,5 +1,7 @@
-import { APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR, APP_PIPE } from '@nestjs/core';
 import { Module, ValidationPipe } from '@nestjs/common';
+import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { getThrottlerLimit, getThrottlerTtl } from './utils/throttler.utils';
 
 import { AppController } from './app.controller';
 import { AuthModule } from './auth/auth.module';
@@ -24,6 +26,12 @@ import { TerminusModule } from '@nestjs/terminus';
     DataBaseModule,
     AuthModule,
     StorageModule,
+    ThrottlerModule.forRoot([
+      {
+        ttl: getThrottlerTtl(),
+        limit: getThrottlerLimit(),
+      },
+    ]),
     StudiesModule,
     CountryCodesModule,
     PoliciesModule,
@@ -47,6 +55,10 @@ import { TerminusModule } from '@nestjs/terminus';
       useValue: new ValidationPipe({
         whitelist: true,
       }),
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })

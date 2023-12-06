@@ -16,8 +16,17 @@ import { StorageService } from './storage.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { StorageFileDto } from './dtos/storage-file.dto';
 import { CreateRecordingDto } from './dtos/create-recording.dto';
+import { getMaxFileSize } from 'src/utils/file.utils';
+import { Throttle } from '@nestjs/throttler';
+import { getThrottlerLimit, getThrottlerTtl } from 'src/utils/throttler.utils';
 
 @UseInterceptors(SentryInterceptor)
+@Throttle({
+  default: {
+    ttl: getThrottlerTtl(),
+    limit: getThrottlerLimit(),
+  },
+})
 @ApiTags('Storage')
 @Controller('storage')
 export class StorageController {
@@ -57,6 +66,9 @@ export class StorageController {
       new ParseFilePipeBuilder()
         .addFileTypeValidator({
           fileType: 'mp4',
+        })
+        .addMaxSizeValidator({
+          maxSize: getMaxFileSize(),
         })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,

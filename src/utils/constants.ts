@@ -11,6 +11,9 @@ import { SliderFieldDto } from 'src/forms/dtos/slider-field.dto';
 import { TextFieldDto } from 'src/forms/dtos/text-field.dto';
 
 export const DEFAULT_GUID = '00000000-0000-0000-0000-000000000000';
+export const DEFAULT_MAX_FILE_SIZE = 250000000;
+export const DEFAULT_THROTTLER_TTL_IN_MS = 60000;
+export const DEFAULT_THROTTLER_LIMIT = 10;
 export const DEFAULT_IP_ADDRESS_FOR_TESTING = '192.0.2.1';
 
 export const API_KEY_HEADER_VALUE = 'x-api-key';
