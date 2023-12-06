@@ -3,9 +3,10 @@ import { DownloadResponse, Storage } from '@google-cloud/storage';
 import { Injectable } from '@nestjs/common';
 import StorageConfig from './config/storage-config';
 import { StorageFile } from './types/storage-file';
+import { StorageFileDto } from './dtos/storage-file.dto';
 import { getFileExtension } from 'src/utils/file.utils';
 import { getFormattedDateForStorage } from 'src/utils/date.utils';
-import { mapFileToDtos } from './mappers/mapEntitiesToDto';
+import { mapFileToDto } from './mappers/mapEntitiesToDto';
 import { randomUuidv4 } from 'src/utils/generate-uuid';
 
 @Injectable()
@@ -25,7 +26,7 @@ export class StorageService {
     this.bucket = StorageConfig.mediaBucket;
   }
 
-  async save(file: Express.Multer.File) {
+  async save(file: Express.Multer.File): Promise<StorageFileDto> {
     const fileExt = getFileExtension(file.originalname);
     const folderName = getFormattedDateForStorage();
     const randomFileName = randomUuidv4();
@@ -37,8 +38,7 @@ export class StorageService {
 
     stream.end(file.buffer);
 
-    return mapFileToDtos(newFile);
-    //return newFile;
+    return mapFileToDto(newFile);
   }
 
   async getFile(path: string): Promise<DownloadResponse> {

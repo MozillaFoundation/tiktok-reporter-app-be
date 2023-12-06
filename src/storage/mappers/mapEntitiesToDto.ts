@@ -1,6 +1,6 @@
 import { StorageFileDto } from '../dtos/storage-file.dto';
 
-export function mapFileToDtos(file: any): StorageFileDto {
+export function mapFileToDto(file: any): StorageFileDto {
   if (!file) {
     return null;
   }
