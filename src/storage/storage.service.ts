@@ -27,7 +27,7 @@ export class StorageService {
   }
 
   async save(file: Express.Multer.File): Promise<StorageFileDto> {
-    const fileExt = getFileExtension(file.originalname);
+    const fileExt = getFileExtension(file.mimetype);
     const folderName = getFormattedDateForStorage();
     const randomFileName = randomUuidv4();
     const filePath = `${folderName}/${randomFileName}.${fileExt}`;

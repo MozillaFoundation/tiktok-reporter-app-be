@@ -1,7 +1,7 @@
 import { DEFAULT_MAX_FILE_SIZE } from './constants';
 
 export function getFileExtension(fileName: string) {
-  return fileName.split('.').pop();
+  return fileName.split('/').pop();
 }
 
 export function getMaxFileSize() {
