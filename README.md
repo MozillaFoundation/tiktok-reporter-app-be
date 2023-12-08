@@ -1,26 +1,27 @@
 ## Description
 
-TikTok Reporter Reporter Backend API
+TikTok Reporter Backend API
 
 ## Installation
 
 ```bash
 $ npm install
 ```
-
 ## Running the app
 
 ```bash
 # development
 $ npm run start
+```
+Than visit http://localhost:8080/api to access swagger
 
+```bash
 # watch mode
 $ npm run start:dev
 
 # production mode
 $ npm run start:prod
 ```
-
 ## Test
 
 ```bash
@@ -33,16 +34,17 @@ $ npm run test:e2e
 # test coverage
 $ npm run test:cov
 ```
+## Test e2e
+Make sure to uncomment the proper lines for the migrations and entities line in the [data-source.ts](/src/database//data-source.ts) file
 
-## Test
-Make sure to uncomment the proper the migrations and entities line in the [data-source.ts](/src/database//data-source.ts) file
+Because of the way the migrations are being used by development/deployment and e2e testing scenarios they need to be accessed from different locations.
 ```bash
 # unit tests
 $ npm run test:e2e
 ```
 
 ## Generating migrations
-Make sure to uncomment the proper the migrations and entities line in the [data-source.ts](/src/database//data-source.ts) file
+Make sure to uncomment the proper line for the migrations and entities line in the [data-source.ts](/src/database//data-source.ts) file. 
 ```bash
 $ npm run migration:generate -n src/database/migrations/
 ```
