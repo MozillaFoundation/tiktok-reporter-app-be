@@ -26,7 +26,15 @@ async function bootstrap() {
 
   Sentry.init({
     dsn: process.env.SENTRY_DSN_URL || 'SENTRY_DSN_URL',
+    integrations: [new Sentry.Integrations.Http({ tracing: true })],
+    // Performance Monitoring
+    tracesSampleRate: 1.0,
+    // Set sampling rate for profiling - this is relative to tracesSampleRate
+    profilesSampleRate: 1.0,
   });
+
+  // TracingHandler creates a trace for every incoming request
+  app.use(Sentry.Handlers.tracingHandler());
 
   await app.listen(port);
 }
