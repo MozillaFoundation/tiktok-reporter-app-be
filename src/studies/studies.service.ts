@@ -93,7 +93,7 @@ export class StudiesService {
       await this.geolocationService.getCountryCodeByIpAddress(ipAddress);
 
     const areStudiesAvailable = await this.studyRepository.exist({
-      where: { countryCodes: { code: 'fi' } },
+      where: { countryCodes: { code: userCountryCode } },
     });
     console.log(`areStudiesAvailable: ${areStudiesAvailable}`);
     this.logger.warn(`areStudiesAvailable: ${areStudiesAvailable}`);
