@@ -89,6 +89,14 @@ export class StudiesService {
     const userCountryCode =
       await this.geolocationService.getCountryCodeByIpAddress(ipAddress);
 
+    const areStudiesAvailable = await this.studyRepository.exist({
+      where: { countryCodes: { code: userCountryCode } },
+    });
+
+    if (!areStudiesAvailable) {
+      return this.findAll();
+    }
+
     const foundStudies = await this.studyRepository.find({
       where: { countryCodes: { code: userCountryCode } },
       relations: {
