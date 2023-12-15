@@ -20,9 +20,12 @@ import {
   mapStudyEntityToDto,
 } from './mappers/mapEntitiesToDto';
 import { GeolocationService } from 'src/geolocation/geo-location.service';
+import { Logger } from '@nestjs/common';
 
 @Injectable()
 export class StudiesService {
+  private readonly logger = new Logger(StudiesService.name);
+
   constructor(
     private readonly geolocationService: GeolocationService,
     private readonly countryCodeService: CountryCodesService,
@@ -90,12 +93,17 @@ export class StudiesService {
       await this.geolocationService.getCountryCodeByIpAddress(ipAddress);
 
     const areStudiesAvailable = await this.studyRepository.exist({
-      where: { countryCodes: { code: userCountryCode } },
+      where: { countryCodes: { code: 'fi' } },
     });
+    this.logger.warn(`areStudiesAvailable: ${areStudiesAvailable}`);
+    this.logger.warn(`ipAddress: ${ipAddress}`);
 
     if (!areStudiesAvailable) {
+      this.logger.warn(`getting all studies`);
       return this.findAll();
     }
+
+    this.logger.warn(`getting specific study`);
 
     const foundStudies = await this.studyRepository.find({
       where: { countryCodes: { code: userCountryCode } },
