@@ -20,6 +20,13 @@ export class FieldDto {
   type: FieldType;
 
   @ApiProperty({
+    description: 'Checking if the field is used for sharing a link',
+    type: Boolean,
+  })
+  @IsBoolean()
+  isTikTokLink;
+
+  @ApiProperty({
     description: 'The Label of the Field',
     type: String,
   })

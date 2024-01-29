@@ -7,6 +7,7 @@ export function mapSliderField(sliderFieldDto: SliderFieldDto): SliderField {
   return {
     id: randomUuidv4(),
     type: FieldType.Slider,
+    isTikTokLink: false,
     label: sliderFieldDto.label,
     description: sliderFieldDto.description,
     isRequired: sliderFieldDto.isRequired || false,
