@@ -67,6 +67,7 @@ export const defaultCreateFormDto: CreateFormDto = {
       isRequired: true,
       multiline: true,
       maxLines: 2,
+      isTikTokLink: true,
     } as TextFieldDto,
     {
       type: FieldType.DropDown,

@@ -17,7 +17,6 @@ export function mapDropDownField(
     id: randomUuidv4(),
     type: FieldType.DropDown,
     label: dropDownFieldDto.label,
-    isTikTokLink: false,
     description: dropDownFieldDto.description,
     placeholder: dropDownFieldDto.placeholder,
     isRequired: dropDownFieldDto.isRequired || false,

@@ -7,12 +7,12 @@ export function mapTextField(textFieldDto: TextFieldDto): TextField {
   return {
     id: randomUuidv4(),
     type: FieldType.TextField,
-    isTikTokLink: textFieldDto.isTikTokLink || false,
     label: textFieldDto.label,
     description: textFieldDto.description,
     isRequired: textFieldDto.isRequired || false,
     placeholder: textFieldDto.placeholder,
     multiline: textFieldDto.multiline || false,
+    isTikTokLink: textFieldDto.isTikTokLink || false,
     maxLines: textFieldDto.maxLines || 0,
   };
 }

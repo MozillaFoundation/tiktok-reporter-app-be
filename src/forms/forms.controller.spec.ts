@@ -74,6 +74,9 @@ describe('FormsController', () => {
     expect((firstCreatedField as TextField).maxLines).toEqual(
       (firstDtoField as TextFieldDto).maxLines,
     );
+    expect((firstCreatedField as TextField).isTikTokLink).toEqual(
+      (firstCreatedField as TextFieldDto).isTikTokLink,
+    );
   });
 
   it('findAll returns the list of all forms including the newly created one', async () => {
