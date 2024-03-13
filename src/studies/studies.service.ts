@@ -126,6 +126,11 @@ export class StudiesService {
         },
         form: true,
       },
+      order: {
+        countryCodes: {
+          countryName: 'ASC',
+        },
+      },
     });
 
     return mapStudiesToDtos(foundStudies);
