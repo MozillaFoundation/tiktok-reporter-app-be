@@ -24,6 +24,7 @@ export function mapOnboardingStepEntityToDto(onboardingStep: OnboardingStep) {
   return {
     id: onboardingStep.id,
     title: onboardingStep.title,
+    platform: onboardingStep.platform,
     subtitle: onboardingStep.subtitle,
     description: onboardingStep.description,
     imageUrl: onboardingStep.imageUrl,

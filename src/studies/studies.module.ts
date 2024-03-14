@@ -1,4 +1,5 @@
 import { ApiKey } from 'src/auth/entities/api-key.entity';
+import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { CountryCodesModule } from 'src/countryCodes/country-codes.module';
 import { FormsModule } from 'src/forms/forms.module';
 import { GeolocationModule } from 'src/geolocation/geo-locaiton.module';
@@ -12,7 +13,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Study, ApiKey]),
+    TypeOrmModule.forFeature([Study, OnboardingStep, ApiKey]),
     CountryCodesModule,
     PoliciesModule,
     OnboardingsModule,
