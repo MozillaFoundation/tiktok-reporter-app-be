@@ -27,6 +27,7 @@ import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-serv
 import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
 import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
 import { fakeStudiesService } from 'src/utils/fake-studies-service.util';
+import { OnboardingStepsService } from 'src/onboardingSteps/onboarding-steps.service';
 
 describe('StudiesController', () => {
   let controller: StudiesController;
@@ -114,6 +115,10 @@ describe('StudiesController', () => {
         { provide: StudiesService, useValue: fakeStudiesService },
         { provide: CountryCodesService, useValue: fakeCountryCodesService },
         { provide: OnboardingsService, useValue: fakeOnboardingsService },
+        {
+          provide: OnboardingStepsService,
+          useValue: fakeOnboardingStepsService,
+        },
       ],
     }).compile();
 
@@ -255,14 +260,14 @@ describe('StudiesController', () => {
       },
     );
 
-    const foundEntity = await controller.findOne(createdEntity.id);
+    const foundEntity = await controller.findOne(createdEntity.id, 'ios');
 
     expect(foundEntity).toBeDefined();
     expect(foundEntity).toEqual(createdEntity);
   });
 
   it('findOne throws error when no study was found', async () => {
-    await expect(controller.findOne(DEFAULT_GUID)).rejects.toThrow(
+    await expect(controller.findOne(DEFAULT_GUID, 'ios')).rejects.toThrow(
       NotFoundException,
     );
   });
@@ -608,7 +613,7 @@ describe('StudiesController', () => {
     );
 
     const removedEntity = await controller.remove(createdEntity.id);
-    await expect(controller.findOne(removedEntity.id)).rejects.toThrow(
+    await expect(controller.findOne(removedEntity.id, 'ios')).rejects.toThrow(
       NotFoundException,
     );
   });
