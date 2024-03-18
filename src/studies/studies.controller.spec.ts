@@ -261,7 +261,10 @@ describe('StudiesController', () => {
       },
     );
 
-    const foundEntity = await controller.findOne(createdEntity.id, 'ios');
+    const foundEntity = await controller.findOne(
+      { platform: null },
+      createdEntity.id,
+    );
 
     expect(foundEntity).toBeDefined();
     expect(foundEntity).toEqual(createdEntity);
