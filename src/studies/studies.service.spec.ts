@@ -427,12 +427,21 @@ describe('StudiesService', () => {
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
     });
-    await service.create(apiKey, {
+    await repository.save({
+      ...countryStudy,
+      countryCodes: [firstCountryCode],
+    });
+
+    const anotherCountryStudy = await service.create(apiKey, {
       ...defaultCreateStudyDto,
       countryCodeIds: [secondCountryCode.id],
       policyIds: [secondPolicy.id],
       onboardingId: secondOnboarding.id,
       formId: secondStudyForm.id,
+    });
+    await repository.save({
+      ...anotherCountryStudy,
+      countryCodes: [secondCountryCode],
     });
     const globalStudy = await service.create(apiKey, {
       ...defaultCreateStudyDto,
@@ -441,6 +450,10 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+    });
+    await repository.save({
+      ...globalStudy,
+      countryCodes: [],
     });
 
     const foundEntitiesNoCountry = await service.findByIpAddress(
