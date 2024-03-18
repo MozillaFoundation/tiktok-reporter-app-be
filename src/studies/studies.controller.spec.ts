@@ -28,6 +28,7 @@ import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util'
 import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
 import { fakeStudiesService } from 'src/utils/fake-studies-service.util';
 import { OnboardingStepsService } from 'src/onboardingSteps/onboarding-steps.service';
+import { MobilePlatform } from 'src/interceptors/request-context.interceptor';
 
 describe('StudiesController', () => {
   let controller: StudiesController;
@@ -271,9 +272,9 @@ describe('StudiesController', () => {
   });
 
   it('findOne throws error when no study was found', async () => {
-    await expect(controller.findOne(DEFAULT_GUID, 'ios')).rejects.toThrow(
-      NotFoundException,
-    );
+    await expect(
+      controller.findOne(DEFAULT_GUID, MobilePlatform.IOS),
+    ).rejects.toThrow(NotFoundException);
   });
 
   it('findByIpAddress returns newly created study when querying by id', async () => {
@@ -617,9 +618,9 @@ describe('StudiesController', () => {
     );
 
     const removedEntity = await controller.remove(createdEntity.id);
-    await expect(controller.findOne(removedEntity.id, 'ios')).rejects.toThrow(
-      NotFoundException,
-    );
+    await expect(
+      controller.findOne(removedEntity.id, MobilePlatform.IOS),
+    ).rejects.toThrow(NotFoundException);
   });
 
   it('remove throws error when no study was found', async () => {

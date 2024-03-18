@@ -134,7 +134,7 @@ describe('StudiesService', () => {
       apiKey,
       {
         title: 'Test Second Onboarding Step Title',
-        platform: 'ios',
+        platform: MobilePlatform.IOS,
         subtitle: 'Test Second Onboarding Step SubTitle',
         description: 'Test Second Onboarding Step Description',
         imageUrl: 'Test Second Onboarding Step ImageURL',
