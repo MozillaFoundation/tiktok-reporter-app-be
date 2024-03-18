@@ -427,6 +427,7 @@ describe('StudiesService', () => {
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
     });
+    // countryCodes is used by the query filter and fake repository doesn't set it
     await repository.save({
       ...countryStudy,
       countryCodes: [firstCountryCode],
