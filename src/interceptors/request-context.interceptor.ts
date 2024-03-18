@@ -22,12 +22,12 @@ export class RequestContextInterceptor implements NestInterceptor {
     const userAgent = request.get('user-agent') || '';
 
     let platform;
+    // Assume all other requests are iOS, for now
     if (userAgent.indexOf('okhttp/') >= 0) {
       platform = MobilePlatform.ANDROID;
     } else {
       platform = MobilePlatform.IOS;
     }
-    console.log('UserAgent', { userAgent });
     request.extraContext = {
       platform,
     };
