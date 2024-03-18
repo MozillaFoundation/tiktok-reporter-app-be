@@ -180,7 +180,6 @@ export class StudiesService {
           id: study.onboarding.id,
         },
       });
-      console.log('where platform', mobilePlatform.toString);
     }
     const onboardingSteps = await this.onboardingStepRepository.find({
       where,

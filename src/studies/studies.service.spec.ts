@@ -39,6 +39,7 @@ import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { OnboardingStepDto } from 'src/onboardingSteps/dtos/onboarding-step.dto';
+import { MobilePlatform } from 'src/interceptors/request-context.interceptor';
 
 describe('StudiesService', () => {
   let service: StudiesService;
@@ -122,16 +123,18 @@ describe('StudiesService', () => {
       ...firstOnboardingStep,
       onboardings: [firstOnboarding],
     });
+    firstOnboardingStep.onboardings = [firstOnboarding];
     await fakeOnboardingStepRepository.save({
       ...secondOnboardingStepAndroid,
       onboardings: [firstOnboarding],
     });
+    secondOnboardingStepAndroid.onboardings = [firstOnboarding];
 
     const secondOnboardingStep = await fakeOnboardingStepsService.create(
       apiKey,
       {
         title: 'Test Second Onboarding Step Title',
-        platform: 'android',
+        platform: 'ios',
         subtitle: 'Test Second Onboarding Step SubTitle',
         description: 'Test Second Onboarding Step Description',
         imageUrl: 'Test Second Onboarding Step ImageURL',
@@ -145,6 +148,12 @@ describe('StudiesService', () => {
       stepIds: [secondOnboardingStep.id],
       formId: secondStudyForm.id,
     });
+
+    await fakeOnboardingStepRepository.save({
+      ...secondOnboardingStep,
+      onboardings: [secondOnboarding],
+    });
+    secondOnboardingStep.onboardings = [secondOnboarding];
   });
 
   beforeEach(async () => {
@@ -339,18 +348,35 @@ describe('StudiesService', () => {
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
     });
-    // Onboardings are missing, set them manually
-    // Note that only the first step is shown on ios, not the second
-    createdEntity.onboarding.steps.map(
-      (step) => (step.onboardings = [firstOnboarding]),
-    );
 
-    const foundEntity = await service.findOne(createdEntity.id);
+    const foundEntity = await service.findOne(createdEntity.id, null);
 
     expect(foundEntity).toBeDefined();
-    expect(foundEntity).toEqual(createdEntity);
     expect(foundEntity.countryCodes).toBeDefined();
     expect(foundEntity.onboarding.steps.length).toEqual(1);
+    // Exclude the android-specific step
+    expect(foundEntity).toEqual({
+      ...createdEntity,
+      onboarding: {
+        ...createdEntity.onboarding,
+        steps: [firstOnboardingStep],
+      },
+    });
+
+    const foundEntityForAndroid = await service.findOne(
+      createdEntity.id,
+      MobilePlatform.ANDROID,
+    );
+
+    expect(foundEntityForAndroid).toBeDefined();
+    expect(foundEntityForAndroid.onboarding.steps.length).toEqual(2);
+    expect(foundEntityForAndroid).toEqual({
+      ...createdEntity,
+      onboarding: {
+        ...createdEntity.onboarding,
+        steps: [firstOnboardingStep, secondOnboardingStepAndroid],
+      },
+    });
   });
 
   it('findOne throws error when no study was found', async () => {
