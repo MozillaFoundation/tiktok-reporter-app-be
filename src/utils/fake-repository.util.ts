@@ -2,6 +2,7 @@ import {
   DeepPartial,
   FindManyOptions,
   FindOneOptions,
+  FindOperator,
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
@@ -28,12 +29,12 @@ export function getFakeEntityRepository<TEntity>(): Partial<
     ) => {
       const [first] = Object.keys(where);
       const condition = where[first];
-      let filteredEntities: TEntity[] = [];
+      let filteredEntities: TEntity[] = [...entities];
 
       if (!entityKeys.includes(first)) {
         const [firstConditionKey] = Object.keys(condition);
 
-        filteredEntities = entities.filter((entity) => {
+        filteredEntities = filteredEntities.filter((entity) => {
           if (
             condition?.[firstConditionKey].type === 'isNull' &&
             isEmpty(entity?.[first])
@@ -49,21 +50,28 @@ export function getFakeEntityRepository<TEntity>(): Partial<
           continue;
         }
 
-        const [firstWhereKey] = Object.keys(where[key]);
-        const firstWhereCondition = where[key];
+        let firstWhereKey, firstWhereCondition;
+        if (where[key] instanceof FindOperator) {
+          firstWhereKey = key;
+          firstWhereCondition = where;
+        } else {
+          firstWhereKey = Object.keys(where[key])[0];
+          firstWhereCondition = where[key];
+        }
 
         if (
           firstWhereCondition[firstWhereKey] !== null &&
           firstWhereCondition[firstWhereKey].type === 'isNull'
         ) {
-          filteredEntities = entities.filter(
+          filteredEntities = filteredEntities.filter(
             (entity) =>
-              !isFilledArray(entity[key]) || !arrayNotEmpty(entity[key]),
+              entity[key] === null ||
+              (Array.isArray(entity[key]) &&
+                (!isFilledArray(entity[key]) || !arrayNotEmpty(entity[key]))),
           );
           continue;
         }
-
-        filteredEntities = entities.filter((entity) => {
+        filteredEntities = filteredEntities.filter((entity) => {
           if (isArray(entity[key])) {
             return entity[key].find((foundEntity) => {
               if (!where[key]?.[firstWhereKey]) {

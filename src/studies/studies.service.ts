@@ -6,7 +6,7 @@ import {
 import { CreateStudyDto } from './dto/create-study.dto';
 import { UpdateStudyDto } from './dto/update-study.dto';
 import { Study } from './entities/study.entity';
-import { FindOperator, IsNull, Repository } from 'typeorm';
+import { FindOperator, FindOptionsWhere, IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
 import { isDefined } from 'class-validator';
@@ -21,6 +21,8 @@ import {
 } from './mappers/mapEntitiesToDto';
 import { GeolocationService } from 'src/geolocation/geo-location.service';
 import { CountryCodeDto } from 'src/countryCodes/dtos/country-code.dto';
+import { MobilePlatform } from 'src/interceptors/request-context.interceptor';
+import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 
 @Injectable()
 export class StudiesService {
@@ -32,6 +34,8 @@ export class StudiesService {
     private readonly formsService: FormsService,
     @InjectRepository(Study)
     private readonly studyRepository: Repository<Study>,
+    @InjectRepository(OnboardingStep)
+    private readonly onboardingStepRepository: Repository<OnboardingStep>,
     @InjectRepository(ApiKey)
     private readonly apiKeyRepository: Repository<ApiKey>,
   ) {}
@@ -136,7 +140,7 @@ export class StudiesService {
     return mapStudiesToDtos(foundStudies);
   }
 
-  async findOne(id: string) {
+  async findOne(id: string, mobilePlatform?: MobilePlatform) {
     const study = await this.studyRepository.findOne({
       where: { id },
       relationLoadStrategy: 'query',
@@ -151,7 +155,6 @@ export class StudiesService {
         countryCodes: true,
         policies: true,
         onboarding: {
-          steps: true,
           form: true,
         },
         form: true,
@@ -161,6 +164,27 @@ export class StudiesService {
     if (!study) {
       throw new NotFoundException('Study not found');
     }
+
+    const where: FindOptionsWhere<OnboardingStep>[] = [
+      {
+        onboardings: {
+          id: study.onboarding.id,
+        },
+        platform: IsNull(),
+      },
+    ];
+    if (mobilePlatform) {
+      where.push({
+        platform: mobilePlatform,
+        onboardings: {
+          id: study.onboarding.id,
+        },
+      });
+    }
+    const onboardingSteps = await this.onboardingStepRepository.find({
+      where,
+    });
+    study.onboarding.steps = onboardingSteps;
 
     return mapStudyEntityToDto(study);
   }

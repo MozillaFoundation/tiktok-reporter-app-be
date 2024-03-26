@@ -1,6 +1,6 @@
 import { IsNumber, IsString } from 'class-validator';
 
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateOnboardingStepDto {
   @ApiProperty({
@@ -9,6 +9,13 @@ export class CreateOnboardingStepDto {
   })
   @IsString()
   title: string;
+
+  @ApiPropertyOptional({
+    description: 'The OnboardingStep Platform',
+    type: String,
+  })
+  @IsString()
+  platform: string;
 
   @ApiProperty({
     description: 'The OnboardingStep SubTitle',

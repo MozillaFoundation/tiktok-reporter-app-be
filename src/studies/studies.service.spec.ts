@@ -19,6 +19,7 @@ import { FormDto } from 'src/forms/dtos/form.dto';
 import { FormsService } from 'src/forms/forms.service';
 import { GeolocationService } from 'src/geolocation/geo-location.service';
 import { OnboardingDto } from 'src/onboardings/dtos/onboarding.dto';
+import { OnboardingStep } from 'src/onboardingSteps/entities/onboarding-step.entity';
 import { OnboardingsService } from 'src/onboardings/onboardings.service';
 import { PoliciesService } from 'src/policies/policies.service';
 import { PolicyDto } from 'src/policies/dtos/policy.dto';
@@ -29,11 +30,16 @@ import { Study } from './entities/study.entity';
 import { fakeCountryCodesService } from 'src/utils/fake-country-codes-service.util';
 import { fakeFormsService } from 'src/utils/fake-forms-service.util';
 import { fakeGeolocationService } from 'src/utils/fake-geo-location-service.util';
-import { fakeOnboardingStepsService } from 'src/utils/fake-onboarding-steps-service.util';
+import {
+  fakeOnboardingStepsService,
+  fakeOnboardingStepRepository,
+} from 'src/utils/fake-onboarding-steps-service.util';
 import { fakeOnboardingsService } from 'src/utils/fake-onboardings-service.util';
 import { fakePoliciesService } from 'src/utils/fake-policies-service.util';
 import { getFakeEntityRepository } from 'src/utils/fake-repository.util';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { OnboardingStepDto } from 'src/onboardingSteps/dtos/onboarding-step.dto';
+import { MobilePlatform } from 'src/interceptors/request-context.interceptor';
 
 describe('StudiesService', () => {
   let service: StudiesService;
@@ -42,6 +48,7 @@ describe('StudiesService', () => {
   let configService: ConfigService;
 
   const REPOSITORY_TOKEN = getRepositoryToken(Study);
+  const ONBOARDING_STEP_REPOSITORY_TOKEN = getRepositoryToken(OnboardingStep);
   const API_KEY_REPOSITORY_TOKEN = getRepositoryToken(ApiKey);
 
   let apiKey: string;
@@ -50,6 +57,8 @@ describe('StudiesService', () => {
   let firstPolicy: PolicyDto;
   let secondPolicy: PolicyDto;
   let firstOnboarding: OnboardingDto;
+  let firstOnboardingStep: OnboardingStepDto;
+  let secondOnboardingStepAndroid: OnboardingStepDto;
   let secondOnboarding: OnboardingDto;
   let firstStudyForm: FormDto;
   let secondStudyForm: FormDto;
@@ -84,21 +93,48 @@ describe('StudiesService', () => {
       defaultCreateFormDto,
     );
 
-    const firstOnboardingStep = await fakeOnboardingStepsService.create(
+    firstOnboardingStep = await fakeOnboardingStepsService.create(
       apiKey,
       defaultCreateOnboardingStepDto,
     );
 
+    secondOnboardingStepAndroid = await fakeOnboardingStepsService.create(
+      apiKey,
+      {
+        title: 'Test Android Onboarding Step Title',
+        platform: 'android',
+        subtitle: 'Test Android Onboarding Step SubTitle',
+        description: 'Test Android Onboarding Step Description',
+        imageUrl: 'Test Android Onboarding Step ImageURL',
+        details: 'Test Android Onboarding Step Details',
+        order: 2,
+      },
+    );
+
     firstOnboarding = await fakeOnboardingsService.create(apiKey, {
       ...defaultCreateOnboardingDto,
-      stepIds: [firstOnboardingStep.id],
+      stepIds: [firstOnboardingStep.id, secondOnboardingStepAndroid.id],
       formId: firstStudyForm.id,
     });
+
+    // Need to set this manually, else the steps are not filtered
+    // correctly by onboarding platform. Is there a better way?
+    await fakeOnboardingStepRepository.save({
+      ...firstOnboardingStep,
+      onboardings: [firstOnboarding],
+    });
+    firstOnboardingStep.onboardings = [firstOnboarding];
+    await fakeOnboardingStepRepository.save({
+      ...secondOnboardingStepAndroid,
+      onboardings: [firstOnboarding],
+    });
+    secondOnboardingStepAndroid.onboardings = [firstOnboarding];
 
     const secondOnboardingStep = await fakeOnboardingStepsService.create(
       apiKey,
       {
         title: 'Test Second Onboarding Step Title',
+        platform: MobilePlatform.IOS,
         subtitle: 'Test Second Onboarding Step SubTitle',
         description: 'Test Second Onboarding Step Description',
         imageUrl: 'Test Second Onboarding Step ImageURL',
@@ -112,6 +148,12 @@ describe('StudiesService', () => {
       stepIds: [secondOnboardingStep.id],
       formId: secondStudyForm.id,
     });
+
+    await fakeOnboardingStepRepository.save({
+      ...secondOnboardingStep,
+      onboardings: [secondOnboarding],
+    });
+    secondOnboardingStep.onboardings = [secondOnboarding];
   });
 
   beforeEach(async () => {
@@ -132,6 +174,10 @@ describe('StudiesService', () => {
         {
           provide: REPOSITORY_TOKEN,
           useValue: getFakeEntityRepository<Study>(),
+        },
+        {
+          provide: ONBOARDING_STEP_REPOSITORY_TOKEN,
+          useValue: fakeOnboardingStepRepository,
         },
         {
           provide: API_KEY_REPOSITORY_TOKEN,
@@ -294,7 +340,7 @@ describe('StudiesService', () => {
     expect(allStudies).toEqual(expect.arrayContaining([createdEntity]));
   });
 
-  it('findOne returns newly created study', async () => {
+  it('findOne returns newly created study with platform specific steps', async () => {
     const createdEntity = await service.create(apiKey, {
       ...defaultCreateStudyDto,
       countryCodeIds: [firstCountryCode.id],
@@ -303,11 +349,34 @@ describe('StudiesService', () => {
       formId: firstStudyForm.id,
     });
 
-    const foundEntity = await service.findOne(createdEntity.id);
+    const foundEntity = await service.findOne(createdEntity.id, null);
 
     expect(foundEntity).toBeDefined();
-    expect(foundEntity).toEqual(createdEntity);
     expect(foundEntity.countryCodes).toBeDefined();
+    expect(foundEntity.onboarding.steps.length).toEqual(1);
+    // Exclude the android-specific step
+    expect(foundEntity).toEqual({
+      ...createdEntity,
+      onboarding: {
+        ...createdEntity.onboarding,
+        steps: [firstOnboardingStep],
+      },
+    });
+
+    const foundEntityForAndroid = await service.findOne(
+      createdEntity.id,
+      MobilePlatform.ANDROID,
+    );
+
+    expect(foundEntityForAndroid).toBeDefined();
+    expect(foundEntityForAndroid.onboarding.steps.length).toEqual(2);
+    expect(foundEntityForAndroid).toEqual({
+      ...createdEntity,
+      onboarding: {
+        ...createdEntity.onboarding,
+        steps: [firstOnboardingStep, secondOnboardingStepAndroid],
+      },
+    });
   });
 
   it('findOne throws error when no study was found', async () => {
@@ -358,12 +427,22 @@ describe('StudiesService', () => {
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
     });
-    await service.create(apiKey, {
+    // countryCodes is used by the query filter and fake repository doesn't set it
+    await repository.save({
+      ...countryStudy,
+      countryCodes: [firstCountryCode],
+    });
+
+    const anotherCountryStudy = await service.create(apiKey, {
       ...defaultCreateStudyDto,
       countryCodeIds: [secondCountryCode.id],
       policyIds: [secondPolicy.id],
       onboardingId: secondOnboarding.id,
       formId: secondStudyForm.id,
+    });
+    await repository.save({
+      ...anotherCountryStudy,
+      countryCodes: [secondCountryCode],
     });
     const globalStudy = await service.create(apiKey, {
       ...defaultCreateStudyDto,
@@ -372,6 +451,10 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+    });
+    await repository.save({
+      ...globalStudy,
+      countryCodes: [],
     });
 
     const foundEntitiesNoCountry = await service.findByIpAddress(
