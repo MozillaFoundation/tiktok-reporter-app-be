@@ -34,6 +34,7 @@ export function mapStudyEntityToDto(study: Study): StudyDto {
     policies: mapPoliciesToDtos(study.policies),
     onboarding: mapOnboardingEntityToDto(study.onboarding),
     form: mapFormEntityToDto(study.form),
+    dataDownloadForm: mapFormEntityToDto(study.dataDownloadForm),
     createdAt: study.createdAt,
     updatedAt: study.updatedAt,
   } as StudyDto;

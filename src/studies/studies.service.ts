@@ -57,7 +57,7 @@ export class StudiesService {
       createStudyDto.policyIds,
     );
 
-    if (!policies.length) {
+    if (createStudyDto.policyIds.length && !policies.length) {
       throw new BadRequestException('No Policies with the given id exist');
     }
 
@@ -66,6 +66,9 @@ export class StudiesService {
     );
 
     const form = await this.formsService.findOne(createStudyDto.formId);
+    const dataDownloadForm = await this.formsService.findOne(
+      createStudyDto.dataDownloadFormId,
+    );
 
     const savedApiKey = await this.apiKeyRepository.findOne({
       where: { key: headerApiKey },
@@ -78,6 +81,7 @@ export class StudiesService {
       policies,
       onboarding,
       form,
+      dataDownloadForm,
       createdBy: savedApiKey,
     };
     if (countryCodes.length) {
@@ -129,6 +133,7 @@ export class StudiesService {
           form: true,
         },
         form: true,
+        dataDownloadForm: true,
       },
       order: {
         countryCodes: {
@@ -158,6 +163,7 @@ export class StudiesService {
           form: true,
         },
         form: true,
+        dataDownloadForm: true,
       },
     });
 
@@ -165,26 +171,28 @@ export class StudiesService {
       throw new NotFoundException('Study not found');
     }
 
-    const where: FindOptionsWhere<OnboardingStep>[] = [
-      {
-        onboardings: {
-          id: study.onboarding.id,
+    if (study.onboarding) {
+      const where: FindOptionsWhere<OnboardingStep>[] = [
+        {
+          onboardings: {
+            id: study.onboarding.id,
+          },
+          platform: IsNull(),
         },
-        platform: IsNull(),
-      },
-    ];
-    if (mobilePlatform) {
-      where.push({
-        platform: mobilePlatform,
-        onboardings: {
-          id: study.onboarding.id,
-        },
+      ];
+      if (mobilePlatform) {
+        where.push({
+          platform: mobilePlatform,
+          onboardings: {
+            id: study.onboarding.id,
+          },
+        });
+      }
+      const onboardingSteps = await this.onboardingStepRepository.find({
+        where,
       });
+      study.onboarding.steps = onboardingSteps;
     }
-    const onboardingSteps = await this.onboardingStepRepository.find({
-      where,
-    });
-    study.onboarding.steps = onboardingSteps;
 
     return mapStudyEntityToDto(study);
   }
@@ -250,6 +258,12 @@ export class StudiesService {
 
     if (updateStudyDto.formId) {
       study.form = await this.formsService.findOne(updateStudyDto.formId);
+    }
+
+    if (updateStudyDto.dataDownloadFormId) {
+      study.dataDownloadForm = await this.formsService.findOne(
+        updateStudyDto.dataDownloadFormId,
+      );
     }
 
     const updatedStudy = await this.studyRepository.save(study);
