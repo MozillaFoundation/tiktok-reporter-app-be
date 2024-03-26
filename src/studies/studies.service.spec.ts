@@ -350,21 +350,45 @@ describe('StudiesService', () => {
     expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
   });
 
-  it('findByIpAddress returns all studies when no study can be found', async () => {
-    const newCreatedStudy = await service.create(apiKey, {
+  it('findByIpAddress returns global study whether there is a country study or not', async () => {
+    const countryStudy = await service.create(apiKey, {
       ...defaultCreateStudyDto,
       countryCodeIds: [firstCountryCode.id],
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
     });
+    await service.create(apiKey, {
+      ...defaultCreateStudyDto,
+      countryCodeIds: [secondCountryCode.id],
+      policyIds: [secondPolicy.id],
+      onboardingId: secondOnboarding.id,
+      formId: secondStudyForm.id,
+    });
+    const globalStudy = await service.create(apiKey, {
+      ...defaultCreateStudyDto,
+      // Explicitly set no countries
+      countryCodeIds: [],
+      policyIds: [firstPolicy.id],
+      onboardingId: firstOnboarding.id,
+      formId: firstStudyForm.id,
+    });
 
-    const foundEntities = await service.findByIpAddress(
+    const foundEntitiesNoCountry = await service.findByIpAddress(
       'Non existent ip address',
     );
 
+    expect(foundEntitiesNoCountry).toBeDefined();
+    expect(foundEntitiesNoCountry.map((s) => s.id)).toEqual([globalStudy.id]);
+    const foundEntities = await service.findByIpAddress(
+      DEFAULT_IP_ADDRESS_FOR_TESTING,
+    );
+
     expect(foundEntities).toBeDefined();
-    expect(foundEntities.map((s) => s.id)).toEqual([newCreatedStudy.id]);
+    expect(foundEntities.map((s) => s.id)).toEqual([
+      countryStudy.id,
+      globalStudy.id,
+    ]);
   });
 
   it('update returns the updated study with all changes updated', async () => {

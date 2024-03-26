@@ -6,6 +6,7 @@
 
 # db file
 db.test.sqlite
+database
 
 # compiled output
 /dist

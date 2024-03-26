@@ -6,7 +6,7 @@ import {
 import { CreateStudyDto } from './dto/create-study.dto';
 import { UpdateStudyDto } from './dto/update-study.dto';
 import { Study } from './entities/study.entity';
-import { Repository } from 'typeorm';
+import { FindOperator, IsNull, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CountryCodesService } from 'src/countryCodes/country-codes.service';
 import { isDefined } from 'class-validator';
@@ -20,6 +20,7 @@ import {
   mapStudyEntityToDto,
 } from './mappers/mapEntitiesToDto';
 import { GeolocationService } from 'src/geolocation/geo-location.service';
+import { CountryCodeDto } from 'src/countryCodes/dtos/country-code.dto';
 
 @Injectable()
 export class StudiesService {
@@ -36,12 +37,16 @@ export class StudiesService {
   ) {}
 
   async create(headerApiKey: string, createStudyDto: CreateStudyDto) {
-    const countryCodes = await this.countryCodeService.findAllById(
-      createStudyDto.countryCodeIds,
-    );
-
-    if (!countryCodes.length) {
-      throw new BadRequestException('No Country Codes with the given id exist');
+    let countryCodes: CountryCodeDto[] = [];
+    if (createStudyDto.countryCodeIds.length) {
+      countryCodes = await this.countryCodeService.findAllById(
+        createStudyDto.countryCodeIds,
+      );
+      if (!countryCodes.length) {
+        throw new BadRequestException(
+          'No Country Codes with the given id exist',
+        );
+      }
     }
 
     const policies = await this.policiesService.findAllById(
@@ -61,18 +66,20 @@ export class StudiesService {
     const savedApiKey = await this.apiKeyRepository.findOne({
       where: { key: headerApiKey },
     });
-
-    const createdStudy = await this.studyRepository.create({
+    const createStudyOptions = {
       name: createStudyDto.name,
       description: createStudyDto.description,
       isActive: createStudyDto.isActive,
       supportsRecording: createStudyDto.supportsRecording,
-      countryCodes,
       policies,
       onboarding,
       form,
       createdBy: savedApiKey,
-    });
+    };
+    if (countryCodes.length) {
+      createStudyOptions['countryCodes'] = countryCodes;
+    }
+    const createdStudy = await this.studyRepository.create(createStudyOptions);
 
     const savedStudy = await this.studyRepository.save(createdStudy);
 
@@ -89,16 +96,27 @@ export class StudiesService {
     const userCountryCode =
       await this.geolocationService.getCountryCodeByIpAddress(ipAddress);
 
-    const areStudiesAvailable = await this.studyRepository.exist({
-      where: { countryCodes: { code: userCountryCode } },
-    });
-
-    if (!areStudiesAvailable) {
-      return this.findAll();
+    const where: {
+      countryCodes: {
+        code?: string;
+        id?: FindOperator<any>;
+      };
+    }[] = [
+      {
+        countryCodes: {
+          id: IsNull(),
+        },
+      },
+    ];
+    if (userCountryCode) {
+      where.unshift({
+        countryCodes: {
+          code: userCountryCode,
+        },
+      });
     }
-
     const foundStudies = await this.studyRepository.find({
-      where: { countryCodes: { code: userCountryCode } },
+      where,
       relations: {
         countryCodes: true,
         policies: true,
@@ -107,6 +125,11 @@ export class StudiesService {
           form: true,
         },
         form: true,
+      },
+      order: {
+        countryCodes: {
+          countryName: 'ASC',
+        },
       },
     });
 
