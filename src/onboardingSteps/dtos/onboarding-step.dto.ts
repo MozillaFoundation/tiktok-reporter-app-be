@@ -1,6 +1,6 @@
 import { IsArray, IsNumber, IsString, IsUUID } from 'class-validator';
 
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { OnboardingDto } from 'src/onboardings/dtos/onboarding.dto';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 
@@ -18,6 +18,13 @@ export class OnboardingStepDto {
   })
   @IsString()
   title: string;
+
+  @ApiPropertyOptional({
+    description: 'The OnboardingStep Platform',
+    type: String,
+  })
+  @IsString()
+  platform: string;
 
   @ApiProperty({
     description: 'The OnboardingStep SubTitle',

@@ -29,6 +29,7 @@ export class OnboardingStepsService {
 
     const createdCountryCode = this.onboardingStepRepository.create({
       title: createOnboardingStepDto.title,
+      platform: createOnboardingStepDto.platform,
       subtitle: createOnboardingStepDto.subtitle,
       description: createOnboardingStepDto.description,
       imageUrl: createOnboardingStepDto.imageUrl,
@@ -81,6 +82,7 @@ export class OnboardingStepsService {
 
     Object.assign(onboardingStep, {
       title: updateCountryCodeDto.title || onboardingStep.title,
+      platform: updateCountryCodeDto.platform || onboardingStep.platform,
       subtitle: updateCountryCodeDto.subtitle || onboardingStep.subtitle,
       description:
         updateCountryCodeDto.description || onboardingStep.description,

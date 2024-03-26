@@ -22,8 +22,10 @@ import { SentryInterceptor } from 'src/interceptors/sentry.interceptor';
 import { AuthGuard } from '@nestjs/passport';
 import { API_KEY_HEADER_VALUE } from 'src/utils/constants';
 import { RealIP } from 'nestjs-real-ip';
+import { RequestContext } from 'src/decorators/request-context';
+import { RequestContextInterceptor } from 'src/interceptors/request-context.interceptor';
 
-@UseInterceptors(SentryInterceptor)
+@UseInterceptors(SentryInterceptor, RequestContextInterceptor)
 @ApiTags('Studies')
 @Controller('studies')
 export class StudiesController {
@@ -74,8 +76,11 @@ export class StudiesController {
     type: StudyDto,
   })
   @ApiErrorDecorator(HttpStatus.NOT_FOUND, 'Not Found')
-  findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.studiesService.findOne(id);
+  findOne(
+    @RequestContext() requestContext,
+    @Param('id', ParseUUIDPipe) id: string,
+  ) {
+    return this.studiesService.findOne(id, requestContext.platform);
   }
 
   @Patch(':id')

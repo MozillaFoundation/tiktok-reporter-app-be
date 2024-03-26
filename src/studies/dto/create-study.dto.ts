@@ -1,6 +1,6 @@
 import { IsArray, IsBoolean, IsString, IsUUID } from 'class-validator';
 
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class CreateStudyDto {
   @ApiProperty({
@@ -31,7 +31,7 @@ export class CreateStudyDto {
   @IsBoolean()
   supportsRecording;
 
-  @ApiProperty({
+  @ApiPropertyOptional({
     description: 'The ids of the country code associated to this study',
     type: [String],
   })

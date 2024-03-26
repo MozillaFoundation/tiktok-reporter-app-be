@@ -34,6 +34,7 @@ describe('OnboardingsController', () => {
 
     secondOnboardingStep = await fakeOnboardingStepsService.create(apiKey, {
       title: 'Test Second Onboarding Step Title',
+      platform: null,
       subtitle: 'Test Second Onboarding Step SubTitle',
       description: 'Test Second Onboarding Step Description',
       imageUrl: 'Test Second Onboarding Step ImageURL',

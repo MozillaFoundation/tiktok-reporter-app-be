@@ -16,6 +16,9 @@ export class OnboardingStep {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @Column({ nullable: true })
+  platform: string;
+
   @Column()
   title: string;
 
