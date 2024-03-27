@@ -60,4 +60,11 @@ export class CreateStudyDto {
   })
   @IsUUID()
   formId: string;
+
+  @ApiProperty({
+    description: 'The id of the data download form associated to this study',
+    type: String,
+  })
+  @IsUUID()
+  dataDownloadFormId: string;
 }

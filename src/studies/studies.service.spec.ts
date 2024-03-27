@@ -218,6 +218,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     expect(createdEntity).toBeDefined();
@@ -253,6 +254,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id, firstPolicy.id, firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     expect(createdEntity).toBeDefined();
@@ -284,6 +286,7 @@ describe('StudiesService', () => {
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
+        dataDownloadFormId: firstStudyForm.id,
       }),
     ).rejects.toThrow(BadRequestException);
   });
@@ -296,6 +299,7 @@ describe('StudiesService', () => {
         policyIds: [DEFAULT_GUID],
         onboardingId: firstOnboarding.id,
         formId: firstStudyForm.id,
+        dataDownloadFormId: firstStudyForm.id,
       }),
     ).rejects.toThrow(BadRequestException);
   });
@@ -308,6 +312,7 @@ describe('StudiesService', () => {
         policyIds: [firstPolicy.id],
         onboardingId: DEFAULT_GUID,
         formId: firstStudyForm.id,
+        dataDownloadFormId: firstStudyForm.id,
       }),
     ).rejects.toThrow(NotFoundException);
   });
@@ -320,6 +325,18 @@ describe('StudiesService', () => {
         policyIds: [firstPolicy.id],
         onboardingId: firstOnboarding.id,
         formId: DEFAULT_GUID,
+        dataDownloadFormId: firstStudyForm.id,
+      }),
+    ).rejects.toThrow(NotFoundException);
+
+    await expect(
+      service.create(apiKey, {
+        ...defaultCreateStudyDto,
+        countryCodeIds: [firstCountryCode.id],
+        policyIds: [firstPolicy.id],
+        onboardingId: firstOnboarding.id,
+        formId: firstStudyForm.id,
+        dataDownloadFormId: DEFAULT_GUID,
       }),
     ).rejects.toThrow(NotFoundException);
   });
@@ -331,6 +348,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     const allStudies = await service.findAll();
@@ -347,6 +365,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     const foundEntity = await service.findOne(createdEntity.id, null);
@@ -392,6 +411,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     const foundEntities = await service.findByIpAddress(
@@ -409,6 +429,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     const foundEntities = await service.findByIpAddress(
@@ -426,6 +447,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
     // countryCodes is used by the query filter and fake repository doesn't set it
     await repository.save({
@@ -439,6 +461,7 @@ describe('StudiesService', () => {
       policyIds: [secondPolicy.id],
       onboardingId: secondOnboarding.id,
       formId: secondStudyForm.id,
+      dataDownloadFormId: secondStudyForm.id,
     });
     await repository.save({
       ...anotherCountryStudy,
@@ -451,6 +474,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
     await repository.save({
       ...globalStudy,
@@ -481,6 +505,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     const updatedStudyName = 'UPDATE Test Create Third Study';
@@ -520,6 +545,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     };
     const createdEntity = await service.create(apiKey, entityDto);
     const updatedName = 'UPDATED Test Update Study';
@@ -551,6 +577,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     const updatedStudyName = 'UPDATE Test Create Third Study';
@@ -576,6 +603,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     const updatedStudyName = 'UPDATE Test Create Third Study';
@@ -601,6 +629,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     const updatedStudyName = 'UPDATE Test Create Third Study';
@@ -626,6 +655,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     const updatedStudyName = 'UPDATE Test Create Third Study';
@@ -651,6 +681,7 @@ describe('StudiesService', () => {
       policyIds: [firstPolicy.id],
       onboardingId: firstOnboarding.id,
       formId: firstStudyForm.id,
+      dataDownloadFormId: firstStudyForm.id,
     });
 
     const removedEntity = await service.remove(createdEntity.id);

@@ -58,6 +58,12 @@ export class Study {
   })
   form: Form;
 
+  @ManyToOne(() => Form, (form) => form.dataDownloadStudies, {
+    cascade: false,
+    onDelete: 'SET NULL',
+  })
+  dataDownloadForm: Form;
+
   @CreateDateColumn()
   createdAt: Date;
 

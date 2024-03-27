@@ -38,6 +38,12 @@ export class Form {
   })
   studies: Study[];
 
+  @OneToMany(() => Study, (study) => study.dataDownloadForm, {
+    cascade: false,
+    onDelete: 'SET NULL',
+  })
+  dataDownloadStudies: Study[];
+
   @CreateDateColumn()
   createdAt: Date;
 
