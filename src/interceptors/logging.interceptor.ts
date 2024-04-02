@@ -8,6 +8,7 @@ import {
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
+import * as Sentry from '@sentry/node';
 
 @Injectable()
 export class LoggingInterceptor implements NestInterceptor {
@@ -23,6 +24,11 @@ export class LoggingInterceptor implements NestInterceptor {
     const { ip, method, path: url } = request;
     const correlationKey = uuidv4();
 
+    Sentry.captureMessage(
+      `[${correlationKey}] method: ${method} url: ${url}  userAgent: ${userAgent} ip: ${ip}: className: ${
+        context.getClass().name
+      } handler: ${context.getHandler().name}`,
+    );
     this.logger.log(
       `[${correlationKey}] method:${method} url:${url}  userAgent:${userAgent} ip:${ip}: className:${
         context.getClass().name
@@ -37,6 +43,11 @@ export class LoggingInterceptor implements NestInterceptor {
         const { statusCode } = response;
         const contentLength = response.get('content-length');
 
+        Sentry.captureMessage(
+          `[${correlationKey}] ${method} ${url} ${statusCode} ${contentLength}: ${
+            Date.now() - now
+          }ms`,
+        );
         this.logger.log(
           `[${correlationKey}] ${method} ${url} ${statusCode} ${contentLength}: ${
             Date.now() - now

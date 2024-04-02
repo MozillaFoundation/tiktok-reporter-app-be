@@ -5,8 +5,9 @@ import * as Sentry from '@sentry/node';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 import { AppModule } from './app.module';
-import { NestFactory } from '@nestjs/core';
+import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
+import { SentryFilter } from './filters/SentryFilter';
 
 const port = process.env.PORT || 8080;
 
@@ -32,6 +33,9 @@ async function bootstrap() {
     // Set sampling rate for profiling - this is relative to tracesSampleRate
     profilesSampleRate: 1.0,
   });
+
+  const { httpAdapter } = app.get(HttpAdapterHost);
+  app.useGlobalFilters(new SentryFilter(httpAdapter));
 
   // The request handler must be the first middleware on the app
   app.use(Sentry.Handlers.requestHandler());
