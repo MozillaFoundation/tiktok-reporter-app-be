@@ -68,4 +68,10 @@ export class StudyDto {
     type: FormDto,
   })
   form: FormDto;
+
+  @ApiProperty({
+    description: 'The data download form for this study',
+    type: FormDto,
+  })
+  dataDownloadForm: FormDto;
 }

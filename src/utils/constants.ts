@@ -27,6 +27,7 @@ export const defaultCreateStudyDto: CreateStudyDto = {
   policyIds: [],
   onboardingId: '1',
   formId: '1',
+  dataDownloadFormId: '1'
 };
 
 export const defaultCreateCountryCodeDto: CreateCountryCodeDto = {
