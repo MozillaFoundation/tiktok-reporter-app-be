@@ -5,8 +5,8 @@ steps:
       - build
       - '--no-cache'
       - '--target=production'
-      - '--build-arg="GEO_LOCATION_ACCOUNT_ID=$_GEO_LOCATION_ACCOUNT_ID"'
-      - '--build-arg="GEO_LOCATION_API_KEY=$_GEO_LOCATION_API_KEY"'
+      - '--build-arg="GEO_LOCATION_ACCOUNT_ID=$__GEO_LOCATION_ACCOUNT_ID"'
+      - '--build-arg="GEO_LOCATION_API_KEY=$__GEO_LOCATION_API_KEY"'
       - '-t'
       - >-
         $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
