@@ -49,9 +49,9 @@ substitutions:
   _PLATFORM: managed
 availableSecrets:
   secretManager:
-    - versionName: projects/$PROJECT_ID/secrets/GEO_LOCATION_ACCOUNT_ID/versions/1
+    - versionName: projects/258584333411/secrets/GEO_LOCATION_ACCOUNT_ID/versions/1
       env: 'GEO_LOCATION_ACCOUNT_ID'
-    - versionName: projects/$PROJECT_ID/secrets/GEO_LOCATION_API_KEY/versions/1
+    - versionName: projects/258584333411/secrets/GEO_LOCATION_API_KEY/versions/1
       env: 'GEO_LOCATION_API_KEY'
 tags:
   - gcp-cloud-build-deploy-cloud-run
