@@ -1,7 +1,33 @@
 import { Injectable, Logger } from '@nestjs/common';
 
-import { WebServiceClient } from '@maxmind/geoip2-node';
+import { OpenOpts } from 'maxmind/lib';
+import { WebServiceClient, Reader } from '@maxmind/geoip2-node';
 import { isIP } from 'net';
+
+const getFileBasedIpAddress = async (ipAddress: string) => {
+  const options: OpenOpts = {};
+
+  const GEO_LOCATION_DATABASE_PATH =
+    process.env.GEO_LOCATION_DATABASE_PATH ||
+    '/usr/share/GeoIP/GeoIP2-Country.mmdb';
+
+  const reader = await Reader.open(GEO_LOCATION_DATABASE_PATH, options);
+  return reader.country(ipAddress);
+};
+
+const getWebBasedIpAddress = async (ipAddress: string) => {
+  const client = new WebServiceClient(
+    process.env.GEO_LOCATION_ACCOUNT_ID,
+    process.env.GEO_LOCATION_API_KEY,
+    { host: 'geolite.info' },
+  );
+  return await client.country(ipAddress);
+};
+
+const getIpAddress =
+  (process.env.GEO_LOCATION_LOOKUP_TYPE || 'file') === 'file'
+    ? getFileBasedIpAddress
+    : getWebBasedIpAddress;
 
 @Injectable()
 export class GeolocationService {
@@ -15,18 +41,11 @@ export class GeolocationService {
         return null;
       }
 
-      const client = new WebServiceClient(
-        process.env.GEO_LOCATION_ACCOUNT_ID,
-        process.env.GEO_LOCATION_API_KEY,
-        { host: 'geolite.info' },
-      );
-      const userCountry = await client.country(ipAddress);
+      const userCountry = await getIpAddress(ipAddress);
 
       this.logger.error('The geoip2-node result', JSON.stringify(userCountry));
 
-      const isValidCountry =
-        userCountry.hasOwnProperty('country') &&
-        userCountry.hasOwnProperty('traits');
+      const isValidCountry = !!userCountry.country && !!userCountry.traits;
 
       if (!isValidCountry) {
         this.logger.error(

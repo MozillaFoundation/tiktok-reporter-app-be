@@ -58,6 +58,14 @@ FROM node:18-alpine As production
 RUN addgroup -g 10001 app && \
     adduser -u 10001 -G app -s /usr/sbin/nologin -D -h /app app -s /bin/sh 
 
+RUN add-apt-repository ppa:maxmind/ppa && \
+    apt install geoipupdate && \
+    touch /etc/GeoIP.conf && \
+    echo "AccountID $GEO_LOCATION_ACCOUNT_ID" > /etc/GeoIP.conf && \
+    echo "LicenseKey $GEO_LOCATION_API_KEY" > /etc/GeoIP.conf && \
+    echo "EditionIDs GeoIP2-Country" > /etc/GeoIP.conf && \
+    geoipupdate
+
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /app/node_modules ./node_modules
 COPY --chown=node:node --from=build /app/dist ./dist
