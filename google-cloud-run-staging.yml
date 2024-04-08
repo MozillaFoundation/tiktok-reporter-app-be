@@ -5,8 +5,8 @@ steps:
       - build
       - '--no-cache'
       - '--target=production'
-      - '--build-arg="GEO_LOCATION_ACCOUNT_ID=$_GEO_LOCATION_ACCOUNT_ID"'
-      - '--build-arg="GEO_LOCATION_API_KEY=$_GEO_LOCATION_API_KEY"'
+      - '--build-arg="GEO_LOCATION_ACCOUNT_ID=$GEO_LOCATION_ACCOUNT_ID"'
+      - '--build-arg="GEO_LOCATION_API_KEY=$GEO_LOCATION_API_KEY"'
       - '-t'
       - >-
         $_AR_HOSTNAME/$PROJECT_ID/cloud-run-source-deploy/$REPO_NAME/$_SERVICE_NAME:$COMMIT_SHA
@@ -44,8 +44,8 @@ options:
 substitutions:
   _SERVICE_NAME: tiktok-reporter-app-be
   _TRIGGER_ID: $_TRIGGER_ID
-  _GEO_LOCATION_ACCOUNT_ID: $_GEO_LOCATION_ACCOUNT_ID
-  _GEO_LOCATION_API_KEY: $_GEO_LOCATION_API_KEY
+  GEO_LOCATION_ACCOUNT_ID: $_GEO_LOCATION_ACCOUNT_ID
+  GEO_LOCATION_API_KEY: $_GEO_LOCATION_API_KEY
   _DEPLOY_REGION: us-central1
   _AR_HOSTNAME: us-central1-docker.pkg.dev
   _PLATFORM: managed
