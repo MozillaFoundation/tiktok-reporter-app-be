@@ -65,7 +65,8 @@ RUN wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz && \
 
 ARG GEO_LOCATION_ACCOUNT_ID
 ARG GEO_LOCATION_API_KEY
-RUN echo ${GEO_LOCATION_ACCOUNT_ID}
+RUN echo "GEO_LOCATION_ACCOUNT_ID" && \
+    echo ${GEO_LOCATION_ACCOUNT_ID}
 RUN mkdir -p /usr/local/etc && touch /usr/local/etc/GeoIP.conf && \
     echo "AccountID ${GEO_LOCATION_ACCOUNT_ID}" >> /usr/local/etc/GeoIP.conf && \
     echo "LicenseKey ${GEO_LOCATION_API_KEY}" >> /usr/local/etc/GeoIP.conf && \
