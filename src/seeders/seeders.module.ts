@@ -253,7 +253,6 @@ export class SeedersModule {
           { title: 'Political viewpoint I would like to see less of' },
           { title: 'Stereotypes a group of people' },
           { title: "Generally don't feel represented/seen by this video" },
-          { title: 'Other' },
         ],
         selected: 'Distressing or disturbing',
         hasOtherOption: true,
@@ -321,7 +320,7 @@ const onboardingSteps = [
     details: '',
     order: 1,
     imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%201.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20report%20link%20-%20step%202.png',
   },
   {
     title: 'How to share a TikTok video with us using the app',
@@ -331,7 +330,7 @@ const onboardingSteps = [
     details: '',
     order: 2,
     imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%202.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20report%20link%20-%20step%203.png',
   },
   {
     title: 'How to share a screen recording with us using the app',
@@ -341,7 +340,7 @@ const onboardingSteps = [
     details: '',
     order: 3,
     imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%203.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%201.png',
   },
   {
     title: 'How to share a screen recording with us using the app',
@@ -351,7 +350,7 @@ const onboardingSteps = [
     details: '',
     order: 4,
     imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20report%20link%20-%20step%201.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%202.png',
   },
   {
     title: 'How to share a screen recording with us using the app',
@@ -361,7 +360,7 @@ const onboardingSteps = [
     details: '',
     order: 5,
     imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20report%20link%20-%20step%202.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%203.png',
   },
 ];
 
