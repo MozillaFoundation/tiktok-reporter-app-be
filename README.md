@@ -25,6 +25,12 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+### Installing Maxmind
+
+To test file-based GeoIP lookup, you must install the `geoipupdate` package.
+
+Details [here](https://github.com/maxmind/geoipupdate).
+
 ## Test
 
 ```bash
