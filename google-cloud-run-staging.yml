@@ -42,7 +42,7 @@ options:
   substitutionOption: ALLOW_LOOSE
   logging: CLOUD_LOGGING_ONLY
 substitutions:
-  _SERVICE_NAME: tiktok-reporter-app-be
+  _SERVICE_NAME: ttreporter-be
   _TRIGGER_ID: $_TRIGGER_ID
   _DEPLOY_REGION: us-central1
   _AR_HOSTNAME: us-central1-docker.pkg.dev

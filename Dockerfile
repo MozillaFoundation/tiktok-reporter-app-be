@@ -71,6 +71,10 @@ RUN mkdir -p /usr/local/etc && touch /usr/local/etc/GeoIP.conf && \
     echo "EditionIDs GeoIP2-Country" >> /usr/local/etc/GeoIP.conf && \
     $HOME/go/bin/geoipupdate
 
+# Copy crons
+COPY geoipupdate-cron* /etc/periodic/weekly/geoipupdate-cron
+RUN crond -f -l 8 &
+
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /app/node_modules ./node_modules
 COPY --chown=node:node --from=build /app/dist ./dist
