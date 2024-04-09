@@ -1,6 +1,6 @@
 {
   "source": "https://github.com/MozillaFoundation/tiktok-reporter-app-be#license",
   "version": "0.1.0",
-  "commit": "cf8a60b2c3bfed36f2a6d4d158be49b8df9d84d1",
-  "build": "https://console.cloud.google.com/run?project=regrets-reporter-dev"
+  "commit": "35f5925ad2c43765f690c2ce9fea9e46dcf8abfe",
+  "build": "https://console.cloud.google.com/run?project=moz-fx-ttreporter-nonprod-c233"
 }
