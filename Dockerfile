@@ -72,7 +72,7 @@ RUN mkdir -p /usr/local/etc && touch /usr/local/etc/GeoIP.conf && \
     $HOME/go/bin/geoipupdate
 
 # Copy crons
-COPY geoipupdate-cron* /etc/periodic/weekly/geoipupdate-cron
+COPY geoipupdate-cron.sh /etc/periodic/weekly/geoipupdate-cron
 RUN crond -f -l 8 &
 
 # Copy the bundled code from the build stage to the production image
