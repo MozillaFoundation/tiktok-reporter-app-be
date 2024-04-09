@@ -30,7 +30,7 @@ export const getDataSourceOptions = (): DataSourceOptions => {
     // FOR end to end testing
     //migrations: ['src/database/migrations/*{.ts,.js}'],
     migrationsTableName: 'migrations_typeorm',
-    migrationsRun: true,
+    migrationsRun: false,
   };
 };
 
