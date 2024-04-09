@@ -1,0 +1,9 @@
+version: "3.8"
+services:
+  ttreporter:
+    env_file: .env
+    build:
+      dockerfile: Dockerfile
+      args:
+        - GEO_LOCATION_ACCOUNT_ID=${GEO_LOCATION_ACCOUNT_ID}
+        - GEO_LOCATION_API_KEY=${GEO_LOCATION_API_KEY}

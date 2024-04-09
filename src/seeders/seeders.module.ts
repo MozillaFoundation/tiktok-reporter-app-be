@@ -51,6 +51,9 @@ export class SeedersModule {
 
   async onModuleInit() {
     try {
+      if (!process.env.SEED) {
+        return;
+      }
       await this.seedApiKeys();
 
       const seederKey = await this.apiKeyRepository.findOne({
