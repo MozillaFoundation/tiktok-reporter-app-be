@@ -12,7 +12,7 @@ import { SentryFilter } from './filters/SentryFilter';
 const port = process.env.PORT || 8080;
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bodyParser: false });
   // whitelist set to true strips the request of other values that are not part of the original DTO
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
 
