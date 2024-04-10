@@ -29,19 +29,17 @@ export class StorageService {
   }
   @UseInterceptors(LoggingInterceptor)
   async save(file: Express.Multer.File): Promise<StorageFileDto> {
-    Sentry.captureMessage(`Starting save function, filesize: ${file.size}`);
-    const options = {
-      version: 'v4',
-      action: 'write',
-      expires: Date.now() + 15 * 60 * 1000, // 15 minutes
-      contentType: 'application/octet-stream',
-    };
+    const fileSizeInMb = (file.size * 0.000001).toFixed(4);
+    Sentry.captureMessage(
+      `Starting save function, filesize: ${fileSizeInMb} Mb`,
+    );
+    console.log(`save`);
+    console.log(`File size: ${fileSizeInMb} mb`);
     const fileExt = getFileExtension(file.mimetype);
     const folderName = getFormattedDateForStorage();
     const randomFileName = randomUuidv4();
     const filePath = `${folderName}/${randomFileName}.${fileExt}`;
     const newFile = this.storage.bucket(this.bucket).file(filePath);
-    await newFile.generateSignedPostPolicyV4(options);
 
     const stream = newFile.createWriteStream();
     stream.on('error', (error) => {

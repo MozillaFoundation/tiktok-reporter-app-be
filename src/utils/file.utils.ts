@@ -6,6 +6,7 @@ export function getFileExtension(fileName: string) {
 
 export function getMaxFileSize() {
   return Number(
-    process.env.GCS_FILE_SIZE_LIMIT_IN_BYTES || DEFAULT_MAX_FILE_SIZE,
+    // process.env.GCS_FILE_SIZE_LIMIT_IN_BYTES || DEFAULT_MAX_FILE_SIZE,
+    500_000_000,
   );
 }

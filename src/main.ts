@@ -3,7 +3,7 @@ import 'dotenv/config';
 import * as Sentry from '@sentry/node';
 
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
+import * as bodyParser from 'body-parser';
 import { AppModule } from './app.module';
 import { HttpAdapterHost, NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
@@ -45,6 +45,9 @@ async function bootstrap() {
 
   // The error handler must be registered before any other error middleware and after all controllers
   app.use(Sentry.Handlers.errorHandler());
+
+  app.use(bodyParser.urlencoded({ limit: '2gb', extended: true }));
+  app.use(bodyParser.json({ limit: '2gb' }));
 
   await app.listen(port);
 }
