@@ -67,9 +67,9 @@ export class StorageController {
         .addFileTypeValidator({
           fileType: 'mp4',
         })
-        // .addMaxSizeValidator({
-        //   maxSize: getMaxFileSize(),
-        // })
+        .addMaxSizeValidator({
+          maxSize: getMaxFileSize(),
+        })
         .build({
           errorHttpStatusCode: HttpStatus.UNPROCESSABLE_ENTITY,
         }),

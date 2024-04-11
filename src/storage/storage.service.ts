@@ -41,7 +41,7 @@ export class StorageService {
     const filePath = `${folderName}/${randomFileName}.${fileExt}`;
     const newFile = this.storage.bucket(this.bucket).file(filePath);
 
-    const stream = newFile.createWriteStream();
+    const stream = newFile.createWriteStream({ resumable: false });
     stream.on('error', (error) => {
       Sentry.captureException(error);
     });
