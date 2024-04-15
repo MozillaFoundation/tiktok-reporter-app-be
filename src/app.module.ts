@@ -19,6 +19,7 @@ import { SentryInterceptor } from './interceptors/sentry.interceptor';
 import { StorageModule } from './storage/storage.module';
 import { StudiesModule } from './studies/studies.module';
 import { TerminusModule } from '@nestjs/terminus';
+import { SignedUrlModule } from './signedUrl/signedUrl.module';
 
 @Module({
   imports: [
@@ -42,6 +43,7 @@ import { TerminusModule } from '@nestjs/terminus';
     TerminusModule,
     HttpModule,
     StorageModule,
+    SignedUrlModule,
   ],
   controllers: [AppController],
   providers: [
