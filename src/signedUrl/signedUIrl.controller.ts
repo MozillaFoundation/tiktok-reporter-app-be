@@ -15,7 +15,6 @@ export class SignedUIrlController {
     status: 200,
   })
   async getSignedUrl() {
-    console.log('Getting signed Url');
     return await this.signedUrlService.getUrl();
   }
 }

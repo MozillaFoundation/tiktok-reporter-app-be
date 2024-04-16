@@ -4,6 +4,7 @@ import StorageConfig from '../storage/config/storage-config';
 import { LoggingInterceptor } from '../interceptors/logging.interceptor';
 import { getFormattedDateForStorage } from '../utils/date.utils';
 import { randomUuidv4 } from '../utils/generate-uuid';
+import { mapUrlToDto } from './mappers/mapUrlToDto';
 
 @Injectable()
 export class SignedUrlService {
@@ -38,9 +39,6 @@ export class SignedUrlService {
       .file(filePath)
       .getSignedUrl(options);
 
-    return url.replace(
-      'https://storage.googleapis.com/regrets_reporter_recording_docs/',
-      '',
-    );
+    return mapUrlToDto(url);
   }
 }
