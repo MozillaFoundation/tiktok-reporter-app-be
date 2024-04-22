@@ -39,9 +39,6 @@ export class StorageService {
     stream.on('error', (error) => {
       Sentry.captureException(error);
     });
-    stream.on('finish', async () => {
-      Sentry.captureMessage('File uploaded successfully');
-    });
     stream.end(file.buffer);
 
     return mapFileToDto(newFile);

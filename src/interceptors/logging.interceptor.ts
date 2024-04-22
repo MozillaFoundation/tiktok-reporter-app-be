@@ -24,11 +24,6 @@ export class LoggingInterceptor implements NestInterceptor {
     const { ip, method, path: url } = request;
     const correlationKey = uuidv4();
 
-    Sentry.captureMessage(
-      `[${correlationKey}] method: ${method} url: ${url}  userAgent: ${userAgent} ip: ${ip}: className: ${
-        context.getClass().name
-      } handler: ${context.getHandler().name}`,
-    );
     this.logger.log(
       `[${correlationKey}] method:${method} url:${url}  userAgent:${userAgent} ip:${ip}: className:${
         context.getClass().name
@@ -43,11 +38,6 @@ export class LoggingInterceptor implements NestInterceptor {
         const { statusCode } = response;
         const contentLength = response.get('content-length');
 
-        Sentry.captureMessage(
-          `[${correlationKey}] ${method} ${url} ${statusCode} ${contentLength}: ${
-            Date.now() - now
-          }ms`,
-        );
         this.logger.log(
           `[${correlationKey}] ${method} ${url} ${statusCode} ${contentLength}: ${
             Date.now() - now
