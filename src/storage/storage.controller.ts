@@ -76,7 +76,6 @@ export class StorageController {
     )
     file: Express.Multer.File,
   ) {
-    console.log(`uploadRecording`);
     return await this.storageService.save(file);
   }
 }
