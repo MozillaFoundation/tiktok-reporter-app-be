@@ -336,7 +336,7 @@ const onboardingSteps = [
     title: 'How to share a screen recording with us using the app',
     subtitle: 'Record your session on TikTok',
     description:
-      'Open the TT Reporter app and go to the ‘Record a Session’ tab. Tap ‘Record my TikTok session’ to start screen recording.',
+      'Open the FYP Reporter app and go to the ‘Record a Session’ tab. Tap ‘Record my TikTok session’ to start screen recording.',
     details: '',
     order: 3,
     imageUrl:
@@ -346,7 +346,7 @@ const onboardingSteps = [
     title: 'How to share a screen recording with us using the app',
     subtitle: 'Record your session on TikTok',
     description:
-      'Open TikTok and record your session while you scroll the For You Page (FYP). Once you’re done, go back to the TT Reporter app and tap ‘Stop Recording.’',
+      'Open TikTok and record your session while you scroll the For You Page (FYP). Once you’re done, go back to the FYP Reporter app and tap ‘Stop Recording.’',
     details: '',
     order: 4,
     imageUrl:
@@ -364,7 +364,9 @@ const onboardingSteps = [
   },
 ];
 
-const policyText = `Your use of TT Reporter is subject to our [Terms of Service](https://www.mozilla.org/en-US/about/legal/terms/mozilla/) and [Privacy Notice](https://www.mozilla.org/privacy/) ("Terms"). Please read these Terms carefully before using the app. By clicking "I Agree" below, you agree to be bound by these Terms.`;
+const policyText = `Your use of FYP Reporter is subject to our [Terms of Service](https://foundation.mozilla.org/en/fyp-reporter/terms-of-service/
+) and [Privacy Notice](https://foundation.mozilla.org/en/fyp-reporter/privacy-notice/) ("Terms"). Please read these Terms carefully before using the app. By clicking "I Agree" below, you agree to be bound by these Terms.`;
+
 
 const availableCountryCodes = [
   { countryName: 'Afghanistan', countryCode: 'af' },

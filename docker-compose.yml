@@ -2,7 +2,7 @@
 # docker compose up --build
 version: "3.8"
 services:
-  ttreporter:
+  fyp-reporter:
     env_file: .env
     build:
       dockerfile: Dockerfile

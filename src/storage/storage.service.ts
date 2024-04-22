@@ -29,12 +29,6 @@ export class StorageService {
   }
   @UseInterceptors(LoggingInterceptor)
   async save(file: Express.Multer.File): Promise<StorageFileDto> {
-    const fileSizeInMb = (file.size * 0.000001).toFixed(4);
-    Sentry.captureMessage(
-      `Starting save function, filesize: ${fileSizeInMb} Mb`,
-    );
-    console.log(`save`);
-    console.log(`File size: ${fileSizeInMb} mb`);
     const fileExt = getFileExtension(file.mimetype);
     const folderName = getFormattedDateForStorage();
     const randomFileName = randomUuidv4();
@@ -44,9 +38,6 @@ export class StorageService {
     const stream = newFile.createWriteStream({ resumable: false });
     stream.on('error', (error) => {
       Sentry.captureException(error);
-    });
-    stream.on('finish', async () => {
-      Sentry.captureMessage('File uploaded successfully');
     });
     stream.end(file.buffer);
 
