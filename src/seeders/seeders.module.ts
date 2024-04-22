@@ -12,7 +12,6 @@ import { FieldType } from 'src/forms/types/fields/field.type';
 import { mapFormFields } from 'src/forms/mappers/form-fields.mapper';
 import { TextFieldDto } from 'src/forms/dtos/text-field.dto';
 import { DropDownFieldDto } from 'src/forms/dtos/drop-down-field.dto';
-import { SliderFieldDto } from 'src/forms/dtos/slider-field.dto';
 import { ApiKey } from 'src/auth/entities/api-key.entity';
 import { randomUuidv4 } from 'src/utils/generate-uuid';
 
@@ -51,6 +50,9 @@ export class SeedersModule {
 
   async onModuleInit() {
     try {
+      if (!process.env.SEED) {
+        return;
+      }
       await this.seedApiKeys();
 
       const seederKey = await this.apiKeyRepository.findOne({
@@ -146,16 +148,8 @@ export class SeedersModule {
 
     this.policyRepository.save({
       type: PolicyType.TermsOfService,
-      title: ' Terms of Service Title',
-      subtitle: ' Terms of Service Sub Title',
-      text: policyText,
-      createdBy: seederKey,
-    });
-
-    this.policyRepository.save({
-      type: PolicyType.PrivacyPolicy,
-      title: ' Terms of Service Title',
-      subtitle: ' Terms of Service Sub Title',
+      title: 'Terms & Privacy',
+      subtitle: '',
       text: policyText,
       createdBy: seederKey,
     });
@@ -168,7 +162,7 @@ export class SeedersModule {
     }
 
     const newOnboarding = await this.onboardingRepository.create({
-      name: 'TEST Onboarding step',
+      name: 'Global Onboarding',
       steps: [],
       form: {},
       createdBy: seederKey,
@@ -194,17 +188,18 @@ export class SeedersModule {
     const mappedFields = mapFormFields([
       {
         type: FieldType.TextField,
-        isRequired: true,
-        description: 'Email Field description',
-        label: 'Email field',
-        placeholder: 'Email placeholder',
+        isRequired: false,
+        description:
+          'If you would like to receive updates on this study and hear about future studies, please share your email address.',
+        label: 'Sign up for email updates',
+        placeholder: 'Your e-mail (optional)',
         multiline: false,
         maxLines: 1,
       } as TextFieldDto,
     ]);
 
     const createdForm = await this.formRepository.create({
-      name: 'OnboardingForm',
+      name: 'Sign Up Form',
       fields: mappedFields,
       createdBy: seederKey,
     });
@@ -222,81 +217,96 @@ export class SeedersModule {
       return;
     }
 
-    const studyPolicy = await this.policyRepository.save({
-      type: PolicyType.TermsOfService,
-      title: 'Custom Terms of Service for this study',
-      subtitle: ' Custom Terms of Service for this study',
-      text: policyText,
-      createdBy: seederKey,
-    });
-    const countryCodes = await this.countryCodeRepository.find({
-      where: { code: 'ro' },
-    });
+    // const countryCodes = await this.countryCodeRepository.find({
+    //   where: { code: 'us' },
+    // });
 
-    const mappedFields = mapFormFields([
+    const reportMappedFields = mapFormFields([
       {
         type: FieldType.TextField,
         isRequired: true,
-        label: 'TikTok Link',
-        description: 'TikTok Link Field description',
-        placeholder: 'TikTok Link',
+        label: 'TikTok URL',
+        description:
+          'Copy and paste the link to a TikTok video you consider harmful.',
+        placeholder: 'https://tiktok.com/...',
         multiline: false,
         maxLines: 1,
+        isTikTokLink: true,
       } as TextFieldDto,
       {
         type: FieldType.DropDown,
         isRequired: true,
         label: 'Category',
-        description: 'Category Field description',
+        description: 'Please select a category',
         placeholder: 'Category',
         options: [
-          { title: 'Category 1' },
-          { title: 'Category 2' },
-          { title: 'Category 3' },
-          { title: 'Category 4' },
-          { title: 'Category 5' },
+          { title: 'Distressing or disturbing' },
+          { title: 'Promotes violence or harm' },
+          {
+            title:
+              'Promotes health/wellness information that is harmful or misleading',
+          },
+          { title: 'Infringes on my privacy' },
+          { title: 'Spam and/or posted by a bot account' },
+          { title: 'Appears to be part of a disinformation campaign' },
+          { title: 'Harasses a group of people or an individual' },
+          { title: 'Political viewpoint I would like to see less of' },
+          { title: 'Stereotypes a group of people' },
+          { title: "Generally don't feel represented/seen by this video" },
         ],
-        selected: 'Category 1',
+        selected: 'Distressing or disturbing',
         hasOtherOption: true,
       } as DropDownFieldDto,
-      {
-        type: FieldType.Slider,
-        label: 'Slider Field Label',
-        description: 'Slider Field description',
-        isRequired: true,
-        max: 100,
-        leftLabel: 'Min value',
-        rightLabel: 'Max value',
-        step: 10,
-      } as SliderFieldDto,
       {
         type: FieldType.TextField,
         isRequired: true,
         label: 'Comments',
-        description: 'The Comments field',
-        placeholder: 'Comments field',
+        description: 'Tell us why you think this video is harmful to you.',
+        placeholder: 'Your comment here',
         multiline: true,
         maxLines: 8,
       } as TextFieldDto,
     ]);
 
-    const createdForm = await this.formRepository.create({
-      name: 'StudyForm',
-      fields: mappedFields,
+    const reportForm = await this.formRepository.create({
+      name: 'Global Study Form',
+      fields: reportMappedFields,
       createdBy: seederKey,
     });
 
-    const savedForm = await this.formRepository.save(createdForm);
+    const savedReportForm = await this.formRepository.save(reportForm);
+
+    const dataFormFields = mapFormFields([
+      {
+        type: FieldType.TextField,
+        isRequired: true,
+        description:
+          'Please provide your email address in order to get a copy of your data',
+        label: 'Email address',
+        placeholder: 'Your e-mail',
+        multiline: false,
+        maxLines: 1,
+      } as TextFieldDto,
+    ]);
+
+    const dataDownloadForm = await this.formRepository.create({
+      name: 'Data Download Form',
+      fields: dataFormFields,
+      createdBy: seederKey,
+    });
+
+    const savedDataDownloadForm =
+      await this.formRepository.save(dataDownloadForm);
 
     return await this.studyRepository.save({
-      name: 'Custom Study for testing only',
-      description: 'Custom Study for testing only',
+      name: 'Global Study',
+      description: 'Our main study.',
       isActive: true,
       supportsRecording: true,
-      countryCodes,
-      policies: [studyPolicy],
+      policies: [],
       onboarding,
-      form: savedForm,
+      form: savedReportForm,
+      dataDownloadForm: savedDataDownloadForm,
       createdBy: seederKey,
     });
   }
@@ -304,91 +314,57 @@ export class SeedersModule {
 
 const onboardingSteps = [
   {
-    title: 'OnboardingStep title',
-    subtitle: 'OnboardingStep subtitle',
-    description: 'Onboarding step description',
-    details: 'Onboarding step details',
+    title: 'How to share a TikTok video with us using the app',
+    subtitle: 'Sharing a link',
+    description: "Tap TikTok's share button.",
+    details: '',
     order: 1,
     imageUrl:
-      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20recording%20-%20step%201.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20report%20link%20-%20step%202.png',
   },
   {
-    title: 'OnboardingStep title',
-    subtitle: 'OnboardingStep subtitle',
-    description: 'Onboarding step description',
-    details: 'Onboarding step details',
+    title: 'How to share a TikTok video with us using the app',
+    subtitle: 'Sharink a link',
+    description:
+      'Add some information about the video, then tap ‘Submit Report’.',
+    details: '',
     order: 2,
     imageUrl:
-      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20recording%20-%20step%202.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20report%20link%20-%20step%203.png',
   },
   {
-    title: 'OnboardingStep title',
-    subtitle: 'OnboardingStep subtitle',
-    description: 'Onboarding step description',
-    details: 'Onboarding step details',
+    title: 'How to share a screen recording with us using the app',
+    subtitle: 'Record your session on TikTok',
+    description:
+      'Open the TT Reporter app and go to the ‘Record a Session’ tab. Tap ‘Record my TikTok session’ to start screen recording.',
+    details: '',
     order: 3,
     imageUrl:
-      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20recording%20-%20step%203.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%201.png',
   },
   {
-    title: 'OnboardingStep title',
-    subtitle: 'OnboardingStep subtitle',
-    description: 'Onboarding step description',
-    details: 'Onboarding step details',
+    title: 'How to share a screen recording with us using the app',
+    subtitle: 'Record your session on TikTok',
+    description:
+      'Open TikTok and record your session while you scroll the For You Page (FYP). Once you’re done, go back to the TT Reporter app and tap ‘Stop Recording.’',
+    details: '',
     order: 4,
     imageUrl:
-      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20report%20link%20-%20step%201.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%202.png',
   },
   {
-    title: 'OnboardingStep title',
-    subtitle: 'OnboardingStep subtitle',
-    description: 'Onboarding step description',
-    details: 'Onboarding step details',
+    title: 'How to share a screen recording with us using the app',
+    subtitle: 'Record your session on TikTok',
+    description:
+      'Add some information about the recording if you want. Tap the ‘Trim recording’ button to trim the video, then tap ‘Submit Report’ to submit the recording.',
+    details: '',
     order: 5,
     imageUrl:
-      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20report%20link%20-%20step%202.png',
-  },
-  {
-    title: 'OnboardingStep title',
-    subtitle: 'OnboardingStep subtitle',
-    description: 'Onboarding step description',
-    details: 'Onboarding step details',
-    order: 6,
-    imageUrl:
-      'https://storage.cloud.google.com/regrets_reporter_onboarding_docs/Onboarding%20image%20-%20report%20link%20-%20step%203.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%203.png',
   },
 ];
 
-const policyText = `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris egestas risus augue, ut egestas tortor ultrices vitae. Curabitur malesuada scelerisque rhoncus. Suspendisse vitae commodo metus. Phasellus et bibendum elit, eu auctor tortor. Vivamus pharetra, tellus ac sollicitudin ultrices, lorem lacus dapibus nisi, et dapibus tortor lectus at metus. Sed in maximus urna, tempus ultricies magna. Nam vitae turpis consectetur, pretium metus ut, convallis mi. Vestibulum vestibulum ex at mi faucibus malesuada. Etiam ullamcorper in tortor quis pellentesque. Fusce tristique nunc risus, nec vestibulum dui suscipit eget.
-
-In accumsan ante orci, non fringilla sem blandit at. Nulla sollicitudin cursus aliquet. Pellentesque quis vestibulum nulla. Vivamus blandit sem ut sapien tristique bibendum. Pellentesque fermentum scelerisque pretium. Donec placerat maximus bibendum. In in ultricies purus, ut tempus leo. Pellentesque tempor, justo vel elementum scelerisque, elit sem dapibus enim, porttitor pharetra urna arcu non nibh. In eget risus eleifend, accumsan leo sit amet, maximus lorem. Maecenas quis volutpat tellus. Quisque egestas semper tincidunt. In condimentum elementum bibendum. Donec congue tortor vitae justo tempor, vitae suscipit sem efficitur. Nulla nec euismod orci. In posuere fringilla iaculis. Maecenas posuere, nisl et tincidunt semper, sapien neque porttitor est, ac mollis dolor lorem consectetur urna.
-
-Interdum et malesuada fames ac ante ipsum primis in faucibus. Pellentesque lacinia, dolor id aliquet ornare, diam lectus ornare leo, in pellentesque turpis massa eget magna. Aliquam tortor libero, ultricies non nisi quis, finibus semper velit. Morbi elementum, sapien a efficitur auctor, dolor mi pharetra urna, sed gravida purus orci et dui. Vestibulum eu ultrices neque. Aenean congue, massa a rutrum lacinia, elit turpis imperdiet ipsum, quis mollis dui ligula et lorem. Vestibulum ac elementum neque.
-
-Morbi cursus mattis egestas. Sed vehicula placerat mauris, sed elementum mi viverra et. Nulla feugiat orci elit, in bibendum sapien fringilla ac. Etiam in luctus nibh, sed elementum nisl. Cras quis turpis consectetur nibh euismod sodales. Sed dolor lacus, lobortis porttitor malesuada ac, volutpat a ipsum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur lacinia velit odio, vitae blandit nulla commodo ut. Sed dapibus pulvinar tellus, eu bibendum diam aliquet fermentum. Fusce semper gravida dapibus. Duis non porta quam, ac porttitor velit. Sed faucibus in arcu at porttitor. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Etiam eu rutrum eros, eget finibus lectus. Proin pretium porta iaculis.
-
-Cras feugiat odio tristique, blandit sapien quis, lobortis augue. In libero erat, congue quis volutpat a, vulputate id nisi. Phasellus tincidunt egestas consequat. Donec quis consectetur mi. Aenean tristique leo id lacinia faucibus. Morbi suscipit ligula velit, quis ornare diam bibendum eu. Fusce ut justo varius, consequat tortor in, consectetur augue. Integer placerat dolor ex, ut aliquam nulla rhoncus nec. Nam congue cursus dictum.
-
-Etiam massa lorem, gravida finibus justo eu, dignissim viverra augue. Praesent eleifend turpis erat, sit amet accumsan enim porttitor vitae. Praesent luctus ligula vel mauris varius luctus. Maecenas justo est, tristique eget dapibus non, malesuada sed urna. Ut vel lorem sed orci placerat mollis vel viverra dolor. Sed suscipit tortor arcu, at consectetur nisi tempus quis. Maecenas in nulla sit amet ex ultrices gravida vitae vitae ex. Mauris nec blandit ligula. Donec iaculis viverra erat, sit amet consequat ante mollis id. Nunc consequat lacinia nulla a porttitor. Integer tristique non massa in porttitor. Fusce et aliquam lacus, vitae viverra ligula. In blandit dapibus egestas. Aliquam rhoncus non odio eget bibendum. Integer vitae nulla vitae eros bibendum sollicitudin.
-
-Maecenas pellentesque, leo ut semper faucibus, justo libero pretium purus, ullamcorper rhoncus massa massa et eros. Mauris lorem augue, semper a fringilla ac, pharetra vel dolor. Aliquam ut mi et ligula luctus viverra suscipit in metus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus sed tristique ipsum. Donec at elementum neque. Nunc at commodo libero. Nunc tempus placerat nisl eget euismod. Ut in eros nec libero iaculis pellentesque at at elit. Etiam mollis enim vel pellentesque facilisis. Donec id gravida odio, id rutrum urna. Mauris volutpat hendrerit nibh quis vehicula. Quisque maximus ullamcorper mi, euismod feugiat diam commodo et. Suspendisse sit amet lacus id metus pellentesque vehicula.
-
-Integer ornare et ligula sed eleifend. Proin bibendum odio quam, et sodales mi rutrum eu. Suspendisse potenti. Pellentesque non venenatis enim. Phasellus tincidunt massa ipsum, at scelerisque leo egestas in. Quisque id ligula tincidunt est aliquet tincidunt. Proin eget viverra massa, in fringilla magna. Sed congue consequat nunc, id iaculis nunc egestas in. Sed id efficitur elit. Morbi a elementum ante. Praesent consectetur velit cursus, vehicula quam ut, luctus metus. Nunc sit amet urna lobortis, pharetra quam id, consequat justo. In elementum volutpat convallis.
-
-Morbi sapien arcu, sodales in risus ac, mollis venenatis odio. Duis mi massa, rutrum et sagittis a, scelerisque sed mauris. Curabitur arcu mi, molestie non libero a, interdum hendrerit est. Nunc ultrices in dolor et tincidunt. Nullam enim mauris, sagittis vel massa ut, viverra congue justo. Sed odio nisl, tristique non bibendum pellentesque, feugiat imperdiet augue. Vivamus nec lorem consectetur, feugiat nibh ac, viverra ante. Mauris faucibus, odio eu varius porta, lacus ante egestas dolor, ut ultricies mi risus eget elit. In arcu ante, ultricies iaculis nulla id, mollis bibendum quam. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer tristique ligula sit amet nunc egestas finibus. Fusce pretium augue quis nunc condimentum, eget auctor urna efficitur. Aliquam erat volutpat. Maecenas lacinia lectus sapien, posuere tempor ipsum dapibus ut.
-
-In pellentesque maximus vehicula. Donec placerat velit tortor. Nam hendrerit finibus ante ac congue. Vestibulum imperdiet tortor in bibendum interdum. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nullam nec blandit nisl. In tincidunt justo neque, id dignissim mi cursus vestibulum. Sed justo nibh, mattis id tortor eget, scelerisque feugiat nunc. Sed blandit odio eu faucibus tempus. Proin non odio vehicula, congue est efficitur, rhoncus orci. In sit amet condimentum justo, at sollicitudin massa.
-
-Maecenas convallis mollis quam, vel ornare ante posuere ut. Duis vulputate lobortis lectus vitae aliquet. Aenean in ornare est. Praesent sed metus mattis, fringilla ipsum non, commodo arcu. Cras porta ante quis nulla placerat lacinia. Donec vulputate commodo ligula id pretium. Donec vulputate vel felis a commodo. Fusce lacinia purus sed dolor fermentum auctor. Suspendisse euismod eros eget nunc porttitor suscipit. Sed fermentum aliquam tempor. Donec porttitor, magna vel tempus finibus, leo lorem euismod est, porta rhoncus quam arcu vel justo.
-
-Quisque imperdiet tellus eget leo hendrerit vestibulum. Ut lacinia accumsan turpis at volutpat. Pellentesque mollis dapibus lorem sit amet semper. Phasellus non varius arcu. Aenean eu semper lacus, non dapibus orci. Proin fermentum augue ut tellus tempus dignissim. Ut fermentum consequat velit. Morbi leo diam, ullamcorper ac blandit id, vulputate at magna. Aliquam ut enim est. Quisque facilisis maximus odio, sed vestibulum urna rutrum ac. Duis pretium nisl sapien, a interdum dui fermentum nec. Mauris varius arcu ut dolor maximus scelerisque. Nulla facilisi. Nunc non dictum lacus.
-
-Curabitur vel neque et eros ornare porttitor at quis dolor. Mauris a dapibus justo. Ut a massa a nulla condimentum facilisis. Etiam eu iaculis massa. Integer ut enim massa. Cras venenatis ultrices fringilla. Curabitur non lorem accumsan, fringilla libero sit amet, rutrum felis. Proin lorem ante, scelerisque a mattis et, mattis malesuada tortor.
-
-Sed blandit pharetra consequat. Donec quis magna auctor, tristique lorem sit amet, semper massa. Donec in elementum risus. Sed aliquam, neque ac elementum lacinia, arcu felis faucibus metus, quis feugiat dolor felis a erat. Cras et erat consequat dui dignissim viverra. Mauris finibus, justo nec mattis sagittis, purus magna mattis sem, eu mollis odio odio ut est. Vestibulum nec neque sagittis felis auctor fringilla. In tortor orci, varius vel malesuada eget, tincidunt tincidunt elit. In eleifend tempus mi. Pellentesque nisi augue, posuere id neque nec, aliquam lacinia ante.
-
-Praesent sed massa eu urna auctor elementum ut fermentum tellus. Nullam sed lectus blandit, placerat leo et, faucibus tortor. Vestibulum id eleifend justo. Donec dapibus enim ut lectus ullamcorper laoreet. Aliquam cursus lorem id bibendum blandit. Donec congue aliquet urna quis ullamcorper. Praesent mattis, purus sit amet accumsan vulputate, erat tellus maximus tortor, pharetra tincidunt tortor arcu eu ex. Integer feugiat, justo ac ullamcorper sollicitudin, nibh justo sagittis libero, ac rutrum nisl eros mollis velit. Maecenas posuere lorem ac arcu maximus elementum. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Cras id nulla ligula.
-`;
+const policyText = `Your use of TT Reporter is subject to our [Terms of Service](https://www.mozilla.org/en-US/about/legal/terms/mozilla/) and [Privacy Notice](https://www.mozilla.org/privacy/) ("Terms"). Please read these Terms carefully before using the app. By clicking "I Agree" below, you agree to be bound by these Terms.`;
 
 const availableCountryCodes = [
   { countryName: 'Afghanistan', countryCode: 'af' },

@@ -27,6 +27,7 @@ export const defaultCreateStudyDto: CreateStudyDto = {
   policyIds: [],
   onboardingId: '1',
   formId: '1',
+  dataDownloadFormId: '1'
 };
 
 export const defaultCreateCountryCodeDto: CreateCountryCodeDto = {
@@ -43,6 +44,7 @@ export const defaultCreatePolicyDto: CreatePolicyDto = {
 
 export const defaultCreateOnboardingStepDto: CreateOnboardingStepDto = {
   title: 'Test Onboarding Step Title',
+  platform: null,
   subtitle: 'Test Onboarding Step SubTitle',
   description: 'Test Onboarding Step Description',
   imageUrl: 'Test Onboarding Step ImageURL',

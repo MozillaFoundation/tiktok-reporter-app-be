@@ -2,6 +2,7 @@ import {
   DeepPartial,
   FindManyOptions,
   FindOneOptions,
+  FindOperator,
   FindOptionsWhere,
   Repository,
 } from 'typeorm';
@@ -10,6 +11,10 @@ import { arrayNotEmpty, isArray, isEmpty } from 'class-validator';
 import { isFilledArray } from './isFilledArray';
 import { randomUuidv4 } from './generate-uuid';
 
+const uniqueValues = (value, index, array) => {
+  return array.indexOf(value) === index;
+};
+
 export function getFakeEntityRepository<TEntity>(): Partial<
   Repository<TEntity>
 > {
@@ -17,59 +22,85 @@ export function getFakeEntityRepository<TEntity>(): Partial<
 
   const filterEntities = (options?: FindManyOptions<TEntity>) => {
     const entityKeys = Object.keys(entities.at(0));
-    let filteredEntities = [];
-    const [first] = Object.keys(options.where);
-    const condition = options.where[first];
 
-    if (!entityKeys.includes(first)) {
-      const [firstConditionKey] = Object.keys(condition);
+    const filterEntitiesSingleCondition = (
+      entities: TEntity[],
+      where: FindOptionsWhere<TEntity>,
+    ) => {
+      const [first] = Object.keys(where);
+      const condition = where[first];
+      let filteredEntities: TEntity[] = [...entities];
 
-      filteredEntities = entities.filter((entity) => {
+      if (!entityKeys.includes(first)) {
+        const [firstConditionKey] = Object.keys(condition);
+
+        filteredEntities = filteredEntities.filter((entity) => {
+          if (
+            condition?.[firstConditionKey].type === 'isNull' &&
+            isEmpty(entity?.[first])
+          ) {
+            return true;
+          }
+          return false;
+        });
+      }
+
+      for (const key of entityKeys) {
+        if (!where[key]) {
+          continue;
+        }
+
+        let firstWhereKey, firstWhereCondition;
+        if (where[key] instanceof FindOperator) {
+          firstWhereKey = key;
+          firstWhereCondition = where;
+        } else {
+          firstWhereKey = Object.keys(where[key])[0];
+          firstWhereCondition = where[key];
+        }
+
         if (
-          condition?.[firstConditionKey].type === 'isNull' &&
-          isEmpty(entity?.[first])
+          firstWhereCondition[firstWhereKey] !== null &&
+          firstWhereCondition[firstWhereKey].type === 'isNull'
         ) {
-          return true;
+          filteredEntities = filteredEntities.filter(
+            (entity) =>
+              entity[key] === null ||
+              (Array.isArray(entity[key]) &&
+                (!isFilledArray(entity[key]) || !arrayNotEmpty(entity[key]))),
+          );
+          continue;
         }
-        return false;
-      });
-    }
-
-    for (const key of entityKeys) {
-      if (!options.where[key]) {
-        continue;
+        filteredEntities = filteredEntities.filter((entity) => {
+          if (isArray(entity[key])) {
+            return entity[key].find((foundEntity) => {
+              if (!where[key]?.[firstWhereKey]) {
+                return true;
+              }
+              return (
+                foundEntity?.[firstWhereKey] === where[key]?.[firstWhereKey]
+              );
+            });
+          }
+          return entity[key]?.[firstWhereKey] === where[key]?.[firstWhereKey];
+        });
       }
 
-      const [firstWhereKey] = Object.keys(options.where[key]);
-      const firstWhereCondition = options.where[key];
-
-      if (
-        firstWhereCondition[firstWhereKey] !== null &&
-        firstWhereCondition[firstWhereKey].type === 'isNull'
-      ) {
-        filteredEntities = entities.filter(
-          (entity) =>
-            !isFilledArray(entity[key]) || !arrayNotEmpty(entity[key]),
-        );
-        continue;
-      }
-
-      filteredEntities = entities.filter((entity) => {
-        if (isArray(entity[key])) {
-          return entity[key].find((foundEntity) => {
-            if (!options.where[key]?.[firstWhereKey]) {
-              return true;
-            }
-            return (
-              foundEntity?.[firstWhereKey] ===
-              options.where[key]?.[firstWhereKey]
-            );
-          });
-        }
-        return (
-          entity[key]?.[firstWhereKey] === options.where[key]?.[firstWhereKey]
-        );
-      });
+      return filteredEntities;
+    };
+    const whereIsArray = isArray(options.where);
+    let filteredEntities: TEntity[] = [];
+    if (whereIsArray) {
+      const nestedFilteredEntities = (
+        options.where as FindOptionsWhere<TEntity>[]
+      ).map((where) => filterEntitiesSingleCondition(entities, where));
+      // Flatten and deduplicate multiple where conditions
+      filteredEntities = nestedFilteredEntities.flat().filter(uniqueValues);
+    } else {
+      filteredEntities = filterEntitiesSingleCondition(
+        entities,
+        options.where as FindOptionsWhere<TEntity>,
+      );
     }
 
     return filteredEntities;

@@ -6,6 +6,7 @@
 
 # db file
 db.test.sqlite
+database
 
 # compiled output
 /dist
@@ -42,3 +43,7 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
+
+# python, used for google cloud cli, gsutil
+poetry.*
+pyproject.toml

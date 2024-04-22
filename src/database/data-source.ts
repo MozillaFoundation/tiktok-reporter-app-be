@@ -25,11 +25,12 @@ export const getDataSourceOptions = (): DataSourceOptions => {
     //entities: ['src/**/*.entity{.ts,.js}'],
     // Generating a migration: npm run migration:generate -n src/database/migrations/[NameOfMigration]
     // FOR development and deployment
+    // migrations: ['src/database/migrations/*{.ts,.js}'],
     migrations: ['dist/database/migrations/*{.ts,.js}'],
     // FOR end to end testing
     //migrations: ['src/database/migrations/*{.ts,.js}'],
     migrationsTableName: 'migrations_typeorm',
-    migrationsRun: true,
+    migrationsRun: false,
   };
 };
 

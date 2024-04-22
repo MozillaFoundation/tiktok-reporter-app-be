@@ -11,7 +11,8 @@ import {
   mapOnboardingStepsToDtos,
 } from 'src/onboardingSteps/mappers/mapEntitiesToDto';
 
-const fakeOnboardingStepRepository = getFakeEntityRepository<OnboardingStep>();
+export const fakeOnboardingStepRepository =
+  getFakeEntityRepository<OnboardingStep>();
 const fakeApiKeyRepository = getFakeEntityRepository<ApiKey>();
 
 export const fakeOnboardingStepsService: Partial<OnboardingStepsService> = {
@@ -25,6 +26,7 @@ export const fakeOnboardingStepsService: Partial<OnboardingStepsService> = {
 
     const newOnboardingStep = {
       title: createOnboardingStepDto.title,
+      platform: createOnboardingStepDto.platform,
       subtitle: createOnboardingStepDto.subtitle,
       description: createOnboardingStepDto.description,
       imageUrl: createOnboardingStepDto.imageUrl,
@@ -78,6 +80,7 @@ export const fakeOnboardingStepsService: Partial<OnboardingStepsService> = {
 
     Object.assign(onboardingStep, {
       title: updateOnboardingStepDto.title || onboardingStep.title,
+      platform: updateOnboardingStepDto.platform || onboardingStep.platform,
       subtitle: updateOnboardingStepDto.subtitle || onboardingStep.subtitle,
       description:
         updateOnboardingStepDto.description || onboardingStep.description,

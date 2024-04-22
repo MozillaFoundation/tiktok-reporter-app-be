@@ -58,6 +58,23 @@ FROM node:18-alpine As production
 RUN addgroup -g 10001 app && \
     adduser -u 10001 -G app -s /usr/sbin/nologin -D -h /app app -s /bin/sh 
 
+# Install go & geoipupdate
+RUN wget https://go.dev/dl/go1.22.2.linux-amd64.tar.gz && \
+    tar -C /usr/local -xzf go1.22.2.linux-amd64.tar.gz && \
+    /usr/local/go/bin/go install github.com/maxmind/geoipupdate/v6/cmd/geoipupdate@latest
+
+ARG GEO_LOCATION_ACCOUNT_ID
+ARG GEO_LOCATION_API_KEY
+RUN mkdir -p /usr/local/etc && touch /usr/local/etc/GeoIP.conf && \
+    echo "AccountID ${GEO_LOCATION_ACCOUNT_ID}" >> /usr/local/etc/GeoIP.conf && \
+    echo "LicenseKey ${GEO_LOCATION_API_KEY}" >> /usr/local/etc/GeoIP.conf && \
+    echo "EditionIDs GeoIP2-Country" >> /usr/local/etc/GeoIP.conf && \
+    $HOME/go/bin/geoipupdate
+
+# Copy crons
+COPY geoipupdate-cron.sh /etc/periodic/weekly/geoipupdate-cron
+RUN crond -f -l 8 &
+
 # Copy the bundled code from the build stage to the production image
 COPY --chown=node:node --from=build /app/node_modules ./node_modules
 COPY --chown=node:node --from=build /app/dist ./dist

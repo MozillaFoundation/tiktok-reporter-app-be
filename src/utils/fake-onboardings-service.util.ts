@@ -15,7 +15,7 @@ import {
   mapOnboardingsToDtos,
 } from 'src/onboardings/mappers/mapEntitiesToDto';
 
-const fakeOnboardingRepository = getFakeEntityRepository<Onboarding>();
+export const fakeOnboardingRepository = getFakeEntityRepository<Onboarding>();
 const fakeApiKeyRepository = getFakeEntityRepository<ApiKey>();
 
 export const fakeOnboardingsService: Partial<OnboardingsService> = {

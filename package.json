@@ -1,5 +1,5 @@
 {
-  "name": "regrets-reporter-app-be",
+  "name": "ttreporter-be",
   "version": "0.1.0",
   "description": "",
   "author": "",
@@ -19,9 +19,10 @@
     "test:debug": "cross-env NODE_ENV=test node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "npm run build && cross-env NODE_ENV=test jest --config ./test/jest-e2e.json --maxWorkers=1 --detectOpenHandles",
     "typeorm": "npm run build && npx typeorm -d dist/database/data-source.js",
-    "migration:run": "npm run typeorm -- migration:run",
-    "migration:generate": "npm run typeorm -- migration:generate",
-    "migration:revert": "npm run typeorm -- migration:revert"
+    "typeorm:dev": "npm run build && npx typeorm -d dist/src/database/data-source.js",
+    "migration:run": "npm run typeorm:dev -- migration:run",
+    "migration:generate": "npm run typeorm:dev -- migration:generate",
+    "migration:revert": "npm run typeorm:dev -- migration:revert"
   },
   "dependencies": {
     "@google-cloud/storage": "^7.7.0",
