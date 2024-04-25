@@ -1,9 +1,12 @@
 import { Module } from '@nestjs/common';
-import { SignedUIrlController } from './signedUIrl.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { SignedUrlController } from './signedUIrl.controller';
 import { SignedUrlService } from './signedUrl.service';
+import { ApiKey } from 'src/auth/entities/api-key.entity';
 
 @Module({
-  controllers: [SignedUIrlController],
+  imports: [TypeOrmModule.forFeature([ApiKey])],
+  controllers: [SignedUrlController],
   providers: [SignedUrlService],
   exports: [SignedUrlService],
 })

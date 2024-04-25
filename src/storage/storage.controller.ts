@@ -43,7 +43,7 @@ export class StorageController {
   )
   @ApiBody({
     type: CreateRecordingDto,
-    description: 'Save a a recording',
+    description: 'Save a recording',
   })
   @ApiHeader({
     name: 'X-API-KEY',
