@@ -33,9 +33,13 @@ export class SignedUrlService {
   }
   @UseInterceptors(LoggingInterceptor)
   async getUrl(headerApiKey: string) {
+    if (!headerApiKey) {
+      throw new UnauthorizedException('Invalid API Key');
+    }
     const savedApiKey = await this.apiKeyRepository.findOne({
       where: { key: headerApiKey },
     });
+
     if (!savedApiKey) {
       throw new UnauthorizedException('Invalid API Key');
     }
