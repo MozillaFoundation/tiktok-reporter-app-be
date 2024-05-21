@@ -6,7 +6,7 @@ import {
 import { GetSignedUrlConfig, Storage } from '@google-cloud/storage';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import StorageConfig from '../storage/config/storage-config';
+import storageConfig, { mediaBucket } from '../storage/config/storage-config';
 import { LoggingInterceptor } from '../interceptors/logging.interceptor';
 import { getFormattedDateForStorage } from '../utils/date.utils';
 import { randomUuidv4 } from '../utils/generate-uuid';
@@ -22,14 +22,8 @@ export class SignedUrlService {
     @InjectRepository(ApiKey)
     private readonly apiKeyRepository: Repository<ApiKey>,
   ) {
-    this.storage = new Storage({
-      projectId: StorageConfig.projectId,
-      credentials: {
-        client_email: StorageConfig.client_email,
-        private_key: StorageConfig.private_key,
-      },
-    });
-    this.bucket = StorageConfig.mediaBucket;
+    this.storage = new Storage(storageConfig);
+    this.bucket = mediaBucket;
   }
   @UseInterceptors(LoggingInterceptor)
   async getUrl(headerApiKey: string) {
