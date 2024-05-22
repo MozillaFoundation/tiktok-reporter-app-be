@@ -320,17 +320,17 @@ const onboardingSteps = [
     details: '',
     order: 1,
     imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20report%20link%20-%20step%202.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Share%20to.gif',
   },
   {
     title: 'How to share a TikTok video with us using the app',
-    subtitle: 'Sharink a link',
+    subtitle: 'Sharing a link',
     description:
       'Add some information about the video, then tap ‘Submit Report’.',
     details: '',
     order: 2,
     imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20report%20link%20-%20step%203.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/How-to-copy-link.gif',
   },
   {
     title: 'How to share a screen recording with us using the app',
@@ -340,7 +340,7 @@ const onboardingSteps = [
     details: '',
     order: 3,
     imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%201.png',
+      'https://storage.googleapis.com/ttreporter_onboarding/Record-session.gif',
   },
   {
     title: 'How to share a screen recording with us using the app',
