@@ -324,7 +324,7 @@ const onboardingSteps = [
   },
   {
     title: 'How to share a TikTok video with us using the app',
-    subtitle: 'Sharink a link',
+    subtitle: 'Sharing a link',
     description:
       'Add some information about the video, then tap ‘Submit Report’.',
     details: '',
