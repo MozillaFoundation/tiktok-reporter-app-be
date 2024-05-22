@@ -1,7 +1,7 @@
 import { DownloadResponse, Storage } from '@google-cloud/storage';
 
 import { Injectable, UseInterceptors } from '@nestjs/common';
-import StorageConfig from './config/storage-config';
+import storageConfig, { mediaBucket } from './config/storage-config';
 import { StorageFile } from './types/storage-file';
 import { StorageFileDto } from './dtos/storage-file.dto';
 import { getFileExtension } from 'src/utils/file.utils';
@@ -17,15 +17,8 @@ export class StorageService {
   private bucket: string;
 
   constructor() {
-    this.storage = new Storage({
-      projectId: StorageConfig.projectId,
-      credentials: {
-        client_email: StorageConfig.client_email,
-        private_key: StorageConfig.private_key,
-      },
-    });
-
-    this.bucket = StorageConfig.mediaBucket;
+    this.storage = new Storage(storageConfig);
+    this.bucket = mediaBucket;
   }
   @UseInterceptors(LoggingInterceptor)
   async save(file: Express.Multer.File): Promise<StorageFileDto> {
