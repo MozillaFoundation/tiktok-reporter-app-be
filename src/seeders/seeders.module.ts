@@ -314,26 +314,16 @@ export class SeedersModule {
 
 const onboardingSteps = [
   {
-    title: 'How to share a TikTok video with us using the app',
+    title: 'How to share a TikTok video',
     subtitle: 'Sharing a link',
     description: "Tap TikTok's share button.",
     details: '',
     order: 1,
     imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/Share%20to.gif',
+      'https://storage.googleapis.com/ttreporter_onboarding/How-to-share.gif',
   },
   {
-    title: 'How to share a TikTok video with us using the app',
-    subtitle: 'Sharing a link',
-    description:
-      'Add some information about the video, then tap ‘Submit Report’.',
-    details: '',
-    order: 2,
-    imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/How-to-copy-link.gif',
-  },
-  {
-    title: 'How to share a screen recording with us using the app',
+    title: 'How to share a screen recording',
     subtitle: 'Record your session on TikTok',
     description:
       'Open the FYP Reporter app and go to the ‘Record a Session’ tab. Tap ‘Record my TikTok session’ to start screen recording.',
@@ -343,17 +333,7 @@ const onboardingSteps = [
       'https://storage.googleapis.com/ttreporter_onboarding/Record-session.gif',
   },
   {
-    title: 'How to share a screen recording with us using the app',
-    subtitle: 'Record your session on TikTok',
-    description:
-      'Open TikTok and record your session while you scroll the For You Page (FYP). Once you’re done, go back to the FYP Reporter app and tap ‘Stop Recording.’',
-    details: '',
-    order: 4,
-    imageUrl:
-      'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%202.png',
-  },
-  {
-    title: 'How to share a screen recording with us using the app',
+    title: 'How to share a screen recording',
     subtitle: 'Record your session on TikTok',
     description:
       'Add some information about the recording if you want. Tap the ‘Trim recording’ button to trim the video, then tap ‘Submit Report’ to submit the recording.',
