@@ -416,11 +416,19 @@ describe('StudiesService', () => {
 
     const foundEntities = await service.findByIpAddress(
       DEFAULT_IP_ADDRESS_FOR_TESTING,
+      MobilePlatform.IOS,
     );
 
     expect(foundEntities).toBeDefined();
-    expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
-  });
+    const foundEntity = foundEntities.find((s) => s.id === createdEntity.id);
+    // Remove onboardings from steps as they are not set in the fake repository
+    for (const step of foundEntity.onboarding.steps) {
+      step.onboardings = [];
+    }
+    createdEntity.onboarding.steps = createdEntity.onboarding.steps.filter(
+      (s) => s.platform !== MobilePlatform.ANDROID,
+    );
+    expect(foundEntity).toEqual(createdEntity);  });
 
   it('findByIpAddress returns newly created study when querying by country code value', async () => {
     const createdEntity = await service.create(apiKey, {
@@ -434,10 +442,19 @@ describe('StudiesService', () => {
 
     const foundEntities = await service.findByIpAddress(
       DEFAULT_IP_ADDRESS_FOR_TESTING,
+      MobilePlatform.IOS,
     );
 
     expect(foundEntities).toBeDefined();
-    expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
+    const foundEntity = foundEntities.find((s) => s.id === createdEntity.id);
+    // Remove onboardings from steps as they are not set in the fake repository
+    for (const step of foundEntity.onboarding.steps) {
+      step.onboardings = [];
+    }
+    createdEntity.onboarding.steps = createdEntity.onboarding.steps.filter(
+      (s) => s.platform !== MobilePlatform.ANDROID,
+    );
+    expect(foundEntity).toEqual(createdEntity);
   });
 
   it('findByIpAddress returns global study whether there is a country study or not', async () => {
@@ -483,12 +500,14 @@ describe('StudiesService', () => {
 
     const foundEntitiesNoCountry = await service.findByIpAddress(
       'Non existent ip address',
+      MobilePlatform.IOS,
     );
 
     expect(foundEntitiesNoCountry).toBeDefined();
     expect(foundEntitiesNoCountry.map((s) => s.id)).toEqual([globalStudy.id]);
     const foundEntities = await service.findByIpAddress(
       DEFAULT_IP_ADDRESS_FOR_TESTING,
+      MobilePlatform.IOS,
     );
 
     expect(foundEntities).toBeDefined();
