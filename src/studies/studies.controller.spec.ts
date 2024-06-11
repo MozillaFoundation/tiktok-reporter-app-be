@@ -289,7 +289,10 @@ describe('StudiesController', () => {
       },
     );
 
-    const foundEntities = await controller.findByIpAddress(firstCountryCode.id);
+    const foundEntities = await controller.findByIpAddress(
+      firstCountryCode.id,
+      MobilePlatform.IOS,
+    );
 
     expect(foundEntities).toBeDefined();
     expect(foundEntities).toEqual(expect.arrayContaining([createdEntity]));
@@ -309,6 +312,7 @@ describe('StudiesController', () => {
 
     const foundEntities = await controller.findByIpAddress(
       firstCountryCode.code,
+      MobilePlatform.IOS,
     );
 
     expect(foundEntities).toBeDefined();
@@ -329,6 +333,7 @@ describe('StudiesController', () => {
 
     const foundEntities = await controller.findByIpAddress(
       'Non existent country code',
+      MobilePlatform.IOS,
     );
     expect(foundEntities).toBeDefined();
     expect(foundEntities.map((s) => s.id)).toContain(newCreatedStudy.id);
