@@ -66,8 +66,14 @@ export class StudiesController {
     status: 200,
     type: [StudyDto],
   })
-  findByIpAddress(@RealIP() ipAddress: string) {
-    return this.studiesService.findByIpAddress(ipAddress);
+  findByIpAddress(
+    @RealIP() ipAddress: string,
+    @RequestContext() requestContext,
+  ) {
+    return this.studiesService.findByIpAddress(
+      ipAddress,
+      requestContext.platform,
+    );
   }
 
   @Get(':id')

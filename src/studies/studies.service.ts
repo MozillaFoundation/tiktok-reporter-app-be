@@ -100,7 +100,7 @@ export class StudiesService {
     return mapStudiesToDtos(allStudies);
   }
 
-  async findByIpAddress(ipAddress: string) {
+  async findByIpAddress(ipAddress: string, mobilePlatform?: MobilePlatform) {
     const userCountryCode =
       await this.geolocationService.getCountryCodeByIpAddress(ipAddress);
 
@@ -141,6 +141,31 @@ export class StudiesService {
         },
       },
     });
+
+    for (const study of foundStudies) {
+      if (study.onboarding) {
+        const where: FindOptionsWhere<OnboardingStep>[] = [
+          {
+            onboardings: {
+              id: study.onboarding.id,
+            },
+            platform: IsNull(),
+          },
+        ];
+        if (mobilePlatform) {
+          where.push({
+            platform: mobilePlatform,
+            onboardings: {
+              id: study.onboarding.id,
+            },
+          });
+        }
+        const onboardingSteps = await this.onboardingStepRepository.find({
+          where,
+        });
+        study.onboarding.steps = onboardingSteps;
+      }
+    }
 
     return mapStudiesToDtos(foundStudies);
   }
