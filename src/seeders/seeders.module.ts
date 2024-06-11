@@ -14,6 +14,7 @@ import { TextFieldDto } from 'src/forms/dtos/text-field.dto';
 import { DropDownFieldDto } from 'src/forms/dtos/drop-down-field.dto';
 import { ApiKey } from 'src/auth/entities/api-key.entity';
 import { randomUuidv4 } from 'src/utils/generate-uuid';
+import { MobilePlatform } from 'src/interceptors/request-context.interceptor';
 
 @Module({
   imports: [
@@ -178,6 +179,7 @@ export class SeedersModule {
         details: onboardingStep.details,
         order: onboardingStep.order,
         createdBy: seederKey,
+        platform: onboardingStep.platform || null,
       });
       const savedOnboardingStep = await this.onboardingStepRepository.save(
         createdOnboardingStep,
@@ -321,6 +323,7 @@ const onboardingSteps = [
     order: 1,
     imageUrl:
       'https://storage.googleapis.com/ttreporter_onboarding/How-to-share.gif',
+    platform: MobilePlatform.IOS,
   },
   {
     title: 'How to share a screen recording',
@@ -328,9 +331,10 @@ const onboardingSteps = [
     description:
       'Open the FYP Reporter app and go to the ‘Record a Session’ tab. Tap ‘Record my TikTok session’ to start screen recording.',
     details: '',
-    order: 3,
+    order: 2,
     imageUrl:
       'https://storage.googleapis.com/ttreporter_onboarding/Record-session.gif',
+    platform: MobilePlatform.IOS,
   },
   {
     title: 'How to share a screen recording',
@@ -338,9 +342,42 @@ const onboardingSteps = [
     description:
       'Add some information about the recording if you want. Tap the ‘Trim recording’ button to trim the video, then tap ‘Submit Report’ to submit the recording.',
     details: '',
-    order: 5,
+    order: 3,
     imageUrl:
       'https://storage.googleapis.com/ttreporter_onboarding/Onboarding%20image%20-%20recording%20-%20step%203.png',
+    platform: MobilePlatform.IOS,
+  },
+  {
+    title: 'How to share a TikTok video',
+    subtitle: 'Sharing a link',
+    description: "Tap TikTok's share button.",
+    details: '',
+    order: 4,
+    imageUrl:
+      'https://storage.googleapis.com/ttreporter_onboarding/Android-share.gif',
+    platform: MobilePlatform.ANDROID,
+  },
+  {
+    title: 'How to share a screen recording',
+    subtitle: 'Record your session on TikTok',
+    description:
+      'Open the FYP Reporter app and go to the ‘Record a Session’ tab. Tap ‘Record my TikTok session’ to start screen recording.',
+    details: '',
+    order: 5,
+    imageUrl:
+      'https://storage.googleapis.com/ttreporter_onboarding/Android-record.gif',
+    platform: MobilePlatform.ANDROID,
+  },
+  {
+    title: 'How to share a screen recording',
+    subtitle: 'Record your session on TikTok',
+    description:
+      'Add some information about the recording if you want. Tap the ‘Trim recording’ button to trim the video, then tap ‘Submit Report’ to submit the recording.',
+    details: '',
+    order: 6,
+    imageUrl:
+      'https://storage.googleapis.com/ttreporter_onboarding/Android-Onboarding%20image%20-%20recording%20-%20step%203.png',
+    platform: MobilePlatform.ANDROID,
   },
 ];
 
