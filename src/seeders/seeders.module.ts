@@ -245,7 +245,7 @@ export class SeedersModule {
           { title: 'Distressing or disturbing' },
           { title: 'Promotes violence or harm' },
           {
-            title: 'Promotes misleading health information',
+            title: 'Misleading health information',
           },
           { title: 'Infringes on my privacy' },
           { title: 'Spam and/or posted by bot' },
